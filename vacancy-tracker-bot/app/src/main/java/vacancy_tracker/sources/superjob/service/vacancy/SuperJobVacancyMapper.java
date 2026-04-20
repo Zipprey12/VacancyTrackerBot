@@ -1,7 +1,5 @@
 package vacancy_tracker.sources.superjob.service.vacancy;
 
-import org.checkerframework.checker.units.qual.C;
-import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import vacancy_tracker.model.vacancy.Vacancy;
@@ -39,14 +37,14 @@ public interface SuperJobVacancyMapper {
     }
 
     @Named("companyIdToCompany")
-    default Company companyIdToCompany(int id){
+    default Company companyIdToCompany(int id) {
         return Company.builder()
                 .id(id)
                 .build();
     }
 
     @Named("companyToCompanyId")
-    default int companyToCompanyId(Company company){
+    default int companyToCompanyId(Company company) {
         return company.getId();
     }
 }

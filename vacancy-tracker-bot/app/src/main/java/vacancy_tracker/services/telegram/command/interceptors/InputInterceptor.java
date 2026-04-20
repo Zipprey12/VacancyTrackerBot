@@ -14,6 +14,8 @@ public abstract class InputInterceptor {
     @Setter(AccessLevel.PROTECTED)
     private boolean unsubscribeAfterPerform = true;
 
+    public abstract boolean tryHandleInput(String text, long chatId);
+
     public abstract void perform(Message message);
 
     public void processMessage(Message message) {

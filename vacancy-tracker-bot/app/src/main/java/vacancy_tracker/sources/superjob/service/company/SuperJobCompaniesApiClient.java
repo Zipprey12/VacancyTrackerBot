@@ -33,12 +33,12 @@ public class SuperJobCompaniesApiClient extends SuperJobApiClient {
                     url, HttpMethod.GET, entity, SuperJobCompanyResponse.class);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                log.info("Получена компания: id={}, title={}", companyId, response.getBody().getTitle());
+                log.debug("Получена компания: id={}, title={}", companyId, response.getBody().getTitle());
                 return Optional.of(response.getBody());
             }
         } catch (HttpClientErrorException.NotFound e) {
             log.warn("Компания c id {} не была найдена", companyId, e);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("Ошибка при запросе компании id={}: {}", companyId, e.getMessage());
         }
 

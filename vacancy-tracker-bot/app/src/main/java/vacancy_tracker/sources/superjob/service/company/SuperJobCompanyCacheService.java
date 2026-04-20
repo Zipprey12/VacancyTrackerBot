@@ -45,13 +45,8 @@ public class SuperJobCompanyCacheService {
     }
 
     private Optional<Company> fetchAndCacheCompany(long id) {
-        try {
-            return companiesClient.getCompanyById(id)
-                    .map(this::saveCompanyFromApi);
-        } catch (NumberFormatException e) {
-            log.error("Неверный формат ID компании: {}", id);
-            return Optional.empty();
-        }
+        return companiesClient.getCompanyById(id)
+                .map(this::saveCompanyFromApi);
     }
 
     protected Company saveCompanyFromApi(SuperJobCompanyResponse apiCompany) {
@@ -69,7 +64,8 @@ public class SuperJobCompanyCacheService {
     }
 
     private boolean isUpdateNeeded(Timestamp timestamp) {
-        return timestamp.before(Timestamp.valueOf(LocalDateTime.now().minusMinutes(CACHE_UPDATE_DURATION_IN_MINUTES)));
+        return timestamp.before(Timestamp.valueOf(LocalDateTime.now()
+                .minusMinutes(CACHE_UPDATE_DURATION_IN_MINUTES)));
     }
 
     @Async

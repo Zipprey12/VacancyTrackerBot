@@ -25,7 +25,7 @@ public class SuperJobVacanciesApiClient extends SuperJobApiClient {
 
     public Optional<SuperJobVacanciesResponse> searchVacancies(VacancySearchFilterDto filter) {
         String url = buildUrl(filter);
-        log.info("Requesting SuperJob vacancies: {}", url);
+        log.debug("SuperJob: запрос на получение вакансий {}", url);
 
         try {
             HttpEntity<String> entity = new HttpEntity<>(createHeaders());
@@ -48,7 +48,6 @@ public class SuperJobVacanciesApiClient extends SuperJobApiClient {
             return Optional.empty();
         }
     }
-
 
     private String buildUrl(VacancySearchFilterDto filter) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(vacanciesUrl);

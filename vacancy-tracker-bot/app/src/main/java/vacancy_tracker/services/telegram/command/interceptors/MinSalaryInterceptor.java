@@ -1,19 +1,19 @@
 package vacancy_tracker.services.telegram.command.interceptors;
 
 import vacancy_tracker.services.StringUtil;
-import vacancy_tracker.services.telegram.command.settings.SettingInputInterceptor;
 import vacancy_tracker.services.telegram.message.MessageSender;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SettingsService;
 
 public class MinSalaryInterceptor extends SettingInputInterceptor {
 
-    protected MinSalaryInterceptor(MessageSender sender, SessionsService sessionsService, SettingsService settingsService) {
+    public MinSalaryInterceptor(MessageSender sender, SessionsService sessionsService,
+                                   SettingsService settingsService) {
         super(sender, sessionsService, settingsService);
     }
 
     @Override
-    protected boolean tryHandleInput(String text, long chatId) {
+    public boolean tryHandleInput(String text, long chatId) {
         var value = StringUtil.parseInt(text);
         var filters = getSettingsService().getFilters(chatId);
 

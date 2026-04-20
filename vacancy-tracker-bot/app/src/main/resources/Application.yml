@@ -12,3 +12,5 @@ superjob:
   api:
     vacanciesUrl: https://api.superjob.ru/2.0/vacancies
     companiesUrl: https://api.superjob.ru/2.0/clients
+    regionsUrl: https://api.superjob.ru/2.0/regions
+    citiesUrl: https://api.superjob.ru/2.0/towns

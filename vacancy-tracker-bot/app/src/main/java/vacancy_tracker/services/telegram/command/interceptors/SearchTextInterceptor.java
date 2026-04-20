@@ -1,6 +1,5 @@
 package vacancy_tracker.services.telegram.command.interceptors;
 
-import vacancy_tracker.services.telegram.command.settings.SettingInputInterceptor;
 import vacancy_tracker.services.telegram.message.MessageSender;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SettingsService;
@@ -17,7 +16,7 @@ public class SearchTextInterceptor extends SettingInputInterceptor {
     }
 
     @Override
-    protected boolean tryHandleInput(String text, long chatId) {
+    public boolean tryHandleInput(String text, long chatId) {
         if (text == null || text.isBlank()) {
             return false;
         }

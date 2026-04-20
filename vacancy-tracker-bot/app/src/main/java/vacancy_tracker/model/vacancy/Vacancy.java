@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import vacancy_tracker.model.vacancy.dto.LocationDto;
 import vacancy_tracker.model.vacancy.entity.Company;
 
 @Data
@@ -24,8 +25,12 @@ public class Vacancy {
     @JsonProperty("salary_max")
     private Integer salaryMax;
 
-    @JsonProperty("region_name")
+    //todo
+
     private String regionName;
+
+    @JsonProperty("region_name")
+    private LocationDto locationDto;
 
     @JsonProperty("vacancy_url")
     private String vacancyUrl;

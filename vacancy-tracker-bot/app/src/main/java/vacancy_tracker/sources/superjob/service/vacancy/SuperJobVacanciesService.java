@@ -1,6 +1,7 @@
 package vacancy_tracker.sources.superjob.service.vacancy;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import vacancy_tracker.model.vacancy.Vacancy;
@@ -8,6 +9,7 @@ import vacancy_tracker.model.vacancy.dto.VacancySearchFilterDto;
 import vacancy_tracker.services.vacancy.VacancyService;
 import vacancy_tracker.sources.superjob.model.SuperJobVacancyDto;
 import vacancy_tracker.sources.superjob.service.company.SuperJobCompanyCacheService;
+import vacancy_tracker.sources.superjob.service.locations.SuperJobLocationsService;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +24,7 @@ public class SuperJobVacanciesService implements VacancyService {
     private final SuperJobVacanciesApiClient apiClient;
 
     private final SuperJobCompanyCacheService companyService;
+    private final SuperJobLocationsService locationsService;
 
     @Override
     public String getSourceName() {
@@ -47,17 +50,9 @@ public class SuperJobVacanciesService implements VacancyService {
                     .stream()
                     .map(mapper::toEntity)
                     .peek(this::fillCompany)
+                    .peek(this::fillLocation)
                     .toList();
         });
-    }
-
-    public void fillCompany(Vacancy vacancy){
-        var id = vacancy.getCompany().getId();
-        if(id == null){
-            return;
-        }
-        var found = companyService.getCompany(id);
-        found.ifPresent(vacancy::setCompany);
     }
 
     @Override
@@ -74,4 +69,22 @@ public class SuperJobVacanciesService implements VacancyService {
         return 0;
     }
 
+    //todo
+    public void fillCompany(Vacancy vacancy){
+        var id = vacancy.getCompany().getId();
+        if(id == null){
+            return;
+        }
+        var found = companyService.getCompany(id);
+        found.ifPresent(vacancy::setCompany);
+    }
+
+    private void fillLocation(Vacancy vacancy){
+        var locationDto = vacancy.getLocationDto();
+        if(locationDto == null){
+            return;
+        }
+        var found = locationsService.getByCityId(locationDto.getCity().getId());
+        found.ifPresent(r -> vacancy.setRegionName(found.get().getName()));
+    }
 }

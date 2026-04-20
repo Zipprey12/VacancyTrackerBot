@@ -42,7 +42,7 @@ public class DefaultMessageSender implements MessageSender {
             var text = sendMessage.getText();
             var chatId = sendMessage.getChatId();
 
-            log.error("Ошибка отправки сообщения: {} в чат {}", text, chatId, e);
+            log.warn("Ошибка отправки сообщения: {} в чат {}", text, chatId, e);
         }
     }
 

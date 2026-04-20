@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VacancySearchFilterDto {
-
     private Integer offset;
     private Integer limit;
 
     private String text;
-    private LocationDto region;
-    private String modifiedFrom;
     private Integer minSalary;
     private Integer maxSalary;
+
+    private LocationDto region;
+    private String modifiedFrom;
 }
