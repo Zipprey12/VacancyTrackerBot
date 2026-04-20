@@ -1,0 +1,14 @@
+server:
+  port: 8088
+
+bot:
+  data:
+    name: ${BOT_NAME}
+    token: ${BOT_TOKEN}
+
+superjob:
+  appId: ${SUPER_JOB_APP_ID}
+  secretKey: ${SUPER_JOB_SECRET}
+  api:
+    vacanciesUrl: https://api.superjob.ru/2.0/vacancies
+    companiesUrl: https://api.superjob.ru/2.0/clients

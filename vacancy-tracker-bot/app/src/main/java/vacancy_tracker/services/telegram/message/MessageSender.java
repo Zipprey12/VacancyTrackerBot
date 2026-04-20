@@ -1,0 +1,14 @@
+package vacancy_tracker.services.telegram.message;
+
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+
+public interface MessageSender {
+
+    void sendText(long chatId, String text);
+
+    void sendText(long chatId, String text, String parseMode);
+
+    void send(SendMessage sendMessage);
+
+    void sendInvalidValueError(long chatId);
+}
