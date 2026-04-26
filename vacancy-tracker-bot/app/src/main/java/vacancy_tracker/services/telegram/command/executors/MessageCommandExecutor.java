@@ -2,6 +2,7 @@ package vacancy_tracker.services.telegram.command.executors;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import vacancy_tracker.services.telegram.command.MessageBotCommand;
@@ -15,7 +16,7 @@ public class MessageCommandExecutor {
     @Getter(AccessLevel.PROTECTED)
     private final HashMap<String, MessageBotCommand> commands;
 
-    protected MessageCommandExecutor(List<MessageBotCommand> commands) {
+    protected MessageCommandExecutor(@Qualifier("allCommands") List<MessageBotCommand> commands) {
         this.commands = new HashMap<>();
         commands.forEach(c -> this.commands.putIfAbsent(c.getKey(), c));
     }

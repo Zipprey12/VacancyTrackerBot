@@ -1,7 +1,8 @@
 package vacancy_tracker.sources.superjob.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import vacancy_tracker.model.vacancy.dto.MetaDto;
+import vacancy_tracker.model.api.dto.MetaDto;
+import vacancy_tracker.sources.superjob.model.dto.SuperJobVacancyDto;
 
 import java.util.List;
 

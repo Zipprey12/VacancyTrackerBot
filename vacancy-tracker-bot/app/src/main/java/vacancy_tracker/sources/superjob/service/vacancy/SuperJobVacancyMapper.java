@@ -2,38 +2,53 @@ package vacancy_tracker.sources.superjob.service.vacancy;
 
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import vacancy_tracker.model.vacancy.Vacancy;
-import vacancy_tracker.model.vacancy.dto.CityDto;
-import vacancy_tracker.model.vacancy.entity.Company;
-import vacancy_tracker.sources.superjob.model.SuperJobVacancyDto;
+import vacancy_tracker.model.api.entity.Company;
+import vacancy_tracker.model.api.entity.Location;
+import vacancy_tracker.model.api.entity.Town;
+import vacancy_tracker.model.api.entity.Vacancy;
+import vacancy_tracker.sources.superjob.model.dto.SuperJobTownDto;
+import vacancy_tracker.sources.superjob.model.dto.SuperJobVacancyDto;
 
 @org.mapstruct.Mapper(componentModel = "spring")
 public interface SuperJobVacancyMapper {
 
-    @Mapping(source = "city", target = "regionName", qualifiedByName = "cityToRegionName")
+    @Mapping(source = "town", target = "location", qualifiedByName = "townToLocation")
     @Mapping(source = "companyId", target = "company", qualifiedByName = "companyIdToCompany")
     Vacancy toEntity(SuperJobVacancyDto dto);
 
-    @Mapping(source = "regionName", target = "city", qualifiedByName = "regionNameToCity")
+    @Mapping(source = "location", target = "town", qualifiedByName = "locationToTown")
     @Mapping(source = "company", target = "companyId", qualifiedByName = "companyToCompanyId")
     SuperJobVacancyDto toDto(Vacancy vacancy);
 
-    @Named("cityToRegionName")
-    default String townToRegionName(CityDto city) {
-        if (city == null) {
+    @Named("townToLocation")
+    default Location townToLocation(SuperJobTownDto townDto) {
+        if (townDto == null) {
             return null;
         }
-        return city.getName();
+        var town = Town.builder()
+                .name(townDto.getName())
+                .id(townDto.getId())
+                .build();
+
+        var location = new Location();
+        location.setTown(town);
+        return location;
     }
 
-    @Named("regionNameToCity")
-    default CityDto regionNameToTown(String regionName) {
-        if (regionName == null) {
+    @Named("locationToTown")
+    default SuperJobTownDto locationToTown(Location location) {
+        if (location == null) {
             return null;
         }
-        CityDto city = new CityDto();
-        city.setName(regionName);
-        return city;
+        var town = location.getTown();
+        if (town == null) {
+            return null;
+        }
+
+        return SuperJobTownDto.builder()
+                .id(town.getId())
+                .name(town.getName())
+                .build();
     }
 
     @Named("companyIdToCompany")

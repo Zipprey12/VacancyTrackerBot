@@ -1,10 +1,10 @@
 package vacancy_tracker.services.telegram.session;
 
-import vacancy_tracker.model.telegram.UserSession;
+import vacancy_tracker.model.telegram.UserSessionContext;
 
 public interface SessionsService {
 
-    UserSession getSession(long chatId);
+    UserSessionContext getSession(long chatId);
 
     boolean hasSession(long chatId);
 

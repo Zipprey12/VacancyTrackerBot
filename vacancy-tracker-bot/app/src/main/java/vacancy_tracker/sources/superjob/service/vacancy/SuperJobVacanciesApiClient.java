@@ -3,11 +3,13 @@ package vacancy_tracker.sources.superjob.service.vacancy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import vacancy_tracker.model.vacancy.dto.VacancySearchFilterDto;
+import vacancy_tracker.model.api.dto.VacancySearchFilter;
 import vacancy_tracker.sources.superjob.model.SuperJobVacanciesResponse;
 import vacancy_tracker.sources.superjob.service.SuperJobApiClient;
 
@@ -23,7 +25,7 @@ public class SuperJobVacanciesApiClient extends SuperJobApiClient {
     @Value("${superjob.api.vacanciesUrl}")
     private String vacanciesUrl;
 
-    public Optional<SuperJobVacanciesResponse> searchVacancies(VacancySearchFilterDto filter) {
+    public Optional<SuperJobVacanciesResponse> searchVacancies(VacancySearchFilter filter) {
         String url = buildUrl(filter);
         log.debug("SuperJob: запрос на получение вакансий {}", url);
 
@@ -49,14 +51,14 @@ public class SuperJobVacanciesApiClient extends SuperJobApiClient {
         }
     }
 
-    private String buildUrl(VacancySearchFilterDto filter) {
+    private String buildUrl(VacancySearchFilter filter) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(vacanciesUrl);
 
         if (filter.getText() != null) {
             builder.queryParam("keyword", filter.getText());
         }
-        if (filter.getRegion() != null) {
-            builder.queryParam("town", filter.getRegion());
+        if (filter.getLocation() != null) {
+            builder.queryParam("town", filter.getLocation());
         }
         if (filter.getMinSalary() != null) {
             builder.queryParam("payment_from", filter.getMinSalary());

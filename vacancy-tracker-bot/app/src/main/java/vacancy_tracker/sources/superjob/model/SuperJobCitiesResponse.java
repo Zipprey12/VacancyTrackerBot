@@ -2,7 +2,7 @@ package vacancy_tracker.sources.superjob.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import vacancy_tracker.model.vacancy.dto.CityDto;
+import vacancy_tracker.sources.superjob.model.dto.SuperJobTownDto;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
 public class SuperJobCitiesResponse {
 
     @JsonProperty("objects")
-    List<CityDto> cities;
+    List<SuperJobTownDto> cities;
 
     Integer total;
 }

@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import vacancy_tracker.model.vacancy.Vacancy;
-import vacancy_tracker.model.vacancy.dto.VacancySearchFilterDto;
+import vacancy_tracker.model.api.dto.VacancySearchFilter;
+import vacancy_tracker.model.api.entity.Vacancy;
 import vacancy_tracker.services.vacancy.VacancyService;
 import vacancy_tracker.sources.trudvsem.model.TrudVsemResponse;
 
@@ -27,7 +27,7 @@ public class TrudVsemVacanciesService implements VacancyService {
 
     @Async
     @Override
-    public CompletableFuture<List<Vacancy>> search(VacancySearchFilterDto filter) {
+    public CompletableFuture<List<Vacancy>> search(VacancySearchFilter filter) {
         return apiClient.searchVacancies(filter)
                 .map(TrudVsemResponse::getVacancies)
                 .map(CompletableFuture::completedFuture)

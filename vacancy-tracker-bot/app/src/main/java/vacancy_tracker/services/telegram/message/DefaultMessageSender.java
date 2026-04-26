@@ -3,6 +3,7 @@ package vacancy_tracker.services.telegram.message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
@@ -50,5 +51,18 @@ public class DefaultMessageSender implements MessageSender {
     @Override
     public void sendInvalidValueError(long chatId) {
         sendText(chatId, "Неверный формат данных");
+    }
+
+    @Override
+    public void answerCallback(String callbackId) {
+        AnswerCallbackQuery answer = AnswerCallbackQuery.builder()
+                .callbackQueryId(callbackId)
+                .build();
+
+        try {
+            client.execute(answer);
+        } catch (TelegramApiException e) {
+            log.warn("Ошибка при ответе на callback {}", answer.getCallbackQueryId(), e);
+        }
     }
 }

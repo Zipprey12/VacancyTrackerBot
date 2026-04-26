@@ -1,7 +1,8 @@
 package vacancy_tracker.services.telegram.view;
 
 import org.springframework.stereotype.Component;
-import vacancy_tracker.model.vacancy.Vacancy;
+import vacancy_tracker.model.api.entity.Location;
+import vacancy_tracker.model.api.entity.Vacancy;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,27 +13,27 @@ public class VacanciesMessageFormatter {
     public String format(List<Vacancy> vacancies) {
         return "`Пока что я просто вывожу 10 последних вакансий!`\n\n" +
                 vacancies.stream()
-                .map(this::format)
-                .collect(Collectors.joining("\n\n"));
+                        .map(this::format)
+                        .collect(Collectors.joining("\n\n"));
     }
 
-    private String format(Vacancy vacancy) {
+    public String format(Vacancy vacancy) {
         return String.format(
                 """                    
-                        🏢 *%s*
-                        💼 %s
-                        💰 %s RUB
+                        💼 *%s*
+                        🏢 %s
+                        💰 %s руб.
                         📍 %s
                         🔗 [Подробнее](%s)""",
-                vacancy.getCompany().getName(),
                 vacancy.getName(),
+                vacancy.getCompany().getName(),
                 getSalaryString(vacancy.getSalaryMin(), vacancy.getSalaryMax()),
-                vacancy.getRegionName() != null ? vacancy.getRegionName() : "Не указан",
+                getLocationString(vacancy.getLocation()),
                 vacancy.getVacancyUrl()
         );
     }
 
-    private String getSalaryString(int min, int max) {
+    public String getSalaryString(int min, int max) {
         if (min == 0) {
             return String.valueOf(max);
         }
@@ -40,5 +41,15 @@ public class VacanciesMessageFormatter {
             return String.valueOf(min);
         }
         return min + " - " + max;
+    }
+
+    public String getLocationString(Location location) {
+        if (location.getTown() != null) {
+            return "г. " + location.getTown().getName();
+        }
+        if (location.getRegion() != null) {
+            return location.getRegion().getName();
+        }
+        return "Не указан";
     }
 }

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import vacancy_tracker.model.vacancy.entity.Company;
+import vacancy_tracker.model.api.entity.Company;
 import vacancy_tracker.sources.superjob.model.SuperJobCompanyResponse;
 import vacancy_tracker.sources.superjob.repository.SuperJobCompaniesRepository;
 

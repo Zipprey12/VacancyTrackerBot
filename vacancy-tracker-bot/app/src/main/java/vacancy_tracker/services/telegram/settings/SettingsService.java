@@ -1,12 +1,12 @@
 package vacancy_tracker.services.telegram.settings;
 
 import org.springframework.stereotype.Service;
-import vacancy_tracker.model.vacancy.dto.VacancySearchFilterDto;
+import vacancy_tracker.model.api.dto.VacancySearchFilter;
 
 @Service
 public interface SettingsService {
 
-    void saveFilters(long sessionId, VacancySearchFilterDto filter);
+    void saveFilters(long sessionId, VacancySearchFilter filter);
 
-    VacancySearchFilterDto getFilters(long sessionId);
+    VacancySearchFilter getFilters(long sessionId);
 }

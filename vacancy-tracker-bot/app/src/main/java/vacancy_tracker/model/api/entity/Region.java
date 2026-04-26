@@ -1,4 +1,4 @@
-package vacancy_tracker.model.vacancy.entity;
+package vacancy_tracker.model.api.entity;
 
 import lombok.Builder;
 import lombok.Data;
@@ -9,11 +9,11 @@ import java.util.List;
 @Data
 @Builder
 public class Region {
-    int id;
-    String name;
-    List<City> cities;
+    private int id;
+    private String name;
+    private List<Town> cities;
 
-    public void addCity(City city){
+    public void addCity(Town city){
         if(cities == null){
             cities = new LinkedList<>();
         }

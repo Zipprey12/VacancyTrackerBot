@@ -1,4 +1,4 @@
-package vacancy_tracker.model.vacancy.dto;
+package vacancy_tracker.model.api.dto;
 
 import lombok.Data;
 

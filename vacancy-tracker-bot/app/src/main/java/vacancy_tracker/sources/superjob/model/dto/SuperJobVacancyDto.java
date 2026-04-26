@@ -1,8 +1,7 @@
-package vacancy_tracker.sources.superjob.model;
+package vacancy_tracker.sources.superjob.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import vacancy_tracker.model.vacancy.dto.CityDto;
 
 @Data
 public class SuperJobVacancyDto {
@@ -23,14 +22,13 @@ public class SuperJobVacancyDto {
     private Integer salaryMax;
 
     @JsonProperty("town")
-    private CityDto city;
+    private SuperJobTownDto town;
 
     @JsonProperty("link")
     private String vacancyUrl;
 
     @JsonProperty("date_published")
     private String creationDate;
-
 
     @JsonProperty("employment_type")
     private String employmentType;

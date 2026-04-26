@@ -1,13 +1,13 @@
 package vacancy_tracker.sources.superjob.service.vacancy;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import vacancy_tracker.model.vacancy.Vacancy;
-import vacancy_tracker.model.vacancy.dto.VacancySearchFilterDto;
+import vacancy_tracker.model.api.dto.VacancySearchFilter;
+import vacancy_tracker.model.api.entity.Region;
+import vacancy_tracker.model.api.entity.Town;
+import vacancy_tracker.model.api.entity.Vacancy;
 import vacancy_tracker.services.vacancy.VacancyService;
-import vacancy_tracker.sources.superjob.model.SuperJobVacancyDto;
 import vacancy_tracker.sources.superjob.service.company.SuperJobCompanyCacheService;
 import vacancy_tracker.sources.superjob.service.locations.SuperJobLocationsService;
 
@@ -32,7 +32,7 @@ public class SuperJobVacanciesService implements VacancyService {
     }
 
     @Override
-    public CompletableFuture<List<Vacancy>> search(VacancySearchFilterDto filter) {
+    public CompletableFuture<List<Vacancy>> search(VacancySearchFilter filter) {
         log.info("Searching vacancies for query: {}", filter);
 
         return CompletableFuture.supplyAsync(() -> {
@@ -57,7 +57,7 @@ public class SuperJobVacanciesService implements VacancyService {
 
     @Override
     public boolean isAvailable() {
-        VacancySearchFilterDto testFilter = VacancySearchFilterDto.builder()
+        VacancySearchFilter testFilter = VacancySearchFilter.builder()
                 .text("java")
                 .limit(1)
                 .build();
@@ -70,21 +70,45 @@ public class SuperJobVacanciesService implements VacancyService {
     }
 
     //todo
-    public void fillCompany(Vacancy vacancy){
+    public void fillCompany(Vacancy vacancy) {
         var id = vacancy.getCompany().getId();
-        if(id == null){
+        if (id == null) {
             return;
         }
         var found = companyService.getCompany(id);
         found.ifPresent(vacancy::setCompany);
     }
 
-    private void fillLocation(Vacancy vacancy){
-        var locationDto = vacancy.getLocationDto();
-        if(locationDto == null){
+    private void fillLocation(Vacancy vacancy) {
+        var location = vacancy.getLocation();
+        if (location == null) {
             return;
         }
-        var found = locationsService.getByCityId(locationDto.getCity().getId());
-        found.ifPresent(r -> vacancy.setRegionName(found.get().getName()));
+        var town = location.getTown();
+        if (town != null && fillLocation(town, vacancy)) {
+            return;
+        }
+
+        var region = location.getRegion();
+        if (region != null) {
+            fillLocation(region, vacancy);
+        }
+    }
+
+    private boolean fillLocation(Town town, Vacancy vacancy) {
+        var found = locationsService.getLocationByTownId(town.getId());
+        if (found.isEmpty()) {
+            return false;
+        }
+        vacancy.setLocation(found.get());
+        return true;
+    }
+
+    private void fillLocation(Region region, Vacancy vacancy) {
+        var found = locationsService.getLocationByRegionId(region.getId());
+        if (found.isEmpty()) {
+            return;
+        }
+        vacancy.setLocation(found.get());
     }
 }

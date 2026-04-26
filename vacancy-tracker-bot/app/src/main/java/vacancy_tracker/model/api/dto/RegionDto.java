@@ -1,4 +1,4 @@
-package vacancy_tracker.model.vacancy.dto;
+package vacancy_tracker.model.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

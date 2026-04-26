@@ -11,4 +11,6 @@ public interface MessageSender {
     void send(SendMessage sendMessage);
 
     void sendInvalidValueError(long chatId);
+
+    void answerCallback(String callbackId);
 }

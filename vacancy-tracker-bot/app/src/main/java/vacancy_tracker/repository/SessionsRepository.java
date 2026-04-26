@@ -1,13 +1,13 @@
 package vacancy_tracker.repository;
 
-import vacancy_tracker.model.telegram.UserSession;
+import vacancy_tracker.model.telegram.UserSessionContext;
 
 import java.util.Optional;
 
 public interface SessionsRepository {
 
-    Optional<UserSession> register(long chatId);
+    Optional<UserSessionContext> register(long chatId);
 
-    Optional<UserSession> findById(long chatId);
+    Optional<UserSessionContext> findById(long chatId);
 
 }

@@ -1,20 +1,24 @@
 package vacancy_tracker.repository;
 
-import vacancy_tracker.model.vacancy.entity.City;
-import vacancy_tracker.model.vacancy.entity.Region;
+import vacancy_tracker.model.api.entity.Region;
+import vacancy_tracker.model.api.entity.Town;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface LocationsRepository {
 
-    boolean insertCities(List<City> cities);
+    void insertTowns(List<Town> towns);
 
-    boolean insertRegions(List<Region> regions);
+    void insertRegions(List<Region> regions);
 
-    Optional<Region> getByCityId(int cityId);
+    Optional<Region> getRegionByTownId(int townId);
 
-    Optional<Region> getByRegionId(int regionId);
+    Optional<Region> getRegionById(int regionId);
+
+    Optional<Region> getRegionBasicById(int regionId);
+
+    Optional<Town> getTownById(int townId);
 
     boolean isInitialized();
 }

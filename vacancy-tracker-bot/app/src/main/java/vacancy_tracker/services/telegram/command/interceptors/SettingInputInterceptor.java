@@ -13,7 +13,9 @@ public abstract class SettingInputInterceptor extends InputInterceptor {
     private final SettingsService settingsService;
     private final MessageSender sender;
 
-    protected SettingInputInterceptor(MessageSender sender, SessionsService sessionsService, SettingsService settingsService) {
+    protected SettingInputInterceptor(MessageSender sender,
+                                      SessionsService sessionsService,
+                                      SettingsService settingsService) {
         super(sessionsService);
         this.sender = sender;
         this.settingsService = settingsService;

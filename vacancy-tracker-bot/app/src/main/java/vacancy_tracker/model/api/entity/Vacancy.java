@@ -1,12 +1,10 @@
-package vacancy_tracker.model.vacancy;
+package vacancy_tracker.model.api.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vacancy_tracker.model.vacancy.dto.LocationDto;
-import vacancy_tracker.model.vacancy.entity.Company;
 
 @Data
 @Builder
@@ -25,12 +23,7 @@ public class Vacancy {
     @JsonProperty("salary_max")
     private Integer salaryMax;
 
-    //todo
-
-    private String regionName;
-
-    @JsonProperty("region_name")
-    private LocationDto locationDto;
+    private Location location;
 
     @JsonProperty("vacancy_url")
     private String vacancyUrl;

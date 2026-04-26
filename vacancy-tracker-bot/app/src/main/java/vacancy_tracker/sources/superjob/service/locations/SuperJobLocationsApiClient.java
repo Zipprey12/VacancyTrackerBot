@@ -9,12 +9,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import vacancy_tracker.model.vacancy.entity.City;
-import vacancy_tracker.model.vacancy.entity.Region;
+import vacancy_tracker.model.api.dto.RegionDto;
+import vacancy_tracker.model.api.entity.Region;
+import vacancy_tracker.model.api.entity.Town;
 import vacancy_tracker.sources.superjob.model.SuperJobCitiesResponse;
 import vacancy_tracker.sources.superjob.model.SuperJobRegionsResponse;
+import vacancy_tracker.sources.superjob.model.dto.SuperJobTownDto;
 import vacancy_tracker.sources.superjob.service.SuperJobApiClient;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,7 +47,10 @@ public class SuperJobLocationsApiClient extends SuperJobApiClient {
             var regionResponse = response.getBody();
             if (response.getStatusCode().is2xxSuccessful() && regionResponse != null) {
                 log.info("SuperJob: Получено {} регионов", regionResponse.getTotal());
-                regionResponse.getRegions().forEach(r -> {
+                regionResponse.getRegions()
+                        .stream()
+                        .sorted(Comparator.comparing(RegionDto::getName))
+                        .forEach(r -> {
                     if (r.getCountryId() == RUSSIA_INDEX) {
                         var region = Region.builder()
                                 .id(r.getId())
@@ -62,8 +68,8 @@ public class SuperJobLocationsApiClient extends SuperJobApiClient {
         return regions;
     }
 
-    public List<City> getAllCities() {
-        List<City> cities = new LinkedList<>();
+    public List<Town> getAllCities() {
+        List<Town> cities = new LinkedList<>();
 
         try {
             HttpEntity<String> entity = new HttpEntity<>(createHeaders());
@@ -73,11 +79,10 @@ public class SuperJobLocationsApiClient extends SuperJobApiClient {
             var citiesResponse = response.getBody();
             if (response.getStatusCode().is2xxSuccessful() && citiesResponse != null) {
                 log.info("SuperJob: Получено {} городов", citiesResponse.getTotal());
-                citiesResponse.getCities().forEach(c -> {
-                    var city = City.builder()
-                            .id(c.getId())
-                            .name(c.getName())
-                            .regionId(c.getRegionId())
+                citiesResponse.getCities().forEach(t -> {
+                    var city = Town.builder()
+                            .id(t.getId())
+                            .name(t.getName())
                             .build();
                     cities.add(city);
                 });

@@ -7,7 +7,8 @@ import vacancy_tracker.services.telegram.settings.SettingsService;
 
 public class MaxSalaryInterceptor extends SettingInputInterceptor {
 
-    public MaxSalaryInterceptor(MessageSender sender, SessionsService sessionsService,
+    public MaxSalaryInterceptor(MessageSender sender,
+                                SessionsService sessionsService,
                                 SettingsService settingsService) {
         super(sender, sessionsService, settingsService);
     }

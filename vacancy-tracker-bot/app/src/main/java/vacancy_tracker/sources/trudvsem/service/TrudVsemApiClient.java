@@ -9,7 +9,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import vacancy_tracker.model.vacancy.dto.VacancySearchFilterDto;
+import vacancy_tracker.model.api.dto.VacancySearchFilter;
 import vacancy_tracker.sources.trudvsem.model.TrudVsemResponse;
 
 import java.util.Optional;
@@ -24,7 +24,7 @@ public class TrudVsemApiClient {
 
     private final RestTemplate restTemplate;
 
-    public Optional<TrudVsemResponse> searchVacancies(VacancySearchFilterDto filter) {
+    public Optional<TrudVsemResponse> searchVacancies(VacancySearchFilter filter) {
         try {
             String url = buildUrl(filter);
             log.info("Requesting vacancies from: {}", url);
@@ -50,7 +50,7 @@ public class TrudVsemApiClient {
 
 
     public Optional<TrudVsemResponse> searchByKeyword(String keyword, int limit) {
-        VacancySearchFilterDto filter = VacancySearchFilterDto.builder()
+        VacancySearchFilter filter = VacancySearchFilter.builder()
                 .text(keyword)
                 .limit(limit)
                 .build();
@@ -68,14 +68,14 @@ public class TrudVsemApiClient {
         }
     }
 
-    private String buildUrl(VacancySearchFilterDto filter) {
+    private String buildUrl(VacancySearchFilter filter) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(BASE_URL);
 
         if (filter.getText() != null) {
             builder.queryParam("text", filter.getText());
         }
-        if (filter.getRegion() != null) {
-            builder.queryParam("regionCode", filter.getRegion());
+        if (filter.getLocation() != null) {
+            builder.queryParam("regionCode", filter.getLocation());
         }
         if (filter.getOffset() != null) {
             builder.queryParam("offset", filter.getOffset());

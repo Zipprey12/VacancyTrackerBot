@@ -1,12 +1,12 @@
 package vacancy_tracker.repository;
 
-import vacancy_tracker.model.vacancy.dto.VacancySearchFilterDto;
+import vacancy_tracker.model.api.dto.VacancySearchFilter;
 
 import java.util.Optional;
 
 public interface SettingsRepository {
 
-    void saveFilters(long sessionId, VacancySearchFilterDto filter);
+    void saveFilters(long sessionId, VacancySearchFilter filter);
 
-    Optional<VacancySearchFilterDto> getFilters(long sessionId);
+    Optional<VacancySearchFilter> getFilters(long sessionId);
 }

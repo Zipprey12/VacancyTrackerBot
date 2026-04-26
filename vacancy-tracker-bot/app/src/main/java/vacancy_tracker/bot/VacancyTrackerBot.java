@@ -9,6 +9,7 @@ import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+import vacancy_tracker.services.telegram.callback.CallbackService;
 import vacancy_tracker.services.telegram.navigation.BotNavigator;
 import vacancy_tracker.services.telegram.session.SessionsService;
 
@@ -17,6 +18,7 @@ public class VacancyTrackerBot implements SpringLongPollingBot, LongPollingSingl
 
     private final BotNavigator navigator;
     private final SessionsService sessionsService;
+    private final CallbackService callbackService;
 
     @Getter
     private final String botToken;
@@ -25,11 +27,13 @@ public class VacancyTrackerBot implements SpringLongPollingBot, LongPollingSingl
 
     public VacancyTrackerBot(@Value("${bot.data.token}") String botToken,
                              BotNavigator navigator,
-                             SessionsService sessionsService) {
+                             SessionsService sessionsService,
+                             CallbackService callbackService) {
         this.botToken = botToken;
         this.client = new OkHttpTelegramClient(botToken);
         this.navigator = navigator;
         this.sessionsService = sessionsService;
+        this.callbackService = callbackService;
     }
 
     @Override
@@ -39,9 +43,15 @@ public class VacancyTrackerBot implements SpringLongPollingBot, LongPollingSingl
 
     @Override
     public void consume(Update update) {
+        var callback = update.getCallbackQuery();
+        if (callback != null) {
+            callbackService.handle(update);
+            return;
+        }
+
         if (update.hasMessage()) {
             var message = update.getMessage();
-            if(!sessionsService.hasSession(message.getChatId())){
+            if (!sessionsService.hasSession(message.getChatId())) {
                 sessionsService.addSession(message.getChatId());
                 navigator.showInitMessage(message);
                 return;

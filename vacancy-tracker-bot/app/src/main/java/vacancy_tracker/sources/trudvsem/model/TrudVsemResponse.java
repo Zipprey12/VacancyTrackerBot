@@ -2,8 +2,8 @@ package vacancy_tracker.sources.trudvsem.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import vacancy_tracker.model.vacancy.dto.MetaDto;
-import vacancy_tracker.model.vacancy.Vacancy;
+import vacancy_tracker.model.api.dto.MetaDto;
+import vacancy_tracker.model.api.entity.Vacancy;
 
 import java.util.List;
 
