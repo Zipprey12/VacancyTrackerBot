@@ -10,6 +10,9 @@ import vacancy_tracker.services.telegram.session.SessionsService;
 @RequiredArgsConstructor
 public abstract class InputInterceptor {
 
+    public static final int MIN_LENGTH = 0;
+    public static final int MAX_LENGTH = 100;
+
     private final SessionsService sessionsService;
 
     @Setter
@@ -21,9 +24,17 @@ public abstract class InputInterceptor {
     @Setter(AccessLevel.PROTECTED)
     private boolean triggerEvent = true;
 
-    public abstract boolean tryHandleInput(String text, long chatId);
+    protected abstract boolean tryHandlePreparedInput(String text, long chatId);
 
     protected abstract void perform(Message message);
+
+    protected int getMinLength(){
+        return MIN_LENGTH;
+    }
+
+    protected int getMaxLength(){
+        return MAX_LENGTH;
+    }
 
     public void processMessage(Message message) {
         perform(message);
@@ -32,7 +43,7 @@ public abstract class InputInterceptor {
             var session = sessionsService.getSession(message.getChatId());
             var lastMessage = session.getLastSignificantMessage();
             if (lastMessage != null) {
-                command.handleInputEnd(lastMessage);
+                command.handleExecutionEnd(lastMessage, true);
             }
         }
 
@@ -40,5 +51,17 @@ public abstract class InputInterceptor {
             var session = sessionsService.getSession(message.getChatId());
             session.deleteInterceptor();
         }
+    }
+
+    public boolean tryHandleInput(String text, long chatId) {
+        if (text == null || text.isBlank()) {
+            return false;
+        }
+
+        String trimmed = text.trim();
+        if (trimmed.length() < getMinLength() || trimmed.length() > getMaxLength()) {
+            return false;
+        }
+        return tryHandlePreparedInput(trimmed, chatId);
     }
 }

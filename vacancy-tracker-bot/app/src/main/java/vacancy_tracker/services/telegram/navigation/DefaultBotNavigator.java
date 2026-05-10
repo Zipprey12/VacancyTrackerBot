@@ -3,7 +3,7 @@ package vacancy_tracker.services.telegram.navigation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.message.Message;
+import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.command.MessageBotCommand;
 import vacancy_tracker.services.telegram.command.executors.MessageCommandExecutor;
 import vacancy_tracker.services.telegram.session.SessionsService;
@@ -34,19 +34,20 @@ public class DefaultBotNavigator implements BotNavigator {
             return;
         }
 
-        if (!executor.execute(message)) {
-            helpCommand.execute(message);
+        var messageData = MessageData.create(message);
+        if (!executor.execute(messageData)) {
+            helpCommand.execute(messageData, false);
         }
     }
 
     @Override
-    public void showInitMessage(Message message) {
-        initCommand.execute(message);
-        helpCommand.execute(message);
+    public void showInitMessage(MessageData message) {
+        initCommand.execute(message, false);
+        helpCommand.execute(message, false);
     }
 
     @Override
-    public void showHelpMessage(Message message) {
-        helpCommand.execute(message);
+    public void showHelpMessage(MessageData message) {
+        helpCommand.execute(message, false);
     }
 }

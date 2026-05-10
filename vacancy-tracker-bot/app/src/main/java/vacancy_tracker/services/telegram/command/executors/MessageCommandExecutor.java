@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.message.Message;
+import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.command.MessageBotCommand;
 
 import java.util.HashMap;
@@ -21,7 +21,7 @@ public class MessageCommandExecutor {
         commands.forEach(c -> this.commands.putIfAbsent(c.getKey(), c));
     }
 
-    public boolean execute(Message message) {
+    public boolean execute(MessageData message) {
         var input = message.getText();
         var key = getKey(input);
 
@@ -30,7 +30,7 @@ public class MessageCommandExecutor {
         }
 
         var command = commands.get(key);
-        command.execute(message);
+        command.execute(message, false);
         return true;
     }
 

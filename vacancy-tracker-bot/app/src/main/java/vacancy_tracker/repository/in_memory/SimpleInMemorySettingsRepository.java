@@ -14,7 +14,7 @@ public class SimpleInMemorySettingsRepository implements SettingsRepository {
 
     @Override
     public void saveFilters(long sessionId, VacancySearchFilter filter) {
-        filters.putIfAbsent(sessionId, filter);
+        this.filters.put(sessionId, filter);
     }
 
     @Override

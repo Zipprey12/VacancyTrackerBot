@@ -70,7 +70,7 @@ public class SuperJobVacanciesService implements VacancyService {
     }
 
     //todo
-    public void fillCompany(Vacancy vacancy) {
+    private void fillCompany(Vacancy vacancy) {
         var id = vacancy.getCompany().getId();
         if (id == null) {
             return;

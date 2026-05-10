@@ -4,13 +4,14 @@ import org.springframework.stereotype.Repository;
 import vacancy_tracker.model.telegram.UserSessionContext;
 import vacancy_tracker.repository.SessionsRepository;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class SimpleInMemorySessionsRepository implements SessionsRepository {
 
-    private final HashMap<Long, UserSessionContext> sessions = new HashMap<>();
+    private final Map<Long, UserSessionContext> sessions = new ConcurrentHashMap<>();
 
     @Override
     public Optional<UserSessionContext> register(long chatId) {
@@ -22,5 +23,10 @@ public class SimpleInMemorySessionsRepository implements SessionsRepository {
     @Override
     public Optional<UserSessionContext> findById(long chatId) {
         return Optional.ofNullable(sessions.get(chatId));
+    }
+
+    @Override
+    public void save(UserSessionContext sessionContext) {
+        sessions.put(sessionContext.getChatId(), sessionContext);
     }
 }

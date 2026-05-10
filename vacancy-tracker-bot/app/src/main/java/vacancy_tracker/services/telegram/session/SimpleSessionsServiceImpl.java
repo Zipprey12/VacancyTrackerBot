@@ -38,4 +38,9 @@ public class SimpleSessionsServiceImpl implements SessionsService {
     public void addSession(long chatId) {
         repository.register(chatId);
     }
+
+    @Override
+    public void save(UserSessionContext session) {
+        repository.save(session);
+    }
 }

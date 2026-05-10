@@ -7,6 +7,7 @@ import vacancy_tracker.model.api.entity.Region;
 import vacancy_tracker.repository.LocationsRepository;
 import vacancy_tracker.services.vacancy.LocationsService;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,6 +17,7 @@ public class SuperJobLocationsService implements LocationsService {
     private final LocationsRepository repository;
     private final SuperJobLocationsApiClient apiClient;
 
+    //todo Переделать. Город не хранит id региона
     @Override
     public void initialize() {
         if (repository.isInitialized()) {
@@ -25,7 +27,7 @@ public class SuperJobLocationsService implements LocationsService {
         var regions = apiClient.findAllRegionsWithoutCities();
         repository.insertRegions(regions);
 
-        var cities = apiClient.getAllCities();
+        var cities = apiClient.getAllTowns();
         repository.insertTowns(cities);
     }
 
@@ -41,7 +43,7 @@ public class SuperJobLocationsService implements LocationsService {
 
     @Override
     public Optional<Location> getLocationByRegionId(int regionId) {
-        var region = repository.getRegionBasicById(regionId);
+        var region = repository.getRegionById(regionId);
         if(region.isEmpty()){
             return Optional.empty();
         }
@@ -64,6 +66,11 @@ public class SuperJobLocationsService implements LocationsService {
         region.ifPresent(location::setRegion);
 
         return Optional.of(location);
+    }
+
+    @Override
+    public List<Region> getAllRegionsBasic() {
+        return repository.getAllRegionsBasic();
     }
 
     @Override

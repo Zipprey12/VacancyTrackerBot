@@ -1,8 +1,10 @@
 package vacancy_tracker.model.telegram.view;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public enum FilterOptions implements CallBackDataProvider{
     KEYWORDS("Ключевые слова", "change_search_text"),
     LOCATION("Местоположение", "change_location"),
@@ -13,10 +15,4 @@ public enum FilterOptions implements CallBackDataProvider{
 
     private final String text;
     private final String callback;
-
-    FilterOptions(String text, String callback) {
-        this.text = text;
-        this.callback = callback;
-    }
-
 }

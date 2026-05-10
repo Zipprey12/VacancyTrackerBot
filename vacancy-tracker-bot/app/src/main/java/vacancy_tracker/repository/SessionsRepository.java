@@ -10,4 +10,5 @@ public interface SessionsRepository {
 
     Optional<UserSessionContext> findById(long chatId);
 
+    void save(UserSessionContext sessionContext);
 }

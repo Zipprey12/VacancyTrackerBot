@@ -1,4 +1,4 @@
-package vacancy_tracker.sources.superjob.model;
+package vacancy_tracker.sources.superjob.model.response;
 
 import lombok.Data;
 

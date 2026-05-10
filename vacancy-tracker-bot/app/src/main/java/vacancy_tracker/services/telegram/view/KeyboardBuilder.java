@@ -1,5 +1,6 @@
 package vacancy_tracker.services.telegram.view;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -10,9 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class KeyboardBuilder {
 
-    public InlineKeyboardMarkup buildInlineKeyboard(List<CallBackDataProvider> dataProviders, int columnCount) {
+    public InlineKeyboardMarkup buildInlineKeyboard(List<? extends CallBackDataProvider> dataProviders, int columnCount) {
         List<InlineKeyboardRow> keyboardRows = new ArrayList<>();
 
         int index = 0;

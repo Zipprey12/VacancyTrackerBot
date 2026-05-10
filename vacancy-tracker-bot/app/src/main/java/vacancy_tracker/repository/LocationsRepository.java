@@ -20,5 +20,7 @@ public interface LocationsRepository {
 
     Optional<Town> getTownById(int townId);
 
+    List<Region> getAllRegionsBasic();
+
     boolean isInitialized();
 }

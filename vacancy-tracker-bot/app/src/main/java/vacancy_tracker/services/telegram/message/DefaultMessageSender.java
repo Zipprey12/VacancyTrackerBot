@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 
 @Component
 @RequiredArgsConstructor
@@ -64,5 +65,16 @@ public class DefaultMessageSender implements MessageSender {
         } catch (TelegramApiException e) {
             log.warn("Ошибка при ответе на callback {}", answer.getCallbackQueryId(), e);
         }
+    }
+
+    @Override
+    public void send(OutgoingMessage commandMessageData) {
+        SendMessage sendMessage = SendMessage.builder()
+                .chatId(commandMessageData.getChatId())
+                .text(commandMessageData.getText())
+                .parseMode(commandMessageData.getParseMode())
+                .replyMarkup(commandMessageData.getKeyboardMarkup())
+                .build();
+        send(sendMessage);
     }
 }

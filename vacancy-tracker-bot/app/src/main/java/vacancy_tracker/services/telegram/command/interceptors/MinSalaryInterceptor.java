@@ -13,9 +13,9 @@ public class MinSalaryInterceptor extends SettingInputInterceptor {
     }
 
     @Override
-    public boolean tryHandleInput(String text, long chatId) {
+    protected boolean tryHandlePreparedInput(String text, long chatId) {
         var value = StringUtil.parseInt(text);
-        var filters = getSettingsService().getFilters(chatId);
+        var filters = settingsService.getFilters(chatId);
 
         if (value.isEmpty()) {
             return false;
@@ -29,7 +29,7 @@ public class MinSalaryInterceptor extends SettingInputInterceptor {
         }
 
         filters.setMinSalary(minSalary);
-        getSettingsService().saveFilters(chatId, filters);
+        settingsService.saveFilters(chatId, filters);
         return true;
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import vacancy_tracker.model.api.dto.VacancySearchFilter;
-import vacancy_tracker.sources.superjob.model.SuperJobVacanciesResponse;
+import vacancy_tracker.sources.superjob.model.response.SuperJobVacanciesResponse;
 import vacancy_tracker.sources.superjob.service.SuperJobApiClient;
 
 import java.util.Optional;
@@ -66,6 +66,9 @@ public class SuperJobVacanciesApiClient extends SuperJobApiClient {
         if (filter.getMaxSalary() != null) {
             builder.queryParam("payment_to", filter.getMaxSalary());
         }
+//        if (filter.getExperienceFrom() != null){
+//            builder.queryParam("")
+//        }
         if (filter.getLimit() != null) {
             builder.queryParam("count", Math.min(filter.getLimit(), 100));
         } else {

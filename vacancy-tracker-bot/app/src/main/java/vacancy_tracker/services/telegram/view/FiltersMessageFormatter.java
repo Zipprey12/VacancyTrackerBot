@@ -51,7 +51,7 @@ public class FiltersMessageFormatter {
         }
     }
 
-    private void appendExperience(StringBuilder sb, Integer experience) {
+    private void appendExperience(StringBuilder sb, Float experience) {
         sb.append("\n\uD83C\uDF93 *Минимальный опыт:* ");
         if (experience == null) {
             sb.append("_отсутствует_");

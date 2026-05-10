@@ -3,12 +3,12 @@ package vacancy_tracker.bot;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
 import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.callback.CallbackService;
 import vacancy_tracker.services.telegram.navigation.BotNavigator;
 import vacancy_tracker.services.telegram.session.SessionsService;
@@ -26,11 +26,12 @@ public class VacancyTrackerBot implements SpringLongPollingBot, LongPollingSingl
     private final TelegramClient client;
 
     public VacancyTrackerBot(@Value("${bot.data.token}") String botToken,
+                             TelegramClient client,
                              BotNavigator navigator,
                              SessionsService sessionsService,
                              CallbackService callbackService) {
         this.botToken = botToken;
-        this.client = new OkHttpTelegramClient(botToken);
+        this.client = client;
         this.navigator = navigator;
         this.sessionsService = sessionsService;
         this.callbackService = callbackService;
@@ -51,9 +52,11 @@ public class VacancyTrackerBot implements SpringLongPollingBot, LongPollingSingl
 
         if (update.hasMessage()) {
             var message = update.getMessage();
+            var messageData = MessageData.create(message);
+
             if (!sessionsService.hasSession(message.getChatId())) {
                 sessionsService.addSession(message.getChatId());
-                navigator.showInitMessage(message);
+                navigator.showInitMessage(messageData);
                 return;
             }
             navigator.navigate(update);

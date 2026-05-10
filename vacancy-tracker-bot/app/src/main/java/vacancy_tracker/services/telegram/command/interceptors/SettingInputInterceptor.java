@@ -1,7 +1,5 @@
 package vacancy_tracker.services.telegram.command.interceptors;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import vacancy_tracker.services.telegram.message.MessageSender;
 import vacancy_tracker.services.telegram.session.SessionsService;
@@ -9,9 +7,8 @@ import vacancy_tracker.services.telegram.settings.SettingsService;
 
 public abstract class SettingInputInterceptor extends InputInterceptor {
 
-    @Getter(AccessLevel.PROTECTED)
-    private final SettingsService settingsService;
-    private final MessageSender sender;
+    protected final SettingsService settingsService;
+    protected final MessageSender sender;
 
     protected SettingInputInterceptor(MessageSender sender,
                                       SessionsService sessionsService,

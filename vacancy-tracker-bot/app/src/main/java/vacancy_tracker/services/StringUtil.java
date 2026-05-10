@@ -17,4 +17,16 @@ public class StringUtil {
             return Optional.empty();
         }
     }
+
+    public static Optional<Float> parseFloat(String text) {
+        if (text == null) {
+            return Optional.empty();
+        }
+        try {
+            String normalized = text.replace(',', '.');
+            return Optional.of(Float.parseFloat(normalized));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
+    }
 }

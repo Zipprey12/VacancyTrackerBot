@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import vacancy_tracker.sources.superjob.model.SuperJobCompanyResponse;
+import vacancy_tracker.sources.superjob.model.response.SuperJobCompanyResponse;
 import vacancy_tracker.sources.superjob.service.SuperJobApiClient;
 
 import java.util.Optional;

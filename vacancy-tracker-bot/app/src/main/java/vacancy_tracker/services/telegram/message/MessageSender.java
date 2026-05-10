@@ -1,6 +1,7 @@
 package vacancy_tracker.services.telegram.message;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 
 public interface MessageSender {
 
@@ -13,4 +14,6 @@ public interface MessageSender {
     void sendInvalidValueError(long chatId);
 
     void answerCallback(String callbackId);
+
+    void send(OutgoingMessage commandMessageData);
 }

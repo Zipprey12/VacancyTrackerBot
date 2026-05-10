@@ -12,9 +12,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import vacancy_tracker.model.api.dto.RegionDto;
 import vacancy_tracker.model.api.entity.Region;
 import vacancy_tracker.model.api.entity.Town;
-import vacancy_tracker.sources.superjob.model.SuperJobCitiesResponse;
-import vacancy_tracker.sources.superjob.model.SuperJobRegionsResponse;
-import vacancy_tracker.sources.superjob.model.dto.SuperJobTownDto;
+import vacancy_tracker.sources.superjob.model.response.SuperJobCitiesResponse;
+import vacancy_tracker.sources.superjob.model.response.SuperJobRegionsResponse;
 import vacancy_tracker.sources.superjob.service.SuperJobApiClient;
 
 import java.util.Comparator;
@@ -68,7 +67,7 @@ public class SuperJobLocationsApiClient extends SuperJobApiClient {
         return regions;
     }
 
-    public List<Town> getAllCities() {
+    public List<Town> getAllTowns() {
         List<Town> cities = new LinkedList<>();
 
         try {
@@ -80,11 +79,12 @@ public class SuperJobLocationsApiClient extends SuperJobApiClient {
             if (response.getStatusCode().is2xxSuccessful() && citiesResponse != null) {
                 log.info("SuperJob: Получено {} городов", citiesResponse.getTotal());
                 citiesResponse.getCities().forEach(t -> {
-                    var city = Town.builder()
+                    var town = Town.builder()
                             .id(t.getId())
+                            .regionId(t.getRegionId())
                             .name(t.getName())
                             .build();
-                    cities.add(city);
+                    cities.add(town);
                 });
             }
 

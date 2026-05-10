@@ -1,16 +1,16 @@
 package vacancy_tracker.services.telegram.command;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.context.ApplicationEventPublisher;
-import org.telegram.telegrambots.meta.api.objects.message.Message;
-import vacancy_tracker.model.telegram.MessageData;
+import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.command.interceptors.InputInterceptor;
+import vacancy_tracker.services.telegram.message.MessageEditor;
 import vacancy_tracker.services.telegram.message.MessageSender;
 import vacancy_tracker.services.telegram.session.SessionsService;
 
-public abstract class InputInterceptingCommand extends SendingMessageCommand implements MessageDataHandler {
+public abstract class InputInterceptingCommand extends SendingAndUpdatingMessageCommand implements MessageDataHandlerCommand {
 
     @Getter(AccessLevel.PROTECTED)
     private final ApplicationEventPublisher eventPublisher;
@@ -21,61 +21,64 @@ public abstract class InputInterceptingCommand extends SendingMessageCommand imp
     @Getter(AccessLevel.PROTECTED)
     private final InputInterceptor inputInterceptor;
 
+    @Setter(AccessLevel.PROTECTED)
+    private boolean markSignificantAfterExecution = false;
+
     protected InputInterceptingCommand(String key,
                                        String description,
                                        MessageSender sender,
+                                       MessageEditor editor,
                                        ApplicationEventPublisher eventPublisher,
                                        SessionsService sessionsService,
                                        InputInterceptor inputInterceptor) {
-        super(key, description, sender);
+        super(key, description, sender, editor);
         this.eventPublisher = eventPublisher;
         this.sessionsService = sessionsService;
         this.inputInterceptor = inputInterceptor;
         inputInterceptor.setCommand(this);
     }
 
-    //todo переименовать
-    public abstract void handleInputEnd(MessageData messageData);
-
-    protected abstract void handle(MessageData messageData);
+    public abstract void handleExecutionEnd(MessageData messageData, boolean isInterceptorUsed);
 
     @Override
-    public void execute(Message message) {
+    public void handleData(MessageData message, boolean shouldOverwrite) {
         var text = message.getText();
         if (text == null) {
+            execute(message, shouldOverwrite);
             return;
         }
 
         var parameters = getParameters(text);
-        if (parameters == null) {
-            var messageData = MessageData.create(message);
-            execute(messageData);
+        if (parameters.isEmpty()) {
+            execute(message, shouldOverwrite);
         } else {
             handleWithParameters(message, parameters);
         }
     }
 
     @Override
-    public void execute(MessageData messageData) {
-        var chatId = messageData.getChatId();
-        var session = sessionsService.getSession(chatId);
-        session.setLastSignificantMessage(messageData);
+    public final void execute(MessageData message, boolean shouldOverwrite) {
+        super.execute(message, shouldOverwrite);
+        enableInterceptor(message.getChatId());
 
-        handle(messageData);
-        enableInterceptor(chatId);
+        if (markSignificantAfterExecution) {
+            var session = sessionsService
+                    .getSession(message.getChatId());
+            session.setLastSignificantMessage(message);
+        }
     }
 
-    protected void handleWithParameters(Message message, String parameter) {
+    protected void handleWithParameters(MessageData message, String parameter) {
         var id = message.getChatId();
         inputInterceptor.tryHandleInput(parameter, id);
     }
 
-    protected void enableInterceptor(long chatId) {
+    public void enableInterceptor(long chatId) {
         var session = sessionsService.getSession(chatId);
         session.setInputInterceptor(inputInterceptor);
     }
 
-    protected void disableInterceptor(long chatId) {
+    public void disableInterceptor(long chatId) {
         var session = sessionsService.getSession(chatId);
         session.deleteInterceptor();
     }

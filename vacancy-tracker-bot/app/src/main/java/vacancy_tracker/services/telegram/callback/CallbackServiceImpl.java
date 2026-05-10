@@ -3,8 +3,11 @@ package vacancy_tracker.services.telegram.callback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import vacancy_tracker.model.telegram.callback.CommonCallbackKeys;
 import vacancy_tracker.services.telegram.callback.handlers.CallbackHandler;
+import vacancy_tracker.services.telegram.message.MessageSender;
 
 import java.util.List;
 import java.util.Map;
@@ -12,16 +15,19 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class SettingCallbackService implements CallbackService {
+public class CallbackServiceImpl implements CallbackService {
 
     private final Map<String, CallbackHandler> callbackHandlers;
+    private final MessageSender sender;
 
-    public SettingCallbackService(@Qualifier("callbackHandlers") List<CallbackHandler> callbackHandlers) {
+    public CallbackServiceImpl(@Qualifier("callbackHandlers") List<CallbackHandler> callbackHandlers,
+                               MessageSender sender) {
         this.callbackHandlers = callbackHandlers.stream()
                 .collect(Collectors.toMap(
                         CallbackHandler::getCallbackKey,
                         handler -> handler
                 ));
+        this.sender = sender;
     }
 
     @Override
@@ -30,13 +36,30 @@ public class SettingCallbackService implements CallbackService {
         if (callback == null) {
             throw new IllegalArgumentException("Update не содержит Callback");
         }
-        var key = callback.getData();
+
+        var key = getKey(callback);
+        if (!key.equals(CommonCallbackKeys.IGNORE.getKey())) {
+            callHandler(callback, key);
+        }
+
+        sender.answerCallback(callback.getId());
+    }
+
+    private void callHandler(CallbackQuery callback, String key){
         var handler = callbackHandlers.get(key);
         if (handler != null) {
             handler.handle(callback);
-
         } else {
             log.warn("Был вызван Callback {}, для которого нет обработчика", key);
         }
+    }
+
+    private String getKey(CallbackQuery query) {
+        var data = query.getData();
+        var indexOfSeparator = data.indexOf(' ');
+        if (indexOfSeparator == -1) {
+            return data;
+        }
+        return data.substring(0, indexOfSeparator);
     }
 }

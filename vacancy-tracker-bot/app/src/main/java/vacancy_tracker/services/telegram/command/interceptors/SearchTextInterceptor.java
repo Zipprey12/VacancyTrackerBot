@@ -6,9 +6,6 @@ import vacancy_tracker.services.telegram.settings.SettingsService;
 
 public class SearchTextInterceptor extends SettingInputInterceptor {
 
-    private static final int MIN_LENGTH = 2;
-    private static final int MAX_LENGTH = 100;
-
     public SearchTextInterceptor(MessageSender sender,
                                  SessionsService sessionsService,
                                  SettingsService settingsService) {
@@ -16,19 +13,10 @@ public class SearchTextInterceptor extends SettingInputInterceptor {
     }
 
     @Override
-    public boolean tryHandleInput(String text, long chatId) {
-        if (text == null || text.isBlank()) {
-            return false;
-        }
-
-        String trimmed = text.trim();
-        if (trimmed.length() < MIN_LENGTH || trimmed.length() > MAX_LENGTH) {
-            return false;
-        }
-
-        var filters = getSettingsService().getFilters(chatId);
-        filters.setText(trimmed);
-        getSettingsService().saveFilters(chatId, filters);
+    protected boolean tryHandlePreparedInput(String text, long chatId) {
+        var filters = settingsService.getFilters(chatId);
+        filters.setText(text);
+        settingsService.saveFilters(chatId, filters);
         return true;
     }
 }

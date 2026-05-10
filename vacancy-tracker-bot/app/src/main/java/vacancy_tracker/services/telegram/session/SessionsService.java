@@ -9,4 +9,6 @@ public interface SessionsService {
     boolean hasSession(long chatId);
 
     void addSession(long chatId);
+
+    void save(UserSessionContext session);
 }

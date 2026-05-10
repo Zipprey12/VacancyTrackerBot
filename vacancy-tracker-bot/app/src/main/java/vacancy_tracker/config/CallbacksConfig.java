@@ -1,27 +1,61 @@
 package vacancy_tracker.config;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import vacancy_tracker.model.telegram.callback.CallbackItem;
+import vacancy_tracker.services.telegram.callback.PaginationCallbackParser;
 import vacancy_tracker.services.telegram.callback.handlers.CallbackHandler;
-import vacancy_tracker.services.telegram.callback.handlers.SetMaxSalaryCallbackHandler;
-import vacancy_tracker.services.telegram.callback.handlers.SetSearchingTextCallbackHandler;
+import vacancy_tracker.services.telegram.callback.handlers.settings.*;
+import vacancy_tracker.services.telegram.mappers.CallbackItemMapper;
+import vacancy_tracker.services.telegram.view.PaginatedKeyboardBuilder;
+import vacancy_tracker.services.vacancy.LocationsService;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @Configuration
-@RequiredArgsConstructor
+@DependsOn("initializer")
 public class CallbacksConfig {
 
-    private final SetMaxSalaryCallbackHandler setMaxSalaryCallbackHandler;
-    private final SetSearchingTextCallbackHandler setSearchingTextCallbackHandler;
-
-
     @Bean
-    public List<CallbackHandler> callbackHandlers() {
+    public List<CallbackHandler> callbackHandlers(SetMaxSalaryCallbackHandler setMaxSalaryCallbackHandler,
+                                                  SetMinSalaryCallbackHandler setMinSalaryCallbackHandler,
+                                                  SetSearchingTextCallbackHandler setSearchingTextCallbackHandler,
+                                                  SetLocationCallbackHandler setLocationCallbackHandler,
+                                                  SetRegionCallbackHandler setRegionCallbackHandler,
+                                                  SetExperienceCallbackHandler setExperienceCallbackHandler,
+                                                  SaveLocationCallbackHandler saveLocationCallbackHandler,
+                                                  SetTownCallbackHandler setTownCallbackHandler) {
         return List.of(
                 setMaxSalaryCallbackHandler,
-                setSearchingTextCallbackHandler
+                setMinSalaryCallbackHandler,
+                setSearchingTextCallbackHandler,
+                setLocationCallbackHandler,
+                setRegionCallbackHandler,
+                setExperienceCallbackHandler,
+                saveLocationCallbackHandler,
+                setTownCallbackHandler
         );
+    }
+
+    @Bean
+    public PaginatedKeyboardBuilder regionsPaginationBuilder(@Qualifier("regionsPaginationCallbackParser")
+                                                             PaginationCallbackParser parser,
+                                                             LocationsService locationsService,
+                                                             CallbackItemMapper mapper) {
+        var builder = new PaginatedKeyboardBuilder(parser);
+        var regions = locationsService.getAllRegionsBasic();
+        var items = new LinkedList<CallbackItem>();
+
+        regions.forEach(r -> items.add(mapper.fromRegion(r)));
+        builder.setItems(items);
+        return builder;
+    }
+
+    @Bean
+    public PaginatedKeyboardBuilder townsPaginationBuilder(PaginationCallbackParser townsPaginationCallbackParser) {
+        return new PaginatedKeyboardBuilder(townsPaginationCallbackParser);
     }
 }

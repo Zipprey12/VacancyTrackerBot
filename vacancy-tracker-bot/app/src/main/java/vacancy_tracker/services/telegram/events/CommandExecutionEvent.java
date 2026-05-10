@@ -2,7 +2,7 @@ package vacancy_tracker.services.telegram.events;
 
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
-import vacancy_tracker.model.telegram.MessageData;
+import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.command.MessageBotCommand;
 
 @Getter

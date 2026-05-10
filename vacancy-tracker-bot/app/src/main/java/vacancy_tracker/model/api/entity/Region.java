@@ -11,12 +11,12 @@ import java.util.List;
 public class Region {
     private int id;
     private String name;
-    private List<Town> cities;
+    private List<Town> towns;
 
     public void addCity(Town city){
-        if(cities == null){
-            cities = new LinkedList<>();
+        if(towns == null){
+            towns = new LinkedList<>();
         }
-        cities.add(city);
+        towns.add(city);
     }
 }

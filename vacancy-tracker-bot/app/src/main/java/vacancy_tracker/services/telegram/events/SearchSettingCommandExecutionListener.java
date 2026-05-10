@@ -4,43 +4,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.ParseMode;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import vacancy_tracker.services.telegram.command.settings.SetSearchSettingsCommand;
-import vacancy_tracker.services.telegram.message.DefaultMessageEditor;
+import vacancy_tracker.services.telegram.session.SessionsService;
 
 @Component
 @RequiredArgsConstructor
 public class SearchSettingCommandExecutionListener {
 
     private final SetSearchSettingsCommand command;
-    private final DefaultMessageEditor editor;
+    private final SessionsService sessionsService;
 
     @Async
     @EventListener
-    public void handleSettingCommandExecutionEvent(SettingCommandExecutionEvent commandExecutionEvent){
+    public void handleSettingCommandExecutionEvent(SettingCommandExecutionEvent commandExecutionEvent) {
         var data = commandExecutionEvent.getMessageData();
-        var chatId = data.getChatId();
-        var messageId = data.getMessageId();
+        command.execute(data, !commandExecutionEvent.isInterceptorUsed());
 
-        var keyboard = command.getInlineKeyboardMarkup(data);
-        String messageText = command.getMessageText(data);
-
-        EditMessageText editText = EditMessageText.builder()
-                .chatId(chatId)
-                .messageId(messageId)
-                .text(messageText)
-                .parseMode(ParseMode.MARKDOWN)
-                .build();
-
-        EditMessageReplyMarkup replyMarkup = EditMessageReplyMarkup.builder()
-                .chatId(chatId)
-                .messageId(messageId)
-                .replyMarkup(keyboard)
-                .build();
-
-        editor.edit(editText);
-        editor.edit(replyMarkup);
+        var session = sessionsService.getSession(data.getChatId());
+        session.setLastSignificantMessage(data);
+        sessionsService.save(session);
     }
 }

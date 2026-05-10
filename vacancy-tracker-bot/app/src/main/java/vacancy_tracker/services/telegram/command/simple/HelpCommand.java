@@ -1,12 +1,14 @@
-package vacancy_tracker.services.telegram.command;
+package vacancy_tracker.services.telegram.command.simple;
 
-import org.telegram.telegrambots.meta.api.methods.ParseMode;
-import org.telegram.telegrambots.meta.api.objects.message.Message;
+import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.services.telegram.command.MessageBotCommand;
+import vacancy_tracker.services.telegram.command.SendingAndUpdatingMessageCommand;
+import vacancy_tracker.services.telegram.message.MessageEditor;
 import vacancy_tracker.services.telegram.message.MessageSender;
 
 import java.util.List;
 
-public class HelpCommand extends SendingMessageCommand {
+public class HelpCommand extends SendingAndUpdatingMessageCommand {
 
     private static final String MESSAGE_HEADER = """
             *Список доступных команд*:
@@ -16,15 +18,15 @@ public class HelpCommand extends SendingMessageCommand {
     private String message;
 
     public HelpCommand(MessageSender sender,
+                       MessageEditor editor,
                        List<MessageBotCommand> commands) {
-        super("/help", "Вывод справочной информации", sender);
+        super("/help", "Вывод справочной информации", sender, editor);
         initMessage(commands);
     }
 
     @Override
-    public void execute(Message message) {
-        var id = message.getChatId();
-        sender.sendText(id, this.message, ParseMode.MARKDOWN);
+    protected void executeAndPopulateMessage(OutgoingMessage messageData) {
+        messageData.setText(message);
     }
 
     private void initMessage(List<MessageBotCommand> commands) {

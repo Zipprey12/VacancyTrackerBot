@@ -2,9 +2,8 @@ package vacancy_tracker.model.telegram;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.command.interceptors.InputInterceptor;
-
-import javax.swing.*;
 
 @Data
 @RequiredArgsConstructor
@@ -15,8 +14,6 @@ public class UserSessionContext {
     private InputInterceptor inputInterceptor;
 
     private MessageData lastSignificantMessage;
-
-    private Action inputInterceptingAction;
 
     public void deleteInterceptor(){
         inputInterceptor = null;

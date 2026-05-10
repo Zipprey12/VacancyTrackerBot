@@ -14,13 +14,13 @@ public class MaxSalaryInterceptor extends SettingInputInterceptor {
     }
 
     @Override
-    public boolean tryHandleInput(String text, long chatId) {
+    protected boolean tryHandlePreparedInput(String text, long chatId) {
         var value = StringUtil.parseInt(text);
 
         if (value.isEmpty()) {
             return false;
         }
-        var filters = getSettingsService().getFilters(chatId);
+        var filters = settingsService.getFilters(chatId);
 
         var maxSalary = value.get();
         var minSalary = filters.getMinSalary();
@@ -30,7 +30,7 @@ public class MaxSalaryInterceptor extends SettingInputInterceptor {
         }
 
         filters.setMaxSalary(value.get());
-        getSettingsService().saveFilters(chatId, filters);
+        settingsService.saveFilters(chatId, filters);
         return true;
     }
 }
