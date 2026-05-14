@@ -13,8 +13,8 @@ public class Region {
     private String name;
     private List<Town> towns;
 
-    public void addCity(Town city){
-        if(towns == null){
+    public void addCity(Town city) {
+        if (towns == null) {
             towns = new LinkedList<>();
         }
         towns.add(city);

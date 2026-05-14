@@ -22,7 +22,7 @@ public class MessageData {
         return result;
     }
 
-    public static MessageData create(Message message){
+    public static MessageData create(Message message) {
         var result = new MessageData();
         result.setMessageId(message.getMessageId());
         result.setChatId(message.getChatId());

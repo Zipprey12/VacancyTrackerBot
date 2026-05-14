@@ -12,7 +12,7 @@ public class Initializer {
     private final LocationsService locationsService;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         locationsService.initialize();
     }
 }

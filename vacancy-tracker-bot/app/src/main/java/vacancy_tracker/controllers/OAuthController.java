@@ -17,9 +17,9 @@ public class OAuthController {
 
     @GetMapping("/{source}")
     public boolean handleRedirect(@PathVariable String source,
-                                 @RequestParam("code") String code){
+                                  @RequestParam("code") String code) {
         var service = OAuthServices.get(source);
-        if(source == null){
+        if (source == null) {
             log.error("Ошибка: неизвестный источник авторизации: {}", source);
             return false;
         }

@@ -1,7 +1,7 @@
 package vacancy_tracker.services.telegram.callback.parsers;
 
-import vacancy_tracker.model.telegram.callback.CommonCallbackKeys;
 import vacancy_tracker.model.telegram.callback.CallbackData;
+import vacancy_tracker.model.telegram.callback.CommonCallbackKeys;
 import vacancy_tracker.services.StringUtil;
 
 import static vacancy_tracker.model.telegram.callback.CallbackItem.PARTS_SEPARATOR;

@@ -6,8 +6,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import vacancy_tracker.model.api.entity.Region;
-import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys;
+import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.message.MessageEditor;
 
 import java.util.List;

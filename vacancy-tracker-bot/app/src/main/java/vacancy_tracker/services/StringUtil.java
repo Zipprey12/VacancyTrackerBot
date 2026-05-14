@@ -8,7 +8,7 @@ import java.util.Optional;
 public class StringUtil {
 
     public static Optional<Integer> parseInt(String text) {
-        if(text == null){
+        if (text == null) {
             return Optional.empty();
         }
         try {

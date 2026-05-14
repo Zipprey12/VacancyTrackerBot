@@ -52,7 +52,7 @@ public class SetRegionInterceptor extends SettingInputInterceptor {
         var items = new LinkedList<CallbackItem>();
         found.forEach(r -> items.add(mapper.fromRegion(r)));
 
-        var keyboard =  KeyboardBuilder.buildInlineKeyboard(items, 1);
+        var keyboard = KeyboardBuilder.buildInlineKeyboard(items, 1);
         sender.send(createSendMessage(keyboard, chatId));
         return true;
     }

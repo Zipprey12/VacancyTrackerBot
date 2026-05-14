@@ -57,7 +57,7 @@ public class TrudVsemApiClient {
         return searchVacancies(filter);
     }
 
-    public boolean ping(){
+    public boolean ping() {
         try {
             ResponseEntity<String> response = restTemplate.getForEntity("http://opendata.trudvsem.ru/api", String.class);
             return response.getStatusCode().is2xxSuccessful();

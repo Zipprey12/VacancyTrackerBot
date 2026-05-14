@@ -28,7 +28,7 @@ public class ResetSettingsCommand extends SendingAndUpdatingMessageCommand imple
 
     @Override
     protected void executeAndPopulateMessage(OutgoingMessage messageData) {
-        messageData.setText( "Вы собираетесь *сбросить* настройки поиска.\n" +
+        messageData.setText("Вы собираетесь *сбросить* настройки поиска.\n" +
                 "Это действия *нельзя отменить*. Вы уверены?");
 
         messageData.setKeyboardMarkup(KEYBOARD);

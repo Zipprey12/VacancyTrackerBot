@@ -15,7 +15,7 @@ public class UserSessionContext {
 
     private MessageData lastSignificantMessage;
 
-    public void deleteInterceptor(){
+    public void deleteInterceptor() {
         inputInterceptor = null;
     }
 }

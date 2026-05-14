@@ -50,14 +50,14 @@ public class SuperJobLocationsApiClient extends SuperJobApiClient {
                         .stream()
                         .sorted(Comparator.comparing(RegionDto::getName))
                         .forEach(r -> {
-                    if (r.getCountryId() == RUSSIA_INDEX) {
-                        var region = Region.builder()
-                                .id(r.getId())
-                                .name(r.getName())
-                                .build();
-                        regions.add(region);
-                    }
-                });
+                            if (r.getCountryId() == RUSSIA_INDEX) {
+                                var region = Region.builder()
+                                        .id(r.getId())
+                                        .name(r.getName())
+                                        .build();
+                                regions.add(region);
+                            }
+                        });
             }
 
         } catch (Exception e) {

@@ -15,7 +15,8 @@ import vacancy_tracker.services.telegram.view.NumbersFormatUtil;
 
 import java.util.List;
 
-import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.*;
+import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.CANCEL_FILTER_CHANGE;
+import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.SET_MIN_SALARY;
 
 @Component
 public class SetMinSalaryCommand extends SearchFiltersCommand {

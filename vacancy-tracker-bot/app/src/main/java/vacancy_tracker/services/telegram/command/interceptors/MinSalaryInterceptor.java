@@ -8,7 +8,7 @@ import vacancy_tracker.services.telegram.settings.SettingsService;
 public class MinSalaryInterceptor extends SettingInputInterceptor {
 
     public MinSalaryInterceptor(MessageSender sender, SessionsService sessionsService,
-                                   SettingsService settingsService) {
+                                SettingsService settingsService) {
         super(sender, sessionsService, settingsService);
     }
 

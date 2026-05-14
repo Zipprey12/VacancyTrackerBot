@@ -23,6 +23,7 @@ public abstract class ParsingDataCallbackHandler<T> extends SimpleMessageCallbac
     }
 
     protected abstract Optional<T> tryCastSelectedValue(String value);
+
     public abstract void handleCastedData(T data, MessageData messageData);
 
     @Override
@@ -50,10 +51,9 @@ public abstract class ParsingDataCallbackHandler<T> extends SimpleMessageCallbac
         var value = data.selectedKey();
         var casted = tryCastSelectedValue(value);
 
-        if(casted.isEmpty()){
+        if (casted.isEmpty()) {
             log.error("Передано недопустимое значение для Callback {} : {}", getKey(), value);
-        }
-        else {
+        } else {
             handleCastedData(casted.get(), messageData);
         }
     }

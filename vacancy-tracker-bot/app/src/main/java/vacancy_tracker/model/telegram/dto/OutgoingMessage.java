@@ -1,6 +1,7 @@
 package vacancy_tracker.model.telegram.dto;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 

@@ -3,9 +3,9 @@ package vacancy_tracker.services.telegram.callback.parsers;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import vacancy_tracker.model.telegram.callback.CallbackData;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.callback.CommonCallbackKeys;
-import vacancy_tracker.model.telegram.callback.CallbackData;
 
 @RequiredArgsConstructor
 public class CallbackParser {

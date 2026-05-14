@@ -16,12 +16,12 @@ public class SimpleSessionsServiceImpl implements SessionsService {
     @Override
     public UserSessionContext getSession(long chatId) {
         var existed = repository.findById(chatId);
-        if(existed.isPresent()){
+        if (existed.isPresent()) {
             return existed.get();
         }
 
         var registered = repository.register(chatId);
-        if(registered.isPresent()){
+        if (registered.isPresent()) {
             return registered.get();
         }
 

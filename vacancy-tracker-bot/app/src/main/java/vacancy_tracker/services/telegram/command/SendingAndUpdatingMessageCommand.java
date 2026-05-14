@@ -3,8 +3,8 @@ package vacancy_tracker.services.telegram.command;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.dto.MessageData;
+import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.view.Describable;
 import vacancy_tracker.services.telegram.message.MessageEditor;
 import vacancy_tracker.services.telegram.message.MessageSender;
@@ -44,11 +44,11 @@ public abstract class SendingAndUpdatingMessageCommand implements MessageBotComm
         }
     }
 
-    protected void edit(OutgoingMessage messageData){
+    protected void edit(OutgoingMessage messageData) {
         editor.edit(messageData);
     }
 
-    protected void send(OutgoingMessage messageData){
+    protected void send(OutgoingMessage messageData) {
         sender.send(messageData);
     }
 }

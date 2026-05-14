@@ -29,24 +29,21 @@ public class FiltersMessageFormatter {
         sb.append(HEADER);
     }
 
-    private void appendText(StringBuilder sb, String text){
+    private void appendText(StringBuilder sb, String text) {
         sb.append("\uD83D\uDD0D *Ключевые слова:* ");
         sb.append(Objects.requireNonNullElse(text, "_не задано_"));
     }
 
     private void appendLocation(StringBuilder sb, Location location) {
         sb.append("\n\uD83D\uDCCD *Местоположение:* ");
-        if(location == null){
+        if (location == null) {
             sb.append("любое");
-        }
-        else if (location.getTown() != null) {
+        } else if (location.getTown() != null) {
             sb.append("г. ")
                     .append(location.getTown().getName());
-        }
-        else if (location.getRegion() != null) {
+        } else if (location.getRegion() != null) {
             sb.append(location.getRegion().getName());
-        }
-        else {
+        } else {
             sb.append("_не задано_");
         }
     }
@@ -60,22 +57,20 @@ public class FiltersMessageFormatter {
         }
     }
 
-    private void appendMinSalary(StringBuilder sb, Integer minSalary){
+    private void appendMinSalary(StringBuilder sb, Integer minSalary) {
         sb.append("\n\uD83D\uDCB0 *Зарплата от:* ");
-        if (minSalary != null){
+        if (minSalary != null) {
             sb.append(minSalary).append(" руб.");
-        }
-        else {
+        } else {
             sb.append("_не указана_");
         }
     }
 
-    private void appendMaxSalary(StringBuilder sb, Integer maxSalary){
+    private void appendMaxSalary(StringBuilder sb, Integer maxSalary) {
         sb.append("\n\uD83D\uDCB5 *Зарплата до:* ");
-        if (maxSalary != null){
+        if (maxSalary != null) {
             sb.append(maxSalary).append(" руб.\n");
-        }
-        else {
+        } else {
             sb.append("_не указана_\n");
         }
     }

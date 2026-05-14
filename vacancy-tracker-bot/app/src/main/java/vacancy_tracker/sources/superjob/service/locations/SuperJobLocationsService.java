@@ -44,7 +44,7 @@ public class SuperJobLocationsService implements LocationsService {
     @Override
     public Optional<Location> getLocationByRegionId(int regionId) {
         var region = repository.getRegionById(regionId);
-        if(region.isEmpty()){
+        if (region.isEmpty()) {
             return Optional.empty();
         }
         var location = new Location();
@@ -55,7 +55,7 @@ public class SuperJobLocationsService implements LocationsService {
     @Override
     public Optional<Location> getLocationByTownId(int townId) {
         var town = repository.getTownById(townId);
-        if(town.isEmpty()){
+        if (town.isEmpty()) {
             return Optional.empty();
         }
         var location = new Location();

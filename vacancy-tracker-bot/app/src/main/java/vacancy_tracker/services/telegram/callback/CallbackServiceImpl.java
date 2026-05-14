@@ -45,7 +45,7 @@ public class CallbackServiceImpl implements CallbackService {
         sender.answerCallback(callback.getId());
     }
 
-    private void callHandler(CallbackQuery callback, String key){
+    private void callHandler(CallbackQuery callback, String key) {
         var handler = callbackHandlers.get(key);
         if (handler != null) {
             handler.handle(callback);

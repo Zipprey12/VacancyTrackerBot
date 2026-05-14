@@ -14,7 +14,7 @@ public class ParsersConfig {
     }
 
     @Bean
-    public PaginationCallbackParser townsPaginationCallbackParser(){
+    public PaginationCallbackParser townsPaginationCallbackParser() {
         return new PaginationCallbackParser(FilterSettingsCallbackKeys.SET_TOWN.getKey());
     }
 }

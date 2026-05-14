@@ -39,8 +39,7 @@ public class DefaultMessageSender implements MessageSender {
     public void send(SendMessage sendMessage) {
         try {
             client.execute(sendMessage);
-        }
-        catch (TelegramApiException e){
+        } catch (TelegramApiException e) {
             var text = sendMessage.getText();
             var chatId = sendMessage.getChatId();
 

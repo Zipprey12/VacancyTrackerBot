@@ -57,9 +57,9 @@ public abstract class InputInterceptingCommand extends SendingAndUpdatingMessage
     @Override
     public final void processInput(MessageData message, boolean shouldOverwrite) {
         var text = message.getText();
-        if(text != null){
+        if (text != null) {
             var parameters = getParameters(text);
-            if(!parameters.isEmpty()){
+            if (!parameters.isEmpty()) {
                 handleWithParameters(message, parameters);
                 return;
             }

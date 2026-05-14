@@ -13,8 +13,8 @@ import vacancy_tracker.services.telegram.view.KeyboardBuilder;
 
 import java.util.List;
 
-import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.RESET_TEXT;
 import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.CANCEL_FILTER_CHANGE;
+import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.RESET_TEXT;
 
 public class SetSearchingTextCommand extends SearchFiltersCommand {
 

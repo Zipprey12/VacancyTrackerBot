@@ -81,7 +81,7 @@ public class SuperJobVacanciesApiClient extends SuperJobApiClient {
             builder.queryParam("page", page);
         }
 
-        if(filter.getMinSalary() != null || filter.getMaxSalary() != null){
+        if (filter.getMinSalary() != null || filter.getMaxSalary() != null) {
             builder.queryParam("no_agreement", 1);
         }
 

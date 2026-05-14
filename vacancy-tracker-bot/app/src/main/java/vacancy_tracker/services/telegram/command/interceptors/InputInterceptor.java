@@ -28,11 +28,11 @@ public abstract class InputInterceptor {
 
     protected abstract void perform(Message message);
 
-    protected int getMinLength(){
+    protected int getMinLength() {
         return MIN_LENGTH;
     }
 
-    protected int getMaxLength(){
+    protected int getMaxLength() {
         return MAX_LENGTH;
     }
 
