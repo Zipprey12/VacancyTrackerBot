@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.callback.CommonCallbackKeys;
-import vacancy_tracker.services.telegram.callback.PaginationCallbackParser;
+import vacancy_tracker.services.telegram.callback.parsers.PaginationCallbackParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class PaginatedKeyboardBuilder {
 
     @Getter
     @Setter
-    private List<? extends CallbackItem> items;
+    private List<CallbackItem> items;
 
     @Setter(AccessLevel.PROTECTED)
     private int itemsPerPage = DEFAULT_ITEMS_PER_PAGE;
@@ -74,7 +74,7 @@ public class PaginatedKeyboardBuilder {
         int from = currentPage * itemsPerPage;
         int to = Math.min(from + itemsPerPage, items.size());
 
-        List<? extends CallbackItem> pageItems = items.subList(from, to);
+        List<CallbackItem> pageItems = items.subList(from, to);
         List<InlineKeyboardRow> rows = new ArrayList<>();
         for (CallbackItem item : pageItems) {
             rows.add(createItemRow(item));
@@ -84,7 +84,7 @@ public class PaginatedKeyboardBuilder {
 
     private InlineKeyboardRow createItemRow(CallbackItem item) {
         InlineKeyboardRow row = new InlineKeyboardRow();
-        InlineKeyboardButton button = new InlineKeyboardButton(item.getDisplayedName());
+        InlineKeyboardButton button = new InlineKeyboardButton(item.displayedName());
         var data = parser.createSelectItemCallback(item);
 
         button.setCallbackData(data);

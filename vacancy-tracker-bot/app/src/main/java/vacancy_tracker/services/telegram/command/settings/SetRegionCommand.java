@@ -2,6 +2,7 @@ package vacancy_tracker.services.telegram.command.settings;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.command.interceptors.SetRegionInterceptor;
@@ -10,6 +11,7 @@ import vacancy_tracker.services.telegram.message.MessageSender;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.view.PaginatedKeyboardBuilder;
 
+@Component
 @Slf4j
 public class SetRegionCommand extends SearchFiltersCommand {
 
@@ -26,7 +28,7 @@ public class SetRegionCommand extends SearchFiltersCommand {
                             MessageEditor editor,
                             SessionsService sessionsService,
                             ApplicationEventPublisher eventPublisher,
-                            PaginatedKeyboardBuilder keyboardBuilder,
+                            PaginatedKeyboardBuilder regionsPaginationBuilder,
                             SetRegionInterceptor setRegionInterceptor) {
 
         super(KEY, DESCRIPTION,
@@ -37,7 +39,7 @@ public class SetRegionCommand extends SearchFiltersCommand {
                 eventPublisher);
 
         setMarkSignificantAfterExecution(true);
-        keyboardMarkup = keyboardBuilder.build(0);
+        keyboardMarkup = regionsPaginationBuilder.build(0);
     }
 
     @Override

@@ -6,42 +6,49 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageRe
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.dto.MessageData;
-import vacancy_tracker.model.telegram.view.PaginationCallbackData;
-import vacancy_tracker.services.telegram.callback.PaginationCallbackParser;
+import vacancy_tracker.model.telegram.callback.CallbackData;
+import vacancy_tracker.services.telegram.callback.parsers.PaginationCallbackParser;
+import vacancy_tracker.services.telegram.command.MessageDataHandlerCommand;
 import vacancy_tracker.services.telegram.message.MessageEditor;
 import vacancy_tracker.services.telegram.view.PaginatedKeyboardBuilder;
 
-public abstract class NavigationCallbackHandler extends CallbackHandler {
+public abstract class NavigationCallbackHandler<T> extends ParsingDataCallbackHandler<T> {
 
     @Getter(AccessLevel.PROTECTED)
     private final PaginatedKeyboardBuilder keyboardBuilder;
 
-    private final PaginationCallbackParser parser;
     private final MessageEditor messageEditor;
 
     protected NavigationCallbackHandler(String callbackKey,
-                                        PaginatedKeyboardBuilder keyboardBuilder,
+                                        MessageDataHandlerCommand handler,
                                         MessageEditor messageEditor) {
-        super(callbackKey);
+        super(callbackKey, handler);
 
-        this.keyboardBuilder = keyboardBuilder;
-        this.parser = keyboardBuilder.getParser();
+        this.keyboardBuilder = new PaginatedKeyboardBuilder((PaginationCallbackParser) getCallbackParser());
         this.messageEditor = messageEditor;
     }
 
-    protected abstract void select(PaginationCallbackData data, MessageData messageData);
-    protected abstract void executeWithNoArgs(MessageData messageData);
+    protected NavigationCallbackHandler(String callbackKey,
+                                        PaginatedKeyboardBuilder keyboardBuilder,
+                                        MessageDataHandlerCommand handler,
+                                        MessageEditor messageEditor) {
+        super(callbackKey, handler);
+
+        this.keyboardBuilder = keyboardBuilder;
+        this.messageEditor = messageEditor;
+    }
 
     @Override
     public void handle(CallbackQuery callbackQuery) {
         var text = callbackQuery.getData();
-        var data = parser.parse(text);
+        var data = getCallbackParser().parse(text);
 
         var message = callbackQuery.getMessage();
         var messageData = MessageData.create(message);
 
-        if(data.isEmpty()){
+        if (data.isEmpty()) {
             executeWithNoArgs(messageData);
+            return;
         }
         if (data.isIgnored()) {
             return;
@@ -56,9 +63,14 @@ public abstract class NavigationCallbackHandler extends CallbackHandler {
         }
     }
 
-    protected void navigate(MessageData message, PaginationCallbackData data) {
-        var page = data.getTargetPage();
-        var keyboard = keyboardBuilder.build(page, data.getArgs());
+    @Override
+    protected PaginationCallbackParser initCallbackParser() {
+        return new PaginationCallbackParser(getKey());
+    }
+
+    protected void navigate(MessageData message, CallbackData data) {
+        var page = data.targetPage();
+        var keyboard = keyboardBuilder.build(page, data.args());
         editKeyboard(message.getChatId(), message.getMessageId(), keyboard);
     }
 

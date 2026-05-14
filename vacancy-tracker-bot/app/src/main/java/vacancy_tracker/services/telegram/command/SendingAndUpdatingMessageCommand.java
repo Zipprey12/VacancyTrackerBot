@@ -5,12 +5,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.dto.MessageData;
+import vacancy_tracker.model.telegram.view.Describable;
 import vacancy_tracker.services.telegram.message.MessageEditor;
 import vacancy_tracker.services.telegram.message.MessageSender;
 
 @Getter(AccessLevel.PROTECTED)
 @RequiredArgsConstructor
-public abstract class SendingAndUpdatingMessageCommand implements MessageBotCommand {
+public abstract class SendingAndUpdatingMessageCommand implements MessageBotCommand, Describable {
 
     private final String key;
     private final String description;
@@ -32,7 +33,7 @@ public abstract class SendingAndUpdatingMessageCommand implements MessageBotComm
     }
 
     @Override
-    public void execute(MessageData message, boolean shouldOverwrite) {
+    public void processInput(MessageData message, boolean shouldOverwrite) {
         var commandMessage = new OutgoingMessage(message);
         executeAndPopulateMessage(commandMessage);
 

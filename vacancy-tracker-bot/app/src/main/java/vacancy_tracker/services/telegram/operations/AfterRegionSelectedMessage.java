@@ -45,7 +45,7 @@ public class AfterRegionSelectedMessage {
         var row = new InlineKeyboardRow();
         var button = new InlineKeyboardButton("Уточнить населенный пункт");
 
-        button.setCallbackData(FilterSettingsCallbackKeys.SELECT_TOWN.getKey());
+        button.setCallbackData(FilterSettingsCallbackKeys.SET_TOWN.getKey());
         row.add(button);
         return row;
     }
@@ -54,7 +54,7 @@ public class AfterRegionSelectedMessage {
         var row = new InlineKeyboardRow();
         var button = new InlineKeyboardButton("Оставить регион");
 
-        button.setCallbackData(FilterSettingsCallbackKeys.LOCATION_SELECTED.getKey());
+        button.setCallbackData(FilterSettingsCallbackKeys.CANCEL_FILTER_CHANGE.getKey());
         row.add(button);
         return row;
     }

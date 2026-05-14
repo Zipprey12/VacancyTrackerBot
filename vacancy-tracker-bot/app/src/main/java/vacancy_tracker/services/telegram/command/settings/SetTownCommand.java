@@ -1,12 +1,13 @@
 package vacancy_tracker.services.telegram.command.settings;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.api.entity.Region;
 import vacancy_tracker.model.api.entity.Town;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.services.telegram.command.interceptors.InputInterceptor;
+import vacancy_tracker.services.telegram.command.interceptors.SetTownInterceptor;
 import vacancy_tracker.services.telegram.mappers.CallbackItemMapper;
 import vacancy_tracker.services.telegram.message.MessageEditor;
 import vacancy_tracker.services.telegram.message.MessageSender;
@@ -18,6 +19,7 @@ import vacancy_tracker.services.vacancy.LocationsService;
 import java.util.LinkedList;
 import java.util.List;
 
+@Component
 public class SetTownCommand extends SearchFiltersCommand {
 
     public static final String KEY = "/set_town";
@@ -42,22 +44,21 @@ public class SetTownCommand extends SearchFiltersCommand {
     public SetTownCommand(MessageSender sender,
                           MessageEditor editor,
                           SessionsService sessionsService,
-                          InputInterceptor inputInterceptor,
                           ApplicationEventPublisher eventPublisher,
                           SettingsService settingsService,
-                          PaginatedKeyboardBuilder keyboardBuilder,
+                          PaginatedKeyboardBuilder townsPaginationBuilder,
                           LocationsService locationsService,
                           CallbackItemMapper mapper) {
         super(KEY, DESCRIPTION,
                 sender,
                 editor,
                 sessionsService,
-                inputInterceptor,
+                new SetTownInterceptor(sender, sessionsService, settingsService),
                 eventPublisher);
 
         this.settingsService = settingsService;
         this.locationsService = locationsService;
-        this.keyboardBuilder = keyboardBuilder;
+        this.keyboardBuilder = townsPaginationBuilder;
         this.mapper = mapper;
 
         setMarkSignificantAfterExecution(true);

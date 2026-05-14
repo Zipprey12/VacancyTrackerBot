@@ -1,17 +1,33 @@
 package vacancy_tracker.services.telegram.callback.handlers.settings;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import vacancy_tracker.model.telegram.view.FilterOptions;
-import vacancy_tracker.services.telegram.callback.handlers.SimpleMessageCallbackHandler;
-import vacancy_tracker.services.telegram.command.MessageDataHandlerCommand;
+import vacancy_tracker.model.api.dto.VacancySearchFilter;
+import vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys;
+import vacancy_tracker.services.StringUtil;
+import vacancy_tracker.services.telegram.command.settings.SearchFiltersCommand;
+import vacancy_tracker.services.telegram.settings.SettingsService;
+
+import java.util.Optional;
 
 @Component
-public class SetExperienceCallbackHandler extends SimpleMessageCallbackHandler {
+@Slf4j
+public class SetExperienceCallbackHandler extends FiltersParsingCallbackHandler<Float> {
 
-    private static final String KEY = FilterOptions.EXPERIENCE.getCallback();
+    private static final String KEY = FilterSettingsCallbackKeys.SET_EXPERIENCE.getKey();
 
-    public SetExperienceCallbackHandler(@Qualifier("setExperienceCommand") MessageDataHandlerCommand handler) {
-        super(KEY, handler);
+    public SetExperienceCallbackHandler(SearchFiltersCommand setExperienceCommand,
+                                        SettingsService settingsService) {
+        super(KEY, settingsService, setExperienceCommand);
+    }
+
+    @Override
+    protected Optional<Float> tryCastSelectedValue(String value) {
+        return StringUtil.parseFloat(value);
+    }
+
+    @Override
+    protected void changeSettings(Float value, VacancySearchFilter filter) {
+        filter.setExperience(value);
     }
 }

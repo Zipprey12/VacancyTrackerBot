@@ -1,5 +1,6 @@
 package vacancy_tracker.services.telegram.command.settings;
 
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.view.CallBackDataProvider;
@@ -14,6 +15,7 @@ import vacancy_tracker.services.telegram.view.KeyboardBuilder;
 import java.util.Arrays;
 import java.util.List;
 
+@Component
 public class SetSearchSettingsCommand extends SendingAndUpdatingMessageCommand {
 
     private final SettingsService settingsService;
@@ -23,12 +25,11 @@ public class SetSearchSettingsCommand extends SendingAndUpdatingMessageCommand {
     public SetSearchSettingsCommand(MessageSender sender,
                                     MessageEditor editor,
                                     SettingsService settingsService,
-                                    FiltersMessageFormatter messageFormatter,
-                                    KeyboardBuilder keyboardBuilder) {
+                                    FiltersMessageFormatter messageFormatter) {
         super("/set_filters", "Настройки поиска вакансий", sender, editor);
         this.settingsService = settingsService;
         this.messageFormatter = messageFormatter;
-        keyboardMarkup = initKeyboard(keyboardBuilder);
+        keyboardMarkup = initKeyboard();
     }
 
     @Override
@@ -38,9 +39,9 @@ public class SetSearchSettingsCommand extends SendingAndUpdatingMessageCommand {
         message.setText(createMessageText(chatId));
     }
 
-    private InlineKeyboardMarkup initKeyboard(KeyboardBuilder keyboardBuilder) {
+    private InlineKeyboardMarkup initKeyboard() {
         List<CallBackDataProvider> list = Arrays.asList(FilterOptions.values());
-        return keyboardBuilder.buildInlineKeyboard(list, 2);
+        return KeyboardBuilder.buildInlineKeyboard(list, 2);
     }
 
     private String createMessageText(long chatId) {

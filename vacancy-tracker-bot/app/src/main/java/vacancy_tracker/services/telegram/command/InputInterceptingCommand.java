@@ -38,27 +38,34 @@ public abstract class InputInterceptingCommand extends SendingAndUpdatingMessage
         inputInterceptor.setCommand(this);
     }
 
-    public abstract void handleExecutionEnd(MessageData messageData, boolean isInterceptorUsed);
-
     @Override
-    public void handleData(MessageData message, boolean shouldOverwrite) {
+    public void execute(MessageData message, boolean shouldOverwrite) {
         var text = message.getText();
         if (text == null) {
-            execute(message, shouldOverwrite);
+            processInput(message, shouldOverwrite);
             return;
         }
 
         var parameters = getParameters(text);
         if (parameters.isEmpty()) {
-            execute(message, shouldOverwrite);
+            processInput(message, shouldOverwrite);
         } else {
             handleWithParameters(message, parameters);
         }
     }
 
     @Override
-    public final void execute(MessageData message, boolean shouldOverwrite) {
-        super.execute(message, shouldOverwrite);
+    public final void processInput(MessageData message, boolean shouldOverwrite) {
+        var text = message.getText();
+        if(text != null){
+            var parameters = getParameters(text);
+            if(!parameters.isEmpty()){
+                handleWithParameters(message, parameters);
+                return;
+            }
+        }
+
+        super.processInput(message, shouldOverwrite);
         enableInterceptor(message.getChatId());
 
         if (markSignificantAfterExecution) {

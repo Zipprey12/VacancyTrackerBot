@@ -1,11 +1,14 @@
 package vacancy_tracker.services.telegram.callback.handlers;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.command.MessageDataHandlerCommand;
 
 public class SimpleMessageCallbackHandler extends CallbackHandler {
 
+    @Getter(AccessLevel.PROTECTED)
     private final MessageDataHandlerCommand handler;
 
     public SimpleMessageCallbackHandler(String callbackKey, MessageDataHandlerCommand handler) {
@@ -16,6 +19,6 @@ public class SimpleMessageCallbackHandler extends CallbackHandler {
     @Override
     public void handle(CallbackQuery callbackQuery) {
         var message = callbackQuery.getMessage();
-        handler.handleData(MessageData.create(message), true);
+        handler.execute(MessageData.create(message), true);
     }
 }

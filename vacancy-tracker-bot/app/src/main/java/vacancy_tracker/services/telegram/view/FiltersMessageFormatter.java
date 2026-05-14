@@ -19,7 +19,7 @@ public class FiltersMessageFormatter {
         appendHeader(sb);
         appendText(sb, filter.getText());
         appendLocation(sb, filter.getLocation());
-        appendExperience(sb, filter.getExperienceFrom());
+        appendExperience(sb, filter.getExperience());
         appendMinSalary(sb, filter.getMinSalary());
         appendMaxSalary(sb, filter.getMaxSalary());
         return sb.toString();

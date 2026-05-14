@@ -4,7 +4,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
 import vacancy_tracker.services.telegram.command.interceptors.InputInterceptor;
-import vacancy_tracker.services.telegram.events.SettingCommandExecutionEvent;
+import vacancy_tracker.services.telegram.events.FilterSettingsEvent;
 import vacancy_tracker.services.telegram.message.MessageEditor;
 import vacancy_tracker.services.telegram.message.MessageSender;
 import vacancy_tracker.services.telegram.session.SessionsService;
@@ -24,6 +24,6 @@ public abstract class SearchFiltersCommand extends InputInterceptingCommand {
     @Override
     public void handleExecutionEnd(MessageData messageData, boolean isInterceptorUsed) {
         disableInterceptor(messageData.getChatId());
-        getEventPublisher().publishEvent(new SettingCommandExecutionEvent(this, messageData, isInterceptorUsed));
+        getEventPublisher().publishEvent(new FilterSettingsEvent(this, messageData, isInterceptorUsed, true));
     }
 }

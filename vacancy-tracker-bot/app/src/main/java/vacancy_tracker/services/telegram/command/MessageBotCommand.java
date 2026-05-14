@@ -6,6 +6,6 @@ import vacancy_tracker.model.telegram.view.Describable;
 
 public interface MessageBotCommand extends Describable {
 
-    void execute(MessageData message, boolean shouldOverwrite);
+    void processInput(MessageData message, boolean shouldOverwrite);
 
 }

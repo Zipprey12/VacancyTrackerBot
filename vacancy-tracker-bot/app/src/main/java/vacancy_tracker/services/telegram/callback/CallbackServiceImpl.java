@@ -24,7 +24,7 @@ public class CallbackServiceImpl implements CallbackService {
                                MessageSender sender) {
         this.callbackHandlers = callbackHandlers.stream()
                 .collect(Collectors.toMap(
-                        CallbackHandler::getCallbackKey,
+                        CallbackHandler::getKey,
                         handler -> handler
                 ));
         this.sender = sender;
@@ -50,7 +50,7 @@ public class CallbackServiceImpl implements CallbackService {
         if (handler != null) {
             handler.handle(callback);
         } else {
-            log.warn("Был вызван Callback {}, для которого нет обработчика", key);
+            log.warn("Был вызван Callback {}, для которого нет обработчика", callback.getData());
         }
     }
 

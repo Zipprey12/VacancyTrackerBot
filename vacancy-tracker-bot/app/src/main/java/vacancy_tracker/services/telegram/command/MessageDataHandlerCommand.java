@@ -4,5 +4,7 @@ import vacancy_tracker.model.telegram.dto.MessageData;
 
 public interface MessageDataHandlerCommand {
 
-    void handleData(MessageData messageData, boolean shouldOverwrite);
+    void execute(MessageData messageData, boolean shouldOverwrite);
+
+    void handleExecutionEnd(MessageData messageData, boolean isInterceptorUsed);
 }

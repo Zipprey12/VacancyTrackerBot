@@ -1,6 +1,7 @@
 package vacancy_tracker.services.telegram.command.simple;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import vacancy_tracker.model.api.entity.Vacancy;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.command.SendingAndUpdatingMessageCommand;

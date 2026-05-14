@@ -30,7 +30,7 @@ public class MessageCommandExecutor {
         }
 
         var command = commands.get(key);
-        command.execute(message, false);
+        command.processInput(message, false);
         return true;
     }
 

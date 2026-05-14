@@ -1,35 +1,35 @@
-package vacancy_tracker.services.telegram.callback;
+package vacancy_tracker.services.telegram.callback.parsers;
 
-import lombok.RequiredArgsConstructor;
-import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.callback.CommonCallbackKeys;
-import vacancy_tracker.model.telegram.view.PaginationCallbackData;
+import vacancy_tracker.model.telegram.callback.CallbackData;
 import vacancy_tracker.services.StringUtil;
 
 import static vacancy_tracker.model.telegram.callback.CallbackItem.PARTS_SEPARATOR;
 
-@RequiredArgsConstructor
-public class PaginationCallbackParser {
+public class PaginationCallbackParser extends CallbackParser {
 
     public static final String PAGE_PREFIX = "page_";
     public static final String ARGS_PREFIX = "args_";
-    private final String prefix;
 
-    public PaginationCallbackData parse(String callbackData) {
-        var builder = PaginationCallbackData.builder();
+    public PaginationCallbackParser(String prefix) {
+        super(prefix);
+    }
+
+    @Override
+    public CallbackData parse(String callbackData) {
+        var builder = CallbackData.builder();
 
         if (CommonCallbackKeys.IGNORE.getKey().equals(callbackData)) {
             return builder.isIgnored(true).build();
         }
-        if (callbackData.equals(prefix)) {
+        if (callbackData.equals(getPrefix())) {
             return builder.isEmpty(true).build();
         }
 
-        builder.isIgnored(false);
         int pageIndex = callbackData.lastIndexOf(PARTS_SEPARATOR + PAGE_PREFIX);
         if (pageIndex <= 0) {
             return builder.isSelection(true)
-                    .selectedKey(callbackData.substring(prefix.length() + 1))
+                    .selectedKey(callbackData.substring(getPrefix().length() + 1))
                     .build();
 
         }
@@ -48,12 +48,8 @@ public class PaginationCallbackParser {
                 .build();
     }
 
-    public String createSelectItemCallback(CallbackItem item) {
-        return item.getCallback();
-    }
-
     public String createSelectPageCallback(int pageNumber) {
-        return prefix + PARTS_SEPARATOR + PAGE_PREFIX + pageNumber;
+        return getPrefix() + PARTS_SEPARATOR + PAGE_PREFIX + pageNumber;
     }
 
     public String createSelectPageCallback(int pageNumber, String args) {

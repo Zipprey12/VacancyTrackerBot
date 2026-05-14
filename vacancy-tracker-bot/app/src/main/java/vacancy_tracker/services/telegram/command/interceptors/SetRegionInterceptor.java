@@ -19,18 +19,15 @@ import java.util.*;
 public class SetRegionInterceptor extends SettingInputInterceptor {
 
     private final Map<String, Region> regionsByKey;
-    private final KeyboardBuilder keyboardBuilder;
     private final CallbackItemMapper mapper;
     private final LocationsService locationsService;
 
     public SetRegionInterceptor(MessageSender sender,
                                 SessionsService sessionsService,
                                 SettingsService settingsService,
-                                KeyboardBuilder keyboardBuilder,
                                 CallbackItemMapper callbackItemMapper,
                                 LocationsService locationsService) {
         super(sender, sessionsService, settingsService);
-        this.keyboardBuilder = keyboardBuilder;
         this.mapper = callbackItemMapper;
         this.locationsService = locationsService;
         this.regionsByKey = new LinkedHashMap<>();
@@ -55,7 +52,7 @@ public class SetRegionInterceptor extends SettingInputInterceptor {
         var items = new LinkedList<CallbackItem>();
         found.forEach(r -> items.add(mapper.fromRegion(r)));
 
-        var keyboard = keyboardBuilder.buildInlineKeyboard(items, 1);
+        var keyboard =  KeyboardBuilder.buildInlineKeyboard(items, 1);
         sender.send(createSendMessage(keyboard, chatId));
         return true;
     }

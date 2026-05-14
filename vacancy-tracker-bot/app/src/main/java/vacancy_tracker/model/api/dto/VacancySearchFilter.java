@@ -18,7 +18,7 @@ public class VacancySearchFilter {
     private Integer minSalary;
     private Integer maxSalary;
     private Location location;
-    private Float experienceFrom;
+    private Float experience;
 
     private String modifiedFrom;
 }

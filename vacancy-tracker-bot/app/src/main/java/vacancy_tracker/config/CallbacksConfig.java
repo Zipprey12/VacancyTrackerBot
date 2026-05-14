@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
-import vacancy_tracker.services.telegram.callback.PaginationCallbackParser;
+import vacancy_tracker.services.telegram.callback.parsers.PaginationCallbackParser;
 import vacancy_tracker.services.telegram.callback.handlers.CallbackHandler;
 import vacancy_tracker.services.telegram.callback.handlers.settings.*;
 import vacancy_tracker.services.telegram.mappers.CallbackItemMapper;
@@ -26,8 +26,8 @@ public class CallbacksConfig {
                                                   SetLocationCallbackHandler setLocationCallbackHandler,
                                                   SetRegionCallbackHandler setRegionCallbackHandler,
                                                   SetExperienceCallbackHandler setExperienceCallbackHandler,
-                                                  SaveLocationCallbackHandler saveLocationCallbackHandler,
-                                                  SetTownCallbackHandler setTownCallbackHandler) {
+                                                  SetTownCallbackHandler setTownCallbackHandler,
+                                                  CancelChangeCallbackHandler cancelChangeCallbackHandler) {
         return List.of(
                 setMaxSalaryCallbackHandler,
                 setMinSalaryCallbackHandler,
@@ -35,8 +35,8 @@ public class CallbacksConfig {
                 setLocationCallbackHandler,
                 setRegionCallbackHandler,
                 setExperienceCallbackHandler,
-                saveLocationCallbackHandler,
-                setTownCallbackHandler
+                setTownCallbackHandler,
+                cancelChangeCallbackHandler
         );
     }
 

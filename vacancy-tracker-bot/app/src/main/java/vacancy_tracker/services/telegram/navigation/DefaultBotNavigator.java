@@ -36,18 +36,18 @@ public class DefaultBotNavigator implements BotNavigator {
 
         var messageData = MessageData.create(message);
         if (!executor.execute(messageData)) {
-            helpCommand.execute(messageData, false);
+            helpCommand.processInput(messageData, false);
         }
     }
 
     @Override
     public void showInitMessage(MessageData message) {
-        initCommand.execute(message, false);
-        helpCommand.execute(message, false);
+        initCommand.processInput(message, false);
+        helpCommand.processInput(message, false);
     }
 
     @Override
     public void showHelpMessage(MessageData message) {
-        helpCommand.execute(message, false);
+        helpCommand.processInput(message, false);
     }
 }

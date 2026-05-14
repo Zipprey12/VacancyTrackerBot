@@ -1,12 +1,14 @@
 package vacancy_tracker.services.telegram.events;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import vacancy_tracker.services.telegram.command.settings.SetSearchSettingsCommand;
 import vacancy_tracker.services.telegram.session.SessionsService;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SearchSettingCommandExecutionListener {
@@ -16,12 +18,13 @@ public class SearchSettingCommandExecutionListener {
 
     @Async
     @EventListener
-    public void handleSettingCommandExecutionEvent(SettingCommandExecutionEvent commandExecutionEvent) {
-        var data = commandExecutionEvent.getMessageData();
-        command.execute(data, !commandExecutionEvent.isInterceptorUsed());
+    public void handleSettingCommandExecutionEvent(FilterSettingsEvent filterSettingsEvent) {
+        var data = filterSettingsEvent.getMessageData();
+        command.processInput(data, !filterSettingsEvent.isInterceptorUsed());
 
         var session = sessionsService.getSession(data.getChatId());
         session.setLastSignificantMessage(data);
+
         sessionsService.save(session);
     }
 }

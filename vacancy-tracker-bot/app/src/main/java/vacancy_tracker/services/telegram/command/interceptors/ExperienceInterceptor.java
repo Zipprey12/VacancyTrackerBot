@@ -27,10 +27,10 @@ public class ExperienceInterceptor extends SettingInputInterceptor {
             return false;
         }
         if(experience == 0){
-            filters.setExperienceFrom(null);
+            filters.setExperience(null);
         }
         else {
-            filters.setExperienceFrom(experience);
+            filters.setExperience(experience);
         }
         settingsService.saveFilters(chatId, filters);
         return true;
