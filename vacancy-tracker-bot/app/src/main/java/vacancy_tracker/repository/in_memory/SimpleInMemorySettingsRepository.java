@@ -21,4 +21,9 @@ public class SimpleInMemorySettingsRepository implements SettingsRepository {
     public Optional<VacancySearchFilter> getFilters(long sessionId) {
         return Optional.ofNullable(filters.get(sessionId));
     }
+
+    @Override
+    public void removeFilters(long sessionId) {
+        filters.remove(sessionId);
+    }
 }

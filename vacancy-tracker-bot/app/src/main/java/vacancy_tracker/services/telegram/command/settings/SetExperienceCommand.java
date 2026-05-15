@@ -1,17 +1,17 @@
 package vacancy_tracker.services.telegram.command.settings;
 
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.services.telegram.command.interceptors.InputInterceptor;
-import vacancy_tracker.services.telegram.message.MessageEditor;
-import vacancy_tracker.services.telegram.message.MessageSender;
+import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
+import vacancy_tracker.services.telegram.command.handlers.FiltersInterceptingCompletionHandler;
+import vacancy_tracker.services.telegram.command.interceptors.ExperienceInterceptor;
+import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SettingsService;
-import vacancy_tracker.services.telegram.view.DatesFormatUtil;
 import vacancy_tracker.services.telegram.view.KeyboardBuilder;
+import vacancy_tracker.services.telegram.view.utils.DatesFormatUtil;
 
 import java.util.List;
 
@@ -19,25 +19,22 @@ import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys
 import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.SET_EXPERIENCE;
 
 @Component
-public class SetExperienceCommand extends SearchFiltersCommand {
+public class SetExperienceCommand extends InputInterceptingCommand {
 
     private static final InlineKeyboardMarkup KEYBOARD = initKeyboard();
 
     private final SettingsService settingsService;
 
-    public SetExperienceCommand(MessageSender sender,
-                                MessageEditor editor,
+    public SetExperienceCommand(SendingAndUpdatingMessagePublisher publisher,
                                 SessionsService sessionsService,
-                                InputInterceptor inputInterceptor,
-                                ApplicationEventPublisher eventPublisher,
-                                SettingsService settingsService) {
+                                SettingsService settingsService,
+                                FiltersInterceptingCompletionHandler completionHandler) {
 
-        super("/set_experience", "Установить опыт работы",
-                sender,
-                editor,
-                sessionsService,
-                inputInterceptor,
-                eventPublisher);
+        super("/set_experience", "Установить опыт работы", publisher,
+                completionHandler,
+                new ExperienceInterceptor(publisher.getSender(), sessionsService, settingsService),
+                sessionsService
+        );
 
         this.settingsService = settingsService;
     }

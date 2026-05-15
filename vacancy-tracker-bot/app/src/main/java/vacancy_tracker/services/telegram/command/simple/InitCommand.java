@@ -2,15 +2,14 @@ package vacancy_tracker.services.telegram.command.simple;
 
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.services.telegram.command.SendingAndUpdatingMessageCommand;
-import vacancy_tracker.services.telegram.message.MessageEditor;
-import vacancy_tracker.services.telegram.message.MessageSender;
+import vacancy_tracker.services.telegram.command.MessageCommand;
+import vacancy_tracker.services.telegram.command.publishers.SendingMessagePublisher;
 
 @Component
-public class InitCommand extends SendingAndUpdatingMessageCommand {
+public class InitCommand extends MessageCommand {
 
-    public InitCommand(MessageSender sender, MessageEditor editor) {
-        super("/init", "Сообщение при первом запуске", sender, editor);
+    public InitCommand(SendingMessagePublisher publisher) {
+        super("/init", "Сообщение при первом запуске", publisher);
     }
 
     @Override

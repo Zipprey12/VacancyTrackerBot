@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import vacancy_tracker.model.telegram.callback.CallbackData;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.callback.parsers.CallbackParser;
-import vacancy_tracker.services.telegram.command.MessageDataHandlerCommand;
+import vacancy_tracker.services.telegram.command.MessageDataHandler;
 
 import java.util.Optional;
 
@@ -17,7 +17,7 @@ public abstract class ParsingDataCallbackHandler<T> extends SimpleMessageCallbac
     @Getter(AccessLevel.PROTECTED)
     private final CallbackParser callbackParser;
 
-    protected ParsingDataCallbackHandler(String callbackKey, MessageDataHandlerCommand handler) {
+    protected ParsingDataCallbackHandler(String callbackKey, MessageDataHandler handler) {
         super(callbackKey, handler);
         this.callbackParser = initCallbackParser();
     }
@@ -40,7 +40,7 @@ public abstract class ParsingDataCallbackHandler<T> extends SimpleMessageCallbac
     }
 
     protected void executeWithNoArgs(MessageData messageData) {
-        getHandler().execute(messageData, true);
+        getHandler().execute(messageData);
     }
 
     protected CallbackParser initCallbackParser() {

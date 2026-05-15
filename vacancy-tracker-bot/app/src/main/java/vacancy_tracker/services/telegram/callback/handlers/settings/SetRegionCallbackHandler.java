@@ -8,9 +8,9 @@ import vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.StringUtil;
 import vacancy_tracker.services.telegram.callback.handlers.NavigationCallbackHandler;
+import vacancy_tracker.services.telegram.command.messages.AfterRegionSelectedMessage;
 import vacancy_tracker.services.telegram.command.settings.SetRegionCommand;
 import vacancy_tracker.services.telegram.message.MessageEditor;
-import vacancy_tracker.services.telegram.operations.AfterRegionSelectedMessage;
 import vacancy_tracker.services.telegram.settings.SettingsService;
 import vacancy_tracker.services.telegram.view.PaginatedKeyboardBuilder;
 import vacancy_tracker.services.vacancy.LocationsService;
@@ -58,9 +58,9 @@ public class SetRegionCallbackHandler extends NavigationCallbackHandler<Integer>
 
         var region = foundRegion.get();
         if (region.getTowns() == null || region.getTowns().isEmpty()) {
-            setRegionCommand.handleExecutionEnd(messageData, false);
+            setRegionCommand.endExecution(messageData);
         } else {
-            foundRegion.ifPresent(value -> regionSelectionUpdateMessage.update(messageData, value));
+            foundRegion.ifPresent(value -> regionSelectionUpdateMessage.publish(messageData, value));
         }
         selectRegion(region, messageData.getChatId());
     }
@@ -70,6 +70,7 @@ public class SetRegionCallbackHandler extends NavigationCallbackHandler<Integer>
         var location = createLocation(region);
         filters.setLocation(location);
         settingsService.saveFilters(sessionId, filters);
+        setRegionCommand.disableInterceptor(sessionId);
     }
 
     private Location createLocation(Region region) {

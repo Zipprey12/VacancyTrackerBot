@@ -4,14 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import vacancy_tracker.model.telegram.UserSessionContext;
-import vacancy_tracker.repository.in_memory.SimpleInMemorySessionsRepository;
+import vacancy_tracker.repository.SessionsRepository;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class SimpleSessionsServiceImpl implements SessionsService {
 
-    private final SimpleInMemorySessionsRepository repository;
+    private final SessionsRepository repository;
 
     @Override
     public UserSessionContext getSession(long chatId) {

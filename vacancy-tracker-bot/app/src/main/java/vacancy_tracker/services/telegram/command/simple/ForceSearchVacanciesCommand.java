@@ -1,32 +1,33 @@
 package vacancy_tracker.services.telegram.command.simple;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import vacancy_tracker.model.api.entity.Vacancy;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.services.telegram.command.SendingAndUpdatingMessageCommand;
-import vacancy_tracker.services.telegram.message.MessageEditor;
-import vacancy_tracker.services.telegram.message.MessageSender;
+import vacancy_tracker.services.telegram.command.MessageCommand;
+import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.settings.SettingsService;
-import vacancy_tracker.services.telegram.view.VacanciesMessageFormatter;
+import vacancy_tracker.services.telegram.view.formatters.VacanciesMessageFormatter;
 import vacancy_tracker.services.vacancy.VacancyService;
+import vacancy_tracker.sources.superjob.service.vacancy.SuperJobVacanciesService;
 
 import java.util.List;
 
+@Component
 @Slf4j
-public class ForceSearchVacanciesCommand extends SendingAndUpdatingMessageCommand {
+public class ForceSearchVacanciesCommand extends MessageCommand {
 
     //todo Тут должен быть общий сервис, который будет искать вакансии во всех api
     private final VacancyService vacanciesService;
     private final SettingsService settingsService;
     private final VacanciesMessageFormatter messageFormatter;
 
-    public ForceSearchVacanciesCommand(MessageSender sender,
-                                       MessageEditor editor,
+    public ForceSearchVacanciesCommand(SendingAndUpdatingMessagePublisher publisher,
                                        SettingsService settingsService,
-                                       VacancyService vacanciesService,
+                                       SuperJobVacanciesService vacanciesService,
                                        VacanciesMessageFormatter messageFormatter) {
 
-        super("/get_now", "Вывод всего и сразу", sender, editor);
+        super("/get_now", "Вывод всего и сразу", publisher);
         this.settingsService = settingsService;
         this.vacanciesService = vacanciesService;
         this.messageFormatter = messageFormatter;

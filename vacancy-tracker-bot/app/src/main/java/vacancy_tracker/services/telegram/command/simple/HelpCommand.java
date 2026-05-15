@@ -1,14 +1,15 @@
 package vacancy_tracker.services.telegram.command.simple;
 
+import org.springframework.stereotype.Component;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.services.telegram.command.MessageBotCommand;
-import vacancy_tracker.services.telegram.command.SendingAndUpdatingMessageCommand;
-import vacancy_tracker.services.telegram.message.MessageEditor;
-import vacancy_tracker.services.telegram.message.MessageSender;
+import vacancy_tracker.model.telegram.view.Describable;
+import vacancy_tracker.services.telegram.command.MessageCommand;
+import vacancy_tracker.services.telegram.command.publishers.SendingMessagePublisher;
 
 import java.util.List;
 
-public class HelpCommand extends SendingAndUpdatingMessageCommand {
+@Component
+public class HelpCommand extends MessageCommand {
 
     private static final String MESSAGE_HEADER = """
             *Список доступных команд*:
@@ -17,10 +18,9 @@ public class HelpCommand extends SendingAndUpdatingMessageCommand {
 
     private String message;
 
-    public HelpCommand(MessageSender sender,
-                       MessageEditor editor,
-                       List<MessageBotCommand> commands) {
-        super("/help", "Вывод справочной информации", sender, editor);
+    public HelpCommand(SendingMessagePublisher publisher,
+                       List<? extends Describable> commands) {
+        super("/help", "Вывод справочной информации", publisher);
         initMessage(commands);
     }
 
@@ -29,7 +29,7 @@ public class HelpCommand extends SendingAndUpdatingMessageCommand {
         messageData.setText(message);
     }
 
-    private void initMessage(List<MessageBotCommand> commands) {
+    private void initMessage(List<? extends Describable> commands) {
         StringBuilder builder = new StringBuilder();
         builder.append(MESSAGE_HEADER);
         for (var command : commands) {

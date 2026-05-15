@@ -1,6 +1,5 @@
 package vacancy_tracker.config;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -27,7 +26,8 @@ public class CallbacksConfig {
                                                   SetRegionCallbackHandler setRegionCallbackHandler,
                                                   SetExperienceCallbackHandler setExperienceCallbackHandler,
                                                   SetTownCallbackHandler setTownCallbackHandler,
-                                                  CancelChangeCallbackHandler cancelChangeCallbackHandler) {
+                                                  CancelChangeCallbackHandler cancelChangeCallbackHandler,
+                                                  ResetFiltersCallbackHandler resetFiltersCallbackHandler) {
         return List.of(
                 setMaxSalaryCallbackHandler,
                 setMinSalaryCallbackHandler,
@@ -36,21 +36,21 @@ public class CallbacksConfig {
                 setRegionCallbackHandler,
                 setExperienceCallbackHandler,
                 setTownCallbackHandler,
-                cancelChangeCallbackHandler
+                cancelChangeCallbackHandler,
+                resetFiltersCallbackHandler
         );
     }
 
     @Bean
-    public PaginatedKeyboardBuilder regionsPaginationBuilder(@Qualifier("regionsPaginationCallbackParser")
-                                                             PaginationCallbackParser parser,
+    public PaginatedKeyboardBuilder regionsPaginationBuilder(PaginationCallbackParser regionsPaginationCallbackParser,
                                                              LocationsService locationsService,
                                                              CallbackItemMapper mapper) {
-        var builder = new PaginatedKeyboardBuilder(parser);
+        var builder = new PaginatedKeyboardBuilder(regionsPaginationCallbackParser);
         var regions = locationsService.getAllRegionsBasic();
         var items = new LinkedList<CallbackItem>();
 
         regions.forEach(r -> items.add(mapper.fromRegion(r)));
-        builder.setItems(items);
+        builder.setDefaultItems(items);
         return builder;
     }
 

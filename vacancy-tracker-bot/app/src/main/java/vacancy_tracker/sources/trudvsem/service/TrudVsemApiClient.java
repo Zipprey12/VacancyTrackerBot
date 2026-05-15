@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -61,8 +60,6 @@ public class TrudVsemApiClient {
         try {
             ResponseEntity<String> response = restTemplate.getForEntity("http://opendata.trudvsem.ru/api", String.class);
             return response.getStatusCode().is2xxSuccessful();
-        } catch (ResourceAccessException e) {
-            return false;
         } catch (RestClientException e) {
             return false;
         }

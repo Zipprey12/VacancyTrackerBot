@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
+import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
 import vacancy_tracker.services.telegram.session.SessionsService;
 
@@ -40,11 +41,7 @@ public abstract class InputInterceptor {
         perform(message);
 
         if (triggerEvent && command != null) {
-            var session = sessionsService.getSession(message.getChatId());
-            var lastMessage = session.getLastSignificantMessage();
-            if (lastMessage != null) {
-                command.handleExecutionEnd(lastMessage, true);
-            }
+            command.endExecution(MessageData.create(message));
         }
 
         if (unsubscribeAfterPerform) {

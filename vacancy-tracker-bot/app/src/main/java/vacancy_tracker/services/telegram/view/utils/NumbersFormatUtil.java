@@ -1,4 +1,4 @@
-package vacancy_tracker.services.telegram.view;
+package vacancy_tracker.services.telegram.view.utils;
 
 import lombok.experimental.UtilityClass;
 

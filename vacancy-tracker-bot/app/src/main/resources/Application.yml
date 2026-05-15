@@ -1,3 +1,7 @@
+logging:
+  level:
+    vacancy_tracker: DEBUG
+
 server:
   port: 8088
 

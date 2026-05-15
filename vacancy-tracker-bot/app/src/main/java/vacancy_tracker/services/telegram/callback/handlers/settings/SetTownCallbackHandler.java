@@ -50,7 +50,7 @@ public class SetTownCallbackHandler extends NavigationCallbackHandler<Integer> {
     public void handleCastedData(Integer id, MessageData messageData) {
         var town = selectTown(id, messageData.getChatId());
         if (town.isPresent()) {
-            setTownCommand.handleExecutionEnd(messageData, false);
+            setTownCommand.endExecution(messageData);
         }
     }
 
@@ -75,10 +75,7 @@ public class SetTownCallbackHandler extends NavigationCallbackHandler<Integer> {
         }
 
         var items = mapper.fromTowns(region.get().getTowns());
-        //todo здесь будет работать некорректно при асинхронных вызовах
-        //надо продумать класс так, чтоб можно было передать туда список CallbackItem
-        getKeyboardBuilder().setItems(items);
-        var keyboard = getKeyboardBuilder().build(page, data.args());
+        var keyboard = getKeyboardBuilder().build(items, page, data.args());
         editKeyboard(message.getChatId(), message.getMessageId(), keyboard);
     }
 

@@ -1,17 +1,17 @@
 package vacancy_tracker.services.telegram.command.settings;
 
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
+import vacancy_tracker.services.telegram.command.handlers.FiltersInterceptingCompletionHandler;
 import vacancy_tracker.services.telegram.command.interceptors.MinSalaryInterceptor;
-import vacancy_tracker.services.telegram.message.MessageEditor;
-import vacancy_tracker.services.telegram.message.MessageSender;
+import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SettingsService;
 import vacancy_tracker.services.telegram.view.KeyboardBuilder;
-import vacancy_tracker.services.telegram.view.NumbersFormatUtil;
+import vacancy_tracker.services.telegram.view.utils.NumbersFormatUtil;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys
 import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.SET_MIN_SALARY;
 
 @Component
-public class SetMinSalaryCommand extends SearchFiltersCommand {
+public class SetMinSalaryCommand extends InputInterceptingCommand {
 
     public static final String KEY = "/set_min_salary";
     public static final String DESCRIPTION = "Установить минимальное значение зарплаты";
@@ -27,17 +27,13 @@ public class SetMinSalaryCommand extends SearchFiltersCommand {
 
     private final SettingsService settingsService;
 
-    protected SetMinSalaryCommand(MessageSender sender,
-                                  MessageEditor editor,
+    protected SetMinSalaryCommand(SendingAndUpdatingMessagePublisher publisher,
                                   SessionsService sessionsService,
-                                  ApplicationEventPublisher eventPublisher,
-                                  SettingsService settingsService) {
-        super(KEY, DESCRIPTION,
-                sender,
-                editor,
-                sessionsService,
-                new MinSalaryInterceptor(sender, sessionsService, settingsService),
-                eventPublisher);
+                                  SettingsService settingsService,
+                                  FiltersInterceptingCompletionHandler completionHandler) {
+        super(KEY, DESCRIPTION, publisher, completionHandler,
+                new MinSalaryInterceptor(publisher.getSender(), sessionsService, settingsService),
+                sessionsService);
 
         this.settingsService = settingsService;
     }

@@ -1,11 +1,13 @@
 package vacancy_tracker.model.telegram.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.telegram.telegrambots.meta.api.objects.message.MaybeInaccessibleMessage;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,25 +16,29 @@ public class MessageData {
     Long chatId;
     Integer messageId;
     String text;
+    CallingSource source;
 
     public static MessageData create(MaybeInaccessibleMessage message) {
-        var result = new MessageData();
-        result.setMessageId(message.getMessageId());
-        result.setChatId(message.getChatId());
-        return result;
+        return MessageData.builder()
+                .messageId(message.getMessageId())
+                .chatId(message.getChatId())
+                .source(CallingSource.CALLBACK)
+                .build();
     }
 
     public static MessageData create(Message message) {
-        var result = new MessageData();
-        result.setMessageId(message.getMessageId());
-        result.setChatId(message.getChatId());
-        result.setText(message.getText());
-        return result;
+        return MessageData.builder()
+                .messageId(message.getMessageId())
+                .chatId(message.getChatId())
+                .text(message.getText())
+                .source(CallingSource.CHAT)
+                .build();
     }
 
     public MessageData(MessageData source) {
-        this.chatId = source.chatId;
-        this.messageId = source.messageId;
-        this.text = source.text;
+        chatId = source.chatId;
+        messageId = source.messageId;
+        text = source.text;
+        this.source = source.getSource();
     }
 }

@@ -22,7 +22,6 @@ public class CancelChangeCallbackHandler extends CallbackHandler {
     public void handle(CallbackQuery callbackQuery) {
         var message = callbackQuery.getMessage();
         var messageData = MessageData.create(message);
-        eventPublisher.publishEvent(new FilterSettingsEvent(this, messageData,
-                false, true));
+        eventPublisher.publishEvent(new FilterSettingsEvent(this, messageData, true));
     }
 }

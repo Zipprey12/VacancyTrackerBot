@@ -9,4 +9,6 @@ public interface SettingsRepository {
     void saveFilters(long sessionId, VacancySearchFilter filter);
 
     Optional<VacancySearchFilter> getFilters(long sessionId);
+
+    void removeFilters(long sessionId);
 }

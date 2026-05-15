@@ -1,17 +1,17 @@
 package vacancy_tracker.services.telegram.command.settings;
 
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
+import vacancy_tracker.services.telegram.command.handlers.FiltersInterceptingCompletionHandler;
 import vacancy_tracker.services.telegram.command.interceptors.MaxSalaryInterceptor;
-import vacancy_tracker.services.telegram.message.MessageEditor;
-import vacancy_tracker.services.telegram.message.MessageSender;
+import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SettingsService;
 import vacancy_tracker.services.telegram.view.KeyboardBuilder;
-import vacancy_tracker.services.telegram.view.NumbersFormatUtil;
+import vacancy_tracker.services.telegram.view.utils.NumbersFormatUtil;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys
 import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.SET_MAX_SALARY;
 
 @Component
-public class SetMaxSalaryCommand extends SearchFiltersCommand {
+public class SetMaxSalaryCommand extends InputInterceptingCommand {
 
     public static final String KEY = "/set_max_salary";
     public static final String DESCRIPTION = "Установить максимальное значение зарплаты";
@@ -27,17 +27,13 @@ public class SetMaxSalaryCommand extends SearchFiltersCommand {
 
     private final SettingsService settingsService;
 
-    protected SetMaxSalaryCommand(MessageSender sender,
-                                  MessageEditor editor,
+    protected SetMaxSalaryCommand(SendingAndUpdatingMessagePublisher publisher,
                                   SessionsService sessionsService,
-                                  ApplicationEventPublisher eventPublisher,
-                                  SettingsService settingsService) {
-        super(KEY, DESCRIPTION,
-                sender,
-                editor,
-                sessionsService,
-                new MaxSalaryInterceptor(sender, sessionsService, settingsService),
-                eventPublisher);
+                                  SettingsService settingsService,
+                                  FiltersInterceptingCompletionHandler completionHandler) {
+        super(KEY, DESCRIPTION, publisher, completionHandler,
+                new MaxSalaryInterceptor(publisher.getSender(), sessionsService, settingsService),
+                sessionsService);
 
         this.settingsService = settingsService;
     }

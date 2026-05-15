@@ -4,14 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import vacancy_tracker.model.api.dto.VacancySearchFilter;
-import vacancy_tracker.repository.in_memory.SimpleInMemorySettingsRepository;
+import vacancy_tracker.repository.SettingsRepository;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SimpleSettingsService implements SettingsService {
 
-    private final SimpleInMemorySettingsRepository repository;
+    private final SettingsRepository repository;
 
     @Override
     public void saveFilters(long sessionId, VacancySearchFilter filter) {
@@ -33,5 +33,10 @@ public class SimpleSettingsService implements SettingsService {
 
         repository.saveFilters(sessionId, filter);
         return filter;
+    }
+
+    @Override
+    public void deleteFilters(long sessionId) {
+        repository.removeFilters(sessionId);
     }
 }

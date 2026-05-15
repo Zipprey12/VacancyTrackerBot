@@ -5,28 +5,26 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.view.CallBackDataProvider;
 import vacancy_tracker.model.telegram.view.FilterOptions;
-import vacancy_tracker.services.telegram.command.SendingAndUpdatingMessageCommand;
-import vacancy_tracker.services.telegram.message.MessageEditor;
-import vacancy_tracker.services.telegram.message.MessageSender;
+import vacancy_tracker.services.telegram.command.MessageCommand;
+import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.settings.SettingsService;
-import vacancy_tracker.services.telegram.view.FiltersMessageFormatter;
 import vacancy_tracker.services.telegram.view.KeyboardBuilder;
+import vacancy_tracker.services.telegram.view.formatters.FiltersMessageFormatter;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class SetSearchSettingsCommand extends SendingAndUpdatingMessageCommand {
+public class SetSearchSettingsCommand extends MessageCommand {
 
     private final SettingsService settingsService;
     private final FiltersMessageFormatter messageFormatter;
     private final InlineKeyboardMarkup keyboardMarkup;
 
-    public SetSearchSettingsCommand(MessageSender sender,
-                                    MessageEditor editor,
+    public SetSearchSettingsCommand(SendingAndUpdatingMessagePublisher publisher,
                                     SettingsService settingsService,
                                     FiltersMessageFormatter messageFormatter) {
-        super("/set_filters", "Настройки поиска вакансий", sender, editor);
+        super("/set_filters", "Настройки поиска вакансий", publisher);
         this.settingsService = settingsService;
         this.messageFormatter = messageFormatter;
         keyboardMarkup = initKeyboard();

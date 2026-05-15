@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import vacancy_tracker.model.telegram.dto.MessageData;
-import vacancy_tracker.services.telegram.command.MessageBotCommand;
+import vacancy_tracker.services.telegram.command.MessageCommand;
 import vacancy_tracker.services.telegram.command.executors.MessageCommandExecutor;
 import vacancy_tracker.services.telegram.session.SessionsService;
 
@@ -12,10 +12,10 @@ import vacancy_tracker.services.telegram.session.SessionsService;
 @RequiredArgsConstructor
 public class DefaultBotNavigator implements BotNavigator {
 
-    private final MessageBotCommand initCommand;
-    private final MessageBotCommand helpCommand;
+    private final MessageCommand initCommand;
+    private final MessageCommand helpCommand;
 
-    private final SessionsService sessionsManager;
+    private final SessionsService sessionsService;
     private final MessageCommandExecutor executor;
 
     @Override
@@ -25,29 +25,41 @@ public class DefaultBotNavigator implements BotNavigator {
             return;
         }
 
-        var id = message.getChatId();
-        var session = sessionsManager.getSession(id);
+        var session = sessionsService.getSession(message.getChatId());
         var inputInterceptor = session.getInputInterceptor();
+        var messageData = MessageData.create(message);
+
+        if (message.getText().startsWith("/")) {
+            executeOrHelp(messageData);
+
+            if (inputInterceptor != null) {
+                session.setInputInterceptor(null);
+                sessionsService.save(session);
+            }
+            return;
+        }
 
         if (inputInterceptor != null) {
             inputInterceptor.processMessage(message);
             return;
         }
-
-        var messageData = MessageData.create(message);
-        if (!executor.execute(messageData)) {
-            helpCommand.processInput(messageData, false);
-        }
+        executeOrHelp(messageData);
     }
 
     @Override
     public void showInitMessage(MessageData message) {
-        initCommand.processInput(message, false);
-        helpCommand.processInput(message, false);
+        initCommand.execute(message);
+        helpCommand.execute(message);
     }
 
     @Override
     public void showHelpMessage(MessageData message) {
-        helpCommand.processInput(message, false);
+        helpCommand.execute(message);
+    }
+
+    private void executeOrHelp(MessageData messageData) {
+        if (!executor.execute(messageData)) {
+            helpCommand.execute(messageData);
+        }
     }
 }

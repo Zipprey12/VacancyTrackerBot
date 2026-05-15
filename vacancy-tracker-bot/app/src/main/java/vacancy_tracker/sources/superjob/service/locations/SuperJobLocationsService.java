@@ -17,7 +17,6 @@ public class SuperJobLocationsService implements LocationsService {
     private final LocationsRepository repository;
     private final SuperJobLocationsApiClient apiClient;
 
-    //todo Переделать. Город не хранит id региона
     @Override
     public void initialize() {
         if (repository.isInitialized()) {

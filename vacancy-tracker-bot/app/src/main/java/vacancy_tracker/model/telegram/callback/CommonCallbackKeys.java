@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum CommonCallbackKeys {
 
-    IGNORE("ignore");
+    IGNORE("ignore"),
+    NULL("null");
 
     private final String key;
 }

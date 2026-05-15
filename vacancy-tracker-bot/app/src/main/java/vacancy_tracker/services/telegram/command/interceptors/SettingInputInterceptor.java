@@ -5,6 +5,7 @@ import vacancy_tracker.services.telegram.message.MessageSender;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SettingsService;
 
+//todo
 public abstract class SettingInputInterceptor extends InputInterceptor {
 
     protected final SettingsService settingsService;
@@ -19,7 +20,7 @@ public abstract class SettingInputInterceptor extends InputInterceptor {
     }
 
     @Override
-    public void perform(Message message) {
+    public final void perform(Message message) {
         var text = message.getText();
 
         if (!tryHandleInput(text, message.getChatId())) {

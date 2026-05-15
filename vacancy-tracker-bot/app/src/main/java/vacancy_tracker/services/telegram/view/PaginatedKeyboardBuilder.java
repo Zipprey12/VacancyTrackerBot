@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//todo добавить методы для генерации по передаваемым значениям
 public class PaginatedKeyboardBuilder {
 
     private static final int DEFAULT_ITEMS_PER_PAGE = 10;
@@ -26,7 +25,7 @@ public class PaginatedKeyboardBuilder {
 
     @Getter
     @Setter
-    private List<CallbackItem> items;
+    private List<CallbackItem> defaultItems;
 
     @Setter(AccessLevel.PROTECTED)
     private int itemsPerPage = DEFAULT_ITEMS_PER_PAGE;
@@ -36,41 +35,63 @@ public class PaginatedKeyboardBuilder {
     }
 
     public InlineKeyboardMarkup build(int currentPage) {
-        return build(currentPage, itemsPerPage);
+        if (defaultItems == null) {
+            throw new IllegalArgumentException("defaultItems is null");
+        }
+        return build(defaultItems, currentPage, itemsPerPage);
+    }
+
+    public InlineKeyboardMarkup build(List<CallbackItem> items, int currentPage) {
+        return build(items, currentPage, itemsPerPage);
     }
 
     public InlineKeyboardMarkup build(int currentPage, String navigationArgs) {
-        return build(currentPage, itemsPerPage, navigationArgs);
+        if (defaultItems == null) {
+            throw new IllegalArgumentException("defaultItems is null");
+        }
+        return build(defaultItems, currentPage, itemsPerPage, navigationArgs);
     }
 
-    public InlineKeyboardMarkup build(int currentPage,
+    public InlineKeyboardMarkup build(List<CallbackItem> items, int currentPage, String navigationArgs) {
+        return build(items, currentPage, itemsPerPage, navigationArgs);
+    }
+
+    public InlineKeyboardMarkup build(List<CallbackItem> items,
+                                      int currentPage,
                                       int itemsPerPage,
                                       String navigationArgs) {
-        performCheckItems();
+        performCheckItems(items);
         int totalPages = calculateTotalPages(items.size(), itemsPerPage);
-        var rows = createPageItemRows(currentPage, itemsPerPage);
+        var rows = createPageItemRows(items, currentPage, itemsPerPage);
 
-        rows.add(createNavigationRow(currentPage, totalPages, navigationArgs));
+        if (totalPages > 1) {
+            rows.add(createNavigationRow(currentPage, totalPages, navigationArgs));
+        }
         return new InlineKeyboardMarkup(rows);
     }
 
-    public InlineKeyboardMarkup build(int currentPage,
+    public InlineKeyboardMarkup build(List<CallbackItem> items,
+                                      int currentPage,
                                       int itemsPerPage) {
-        performCheckItems();
+        performCheckItems(items);
         int totalPages = calculateTotalPages(items.size(), itemsPerPage);
-        var rows = createPageItemRows(currentPage, itemsPerPage);
+        var rows = createPageItemRows(items, currentPage, itemsPerPage);
 
-        rows.add(createNavigationRow(currentPage, totalPages));
+        if (totalPages > 1) {
+            rows.add(createNavigationRow(currentPage, totalPages));
+        }
         return new InlineKeyboardMarkup(rows);
     }
 
-    private void performCheckItems() {
+    private void performCheckItems(List<CallbackItem> items) {
         if (items == null) {
             throw new IllegalArgumentException("items не могут быть null при создании клавиатуры");
         }
     }
 
-    private List<InlineKeyboardRow> createPageItemRows(int currentPage, int itemsPerPage) {
+    private List<InlineKeyboardRow> createPageItemRows(List<CallbackItem> items,
+                                                       int currentPage,
+                                                       int itemsPerPage) {
         int from = currentPage * itemsPerPage;
         int to = Math.min(from + itemsPerPage, items.size());
 

@@ -7,4 +7,6 @@ public interface SettingsService {
     void saveFilters(long sessionId, VacancySearchFilter filter);
 
     VacancySearchFilter getFilters(long sessionId);
+
+    void deleteFilters(long sessionId);
 }

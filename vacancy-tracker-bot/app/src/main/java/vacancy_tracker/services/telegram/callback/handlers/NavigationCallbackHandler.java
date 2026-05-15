@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import vacancy_tracker.model.telegram.callback.CallbackData;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.callback.parsers.PaginationCallbackParser;
-import vacancy_tracker.services.telegram.command.MessageDataHandlerCommand;
+import vacancy_tracker.services.telegram.command.MessageDataHandler;
 import vacancy_tracker.services.telegram.message.MessageEditor;
 import vacancy_tracker.services.telegram.view.PaginatedKeyboardBuilder;
 
@@ -20,7 +20,7 @@ public abstract class NavigationCallbackHandler<T> extends ParsingDataCallbackHa
     private final MessageEditor messageEditor;
 
     protected NavigationCallbackHandler(String callbackKey,
-                                        MessageDataHandlerCommand handler,
+                                        MessageDataHandler handler,
                                         MessageEditor messageEditor) {
         super(callbackKey, handler);
 
@@ -30,7 +30,7 @@ public abstract class NavigationCallbackHandler<T> extends ParsingDataCallbackHa
 
     protected NavigationCallbackHandler(String callbackKey,
                                         PaginatedKeyboardBuilder keyboardBuilder,
-                                        MessageDataHandlerCommand handler,
+                                        MessageDataHandler handler,
                                         MessageEditor messageEditor) {
         super(callbackKey, handler);
 

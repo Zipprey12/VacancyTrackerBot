@@ -1,4 +1,4 @@
-package vacancy_tracker.services.telegram.view;
+package vacancy_tracker.services.telegram.view.formatters;
 
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.api.entity.Location;

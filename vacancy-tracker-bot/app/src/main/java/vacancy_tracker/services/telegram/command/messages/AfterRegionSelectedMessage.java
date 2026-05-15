@@ -1,4 +1,4 @@
-package vacancy_tracker.services.telegram.operations;
+package vacancy_tracker.services.telegram.command.messages;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -8,7 +8,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import vacancy_tracker.model.api.entity.Region;
 import vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys;
 import vacancy_tracker.model.telegram.dto.MessageData;
-import vacancy_tracker.services.telegram.message.MessageEditor;
+import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 
 import java.util.List;
 
@@ -18,14 +19,14 @@ public class AfterRegionSelectedMessage {
 
     private static final InlineKeyboardMarkup KEYBOARD_BUTTON = initKeyboard();
 
-    private final MessageEditor editor;
+    private final SendingAndUpdatingMessagePublisher publisher;
 
-    public void update(MessageData messageData, Region region) {
-        var messageId = messageData.getMessageId();
-        var chatId = messageData.getChatId();
+    public void publish(MessageData messageData, Region region) {
+        OutgoingMessage outgoingMessage = new OutgoingMessage(messageData);
+        outgoingMessage.setKeyboardMarkup(KEYBOARD_BUTTON);
+        outgoingMessage.setText(createHeader(region));
 
-        editor.edit(createHeader(region), chatId, messageId);
-        editor.edit(KEYBOARD_BUTTON, chatId, messageId);
+        publisher.publish(outgoingMessage);
     }
 
     private String createHeader(Region region) {

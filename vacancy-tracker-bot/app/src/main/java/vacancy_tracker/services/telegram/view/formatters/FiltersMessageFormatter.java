@@ -1,10 +1,9 @@
-package vacancy_tracker.services.telegram.view;
+package vacancy_tracker.services.telegram.view.formatters;
 
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.api.dto.VacancySearchFilter;
 import vacancy_tracker.model.api.entity.Location;
-
-import java.util.Objects;
+import vacancy_tracker.services.telegram.view.utils.DatesFormatUtil;
 
 @Component
 public class FiltersMessageFormatter {
@@ -31,13 +30,13 @@ public class FiltersMessageFormatter {
 
     private void appendText(StringBuilder sb, String text) {
         sb.append("\uD83D\uDD0D *Ключевые слова:* ");
-        sb.append(Objects.requireNonNullElse(text, "_не задано_"));
+        sb.append(text == null ? "__не задано__" : text);
     }
 
     private void appendLocation(StringBuilder sb, Location location) {
         sb.append("\n\uD83D\uDCCD *Местоположение:* ");
         if (location == null) {
-            sb.append("любое");
+            sb.append("__любое__");
         } else if (location.getTown() != null) {
             sb.append("г. ")
                     .append(location.getTown().getName());
@@ -50,28 +49,28 @@ public class FiltersMessageFormatter {
 
     private void appendExperience(StringBuilder sb, Float experience) {
         sb.append("\n\uD83C\uDF93 *Минимальный опыт:* ");
-        if (experience == null) {
+        if (experience == null || experience == 0) {
             sb.append("_отсутствует_");
         } else {
-            sb.append(experience).append(" лет");
+            sb.append(DatesFormatUtil.formatYears(experience));
         }
     }
 
     private void appendMinSalary(StringBuilder sb, Integer minSalary) {
         sb.append("\n\uD83D\uDCB0 *Зарплата от:* ");
-        if (minSalary != null) {
-            sb.append(minSalary).append(" руб.");
-        } else {
+        if (minSalary == null || minSalary == 0) {
             sb.append("_не указана_");
+        } else {
+            sb.append(minSalary).append(" руб.");
         }
     }
 
     private void appendMaxSalary(StringBuilder sb, Integer maxSalary) {
         sb.append("\n\uD83D\uDCB5 *Зарплата до:* ");
-        if (maxSalary != null) {
-            sb.append(maxSalary).append(" руб.\n");
-        } else {
+        if (maxSalary == null || maxSalary == 0) {
             sb.append("_не указана_\n");
+        } else {
+            sb.append(maxSalary).append(" руб.\n");
         }
     }
 }

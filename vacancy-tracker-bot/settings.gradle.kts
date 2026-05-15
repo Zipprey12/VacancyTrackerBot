@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = "vacancy-tracker-bot"
-    include("app")
+include("app")
