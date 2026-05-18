@@ -8,7 +8,7 @@ import vacancy_tracker.model.api.entity.Region;
 import vacancy_tracker.model.api.entity.Town;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.mappers.CallbackItemMapper;
-import vacancy_tracker.services.telegram.view.PaginatedKeyboardBuilder;
+import vacancy_tracker.services.telegram.view.keyboard.PaginatedKeyboardBuilder;
 import vacancy_tracker.services.vacancy.LocationsService;
 
 import java.util.List;
@@ -41,40 +41,40 @@ public class TownsSelectionMessageFormatter {
     private final CallbackItemMapper mapper;
 
     public void fillMessage(OutgoingMessage message, Location location) {
-        fillMessage(message, location, null);
+        fillMessage(message, location, 0, null);
     }
 
-    public boolean fillMessage(OutgoingMessage message, Location location, String filter) {
+    public void fillMessage(OutgoingMessage message, Location location, int page, String filter) {
         var towns = getTowns(location);
-        if (towns == null) {
+        if (towns.isEmpty()) {
             message.setText(location == null || location.getRegion() == null
                     ? REGION_NOT_SELECTED_MESSAGE : TOWNS_NOT_FOUND);
-            return false;
+            return;
         }
 
         var filtered = filterTowns(towns, filter);
         if (filtered.isEmpty()) {
             message.setText(FILTERED_TOWNS_EMPTY);
-            return false;
+            return;
         }
 
         var regionId = String.valueOf(location.getRegion().getId());
-        var keyboard = buildKeyboard(filtered, regionId);
+        var keyboard = buildKeyboard(filtered, page, regionId, filter);
         message.setText(filter == null ? MAIN_HEADER : HEADER_WITH_FILTER);
         message.setKeyboardMarkup(keyboard);
-        return true;
     }
 
     private List<Town> getTowns(Location location) {
         if (location == null || location.getRegion() == null) {
-            return null;
+            return List.of();
         }
         return locationsService.getRegionById(location.getRegion().getId())
                 .map(Region::getTowns)
                 .filter(t -> !t.isEmpty())
-                .orElse(null);
+                .orElse(List.of());
     }
 
+    //todo Перенести логику фильтра в LocationService
     private List<Town> filterTowns(List<Town> towns, String filterText) {
         if (filterText == null) {
             return towns;
@@ -85,10 +85,13 @@ public class TownsSelectionMessageFormatter {
                 .toList();
     }
 
-    private InlineKeyboardMarkup buildKeyboard(List<Town> towns, String regionId) {
+    private InlineKeyboardMarkup buildKeyboard(List<Town> towns, int page, String regionId, String filter) {
         var items = towns.stream()
                 .map(mapper::fromTown)
                 .toList();
-        return townsPaginationBuilder.build(items, 0, regionId);
+        if (filter != null) {
+            return townsPaginationBuilder.build(items, page, List.of(regionId, filter));
+        }
+        return townsPaginationBuilder.build(items, page, regionId);
     }
 }

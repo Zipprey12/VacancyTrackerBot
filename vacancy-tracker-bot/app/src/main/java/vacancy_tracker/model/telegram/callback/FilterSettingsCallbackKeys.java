@@ -9,7 +9,7 @@ public enum FilterSettingsCallbackKeys {
 
     SET_REGION("select_region"),
     SET_TOWN("select_town"),
-    CANCEL_FILTER_CHANGE("cancel_filter_change"),
+    CANCEL_CHANGE("cancel_filter_change"),
     RESET_TEXT("reset_searching_text"),
     SET_TEXT("select_searching_text"),
     SET_EXPERIENCE("select_experience"),

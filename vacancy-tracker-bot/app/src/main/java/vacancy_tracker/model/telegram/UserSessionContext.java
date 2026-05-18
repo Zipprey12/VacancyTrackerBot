@@ -10,7 +10,8 @@ public class UserSessionContext {
 
     private final long chatId;
 
-    private InputInterceptor inputInterceptor;
+    private InputInterceptor<?> inputInterceptor;
+    private boolean isLastMessageFromBot = false;
 
     public void deleteInterceptor() {
         inputInterceptor = null;

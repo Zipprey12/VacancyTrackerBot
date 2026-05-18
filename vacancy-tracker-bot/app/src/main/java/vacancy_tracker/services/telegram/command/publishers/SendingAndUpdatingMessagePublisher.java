@@ -8,7 +8,7 @@ import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.message.MessageEditor;
 import vacancy_tracker.services.telegram.message.MessageSender;
 
-import static vacancy_tracker.model.telegram.dto.CallingSource.CALLBACK;
+import static vacancy_tracker.model.telegram.CallingSource.CALLBACK;
 
 @Getter
 @Component

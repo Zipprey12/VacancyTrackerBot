@@ -41,7 +41,6 @@ public class CallbackServiceImpl implements CallbackService {
         if (!key.equals(CommonCallbackKeys.IGNORE.getKey())) {
             callHandler(callback, key);
         }
-
         sender.answerCallback(callback.getId());
     }
 

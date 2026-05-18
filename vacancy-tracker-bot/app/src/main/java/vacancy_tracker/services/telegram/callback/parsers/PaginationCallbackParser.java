@@ -4,6 +4,9 @@ import vacancy_tracker.model.telegram.callback.CallbackData;
 import vacancy_tracker.model.telegram.callback.CommonCallbackKeys;
 import vacancy_tracker.services.StringUtil;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static vacancy_tracker.model.telegram.callback.CallbackItem.PARTS_SEPARATOR;
 
 public class PaginationCallbackParser extends CallbackParser {
@@ -44,7 +47,7 @@ public class PaginationCallbackParser extends CallbackParser {
         return builder.isPageNavigation(true)
                 .prefix(callbackData.substring(0, pageIndex))
                 .targetPage(targetPage)
-                .args(argsStart >= 0 ? callbackData.substring(argsStart) : null)
+                .args(argsStart >= 0 ? splitArgs(callbackData.substring(argsStart)) : null)
                 .build();
     }
 
@@ -52,11 +55,21 @@ public class PaginationCallbackParser extends CallbackParser {
         return getPrefix() + PARTS_SEPARATOR + PAGE_PREFIX + pageNumber;
     }
 
-    public String createSelectPageCallback(int pageNumber, String args) {
+    public String createSelectPageCallback(int pageNumber, List<Object> args) {
         var callbackData = createSelectPageCallback(pageNumber);
-        if (args == null || args.isBlank()) {
+        if (args == null || args.isEmpty()) {
             return callbackData;
         }
-        return callbackData + PARTS_SEPARATOR + ARGS_PREFIX + args;
+        var argsString = args.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining("_"));
+        return callbackData + PARTS_SEPARATOR + ARGS_PREFIX + argsString;
+    }
+
+    private List<String> splitArgs(String argsString) {
+        if (argsString == null || argsString.isEmpty()) {
+            return List.of();
+        }
+        return List.of(argsString.split("_"));
     }
 }

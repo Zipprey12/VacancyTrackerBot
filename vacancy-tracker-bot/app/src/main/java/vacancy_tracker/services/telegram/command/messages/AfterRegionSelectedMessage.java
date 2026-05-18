@@ -55,7 +55,7 @@ public class AfterRegionSelectedMessage {
         var row = new InlineKeyboardRow();
         var button = new InlineKeyboardButton("Оставить регион");
 
-        button.setCallbackData(FilterSettingsCallbackKeys.CANCEL_FILTER_CHANGE.getKey());
+        button.setCallbackData(FilterSettingsCallbackKeys.CANCEL_CHANGE.getKey());
         row.add(button);
         return row;
     }

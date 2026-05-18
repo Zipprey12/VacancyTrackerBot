@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import vacancy_tracker.model.telegram.dto.MessageData;
-import vacancy_tracker.services.telegram.command.MessageCommand;
+import vacancy_tracker.services.telegram.command.CompletableMessageCommand;
 import vacancy_tracker.services.telegram.command.executors.MessageCommandExecutor;
 import vacancy_tracker.services.telegram.session.SessionsService;
 
@@ -12,8 +12,8 @@ import vacancy_tracker.services.telegram.session.SessionsService;
 @RequiredArgsConstructor
 public class DefaultBotNavigator implements BotNavigator {
 
-    private final MessageCommand initCommand;
-    private final MessageCommand helpCommand;
+    private final CompletableMessageCommand initCommand;
+    private final CompletableMessageCommand helpCommand;
 
     private final SessionsService sessionsService;
     private final MessageCommandExecutor executor;
@@ -40,7 +40,7 @@ public class DefaultBotNavigator implements BotNavigator {
         }
 
         if (inputInterceptor != null) {
-            inputInterceptor.processMessage(message);
+            inputInterceptor.processInput(messageData);
             return;
         }
         executeOrHelp(messageData);

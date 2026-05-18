@@ -7,7 +7,6 @@ import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsume
 import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.generics.TelegramClient;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.callback.CallbackService;
 import vacancy_tracker.services.telegram.navigation.BotNavigator;
@@ -23,15 +22,11 @@ public class VacancyTrackerBot implements SpringLongPollingBot, LongPollingSingl
     @Getter
     private final String botToken;
 
-    private final TelegramClient client;
-
     public VacancyTrackerBot(@Value("${bot.data.token}") String botToken,
-                             TelegramClient client,
                              BotNavigator navigator,
                              SessionsService sessionsService,
                              CallbackService callbackService) {
         this.botToken = botToken;
-        this.client = client;
         this.navigator = navigator;
         this.sessionsService = sessionsService;
         this.callbackService = callbackService;

@@ -6,5 +6,4 @@ public interface MessageDataHandler {
 
     void execute(MessageData messageData);
 
-    void endExecution(MessageData messageData);
 }

@@ -3,13 +3,13 @@ package vacancy_tracker.services.telegram.command.simple;
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.view.Describable;
-import vacancy_tracker.services.telegram.command.MessageCommand;
+import vacancy_tracker.services.telegram.command.CompletableMessageCommand;
 import vacancy_tracker.services.telegram.command.publishers.SendingMessagePublisher;
 
 import java.util.List;
 
 @Component
-public class HelpCommand extends MessageCommand {
+public class HelpCommand extends CompletableMessageCommand {
 
     private static final String MESSAGE_HEADER = """
             *Список доступных команд*:

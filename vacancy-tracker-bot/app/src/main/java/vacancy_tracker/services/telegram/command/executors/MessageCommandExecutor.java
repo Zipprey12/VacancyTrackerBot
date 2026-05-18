@@ -5,31 +5,30 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import vacancy_tracker.model.telegram.dto.MessageData;
-import vacancy_tracker.services.telegram.command.MessageCommand;
+import vacancy_tracker.services.telegram.command.CompletableMessageCommand;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class MessageCommandExecutor {
 
     @Getter(AccessLevel.PROTECTED)
-    private final HashMap<String, MessageCommand> commands;
+    private final ConcurrentHashMap<String, CompletableMessageCommand> commands;
 
-    protected MessageCommandExecutor(@Qualifier("allCommands") List<MessageCommand> commands) {
-        this.commands = new HashMap<>();
+    protected MessageCommandExecutor(@Qualifier("allCommands") List<CompletableMessageCommand> commands) {
+        this.commands = new ConcurrentHashMap<>();
         commands.forEach(c -> this.commands.putIfAbsent(c.getKey(), c));
     }
 
     public boolean execute(MessageData message) {
-        var input = message.getText();
-        var key = getKey(input);
+        var key = getKey(message.getText());
+        var command = commands.get(key);
 
-        if (!commands.containsKey(key)) {
+        if (command == null) {
             return false;
         }
 
-        var command = commands.get(key);
         command.execute(message);
         return true;
     }

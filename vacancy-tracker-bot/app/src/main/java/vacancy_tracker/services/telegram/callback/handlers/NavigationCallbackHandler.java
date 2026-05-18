@@ -2,41 +2,32 @@ package vacancy_tracker.services.telegram.callback.handlers;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import lombok.Setter;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.callback.CallbackData;
+import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.callback.parsers.PaginationCallbackParser;
-import vacancy_tracker.services.telegram.command.MessageDataHandler;
-import vacancy_tracker.services.telegram.message.MessageEditor;
-import vacancy_tracker.services.telegram.view.PaginatedKeyboardBuilder;
+import vacancy_tracker.services.telegram.command.CompletableMessageDataHandler;
+import vacancy_tracker.services.telegram.view.keyboard.PaginatedKeyboardBuilder;
+
+import java.util.List;
 
 public abstract class NavigationCallbackHandler<T> extends ParsingDataCallbackHandler<T> {
 
     @Getter(AccessLevel.PROTECTED)
     private final PaginatedKeyboardBuilder keyboardBuilder;
 
-    private final MessageEditor messageEditor;
-
     protected NavigationCallbackHandler(String callbackKey,
-                                        MessageDataHandler handler,
-                                        MessageEditor messageEditor) {
+                                        CompletableMessageDataHandler handler) {
         super(callbackKey, handler);
 
         this.keyboardBuilder = new PaginatedKeyboardBuilder((PaginationCallbackParser) getCallbackParser());
-        this.messageEditor = messageEditor;
     }
 
-    protected NavigationCallbackHandler(String callbackKey,
-                                        PaginatedKeyboardBuilder keyboardBuilder,
-                                        MessageDataHandler handler,
-                                        MessageEditor messageEditor) {
-        super(callbackKey, handler);
-
-        this.keyboardBuilder = keyboardBuilder;
-        this.messageEditor = messageEditor;
-    }
+    @Getter(AccessLevel.PROTECTED)
+    @Setter(AccessLevel.PROTECTED)
+    private List<CallbackItem> defaultItems;
 
     @Override
     public void handle(CallbackQuery callbackQuery) {
@@ -68,18 +59,5 @@ public abstract class NavigationCallbackHandler<T> extends ParsingDataCallbackHa
         return new PaginationCallbackParser(getKey());
     }
 
-    protected void navigate(MessageData message, CallbackData data) {
-        var page = data.targetPage();
-        var keyboard = keyboardBuilder.build(page, data.args());
-        editKeyboard(message.getChatId(), message.getMessageId(), keyboard);
-    }
-
-    protected void editKeyboard(long chatId, int messageId, InlineKeyboardMarkup keyboard) {
-        EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
-                .messageId(messageId)
-                .chatId(chatId)
-                .replyMarkup(keyboard)
-                .build();
-        messageEditor.edit(editMessageReplyMarkup);
-    }
+    protected abstract void navigate(MessageData message, CallbackData data);
 }

@@ -4,9 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.api.entity.Vacancy;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.services.telegram.command.MessageCommand;
+import vacancy_tracker.services.telegram.command.CompletableMessageCommand;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
-import vacancy_tracker.services.telegram.settings.SettingsService;
+import vacancy_tracker.services.telegram.settings.SearchFiltersService;
 import vacancy_tracker.services.telegram.view.formatters.VacanciesMessageFormatter;
 import vacancy_tracker.services.vacancy.VacancyService;
 import vacancy_tracker.sources.superjob.service.vacancy.SuperJobVacanciesService;
@@ -15,15 +15,15 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class ForceSearchVacanciesCommand extends MessageCommand {
+public class ForceSearchVacanciesCommand extends CompletableMessageCommand {
 
     //todo Тут должен быть общий сервис, который будет искать вакансии во всех api
     private final VacancyService vacanciesService;
-    private final SettingsService settingsService;
+    private final SearchFiltersService settingsService;
     private final VacanciesMessageFormatter messageFormatter;
 
     public ForceSearchVacanciesCommand(SendingAndUpdatingMessagePublisher publisher,
-                                       SettingsService settingsService,
+                                       SearchFiltersService settingsService,
                                        SuperJobVacanciesService vacanciesService,
                                        VacanciesMessageFormatter messageFormatter) {
 
@@ -36,7 +36,7 @@ public class ForceSearchVacanciesCommand extends MessageCommand {
     @Override
     protected void executeAndPopulateMessage(OutgoingMessage messageData) {
         long id = messageData.getChatId();
-        var filter = settingsService.getFilters(id);
+        var filter = settingsService.get(id);
 
         try {
             List<Vacancy> vacancies = vacanciesService.search(filter).join();

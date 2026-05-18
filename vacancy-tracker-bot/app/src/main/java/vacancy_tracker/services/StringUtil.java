@@ -29,4 +29,19 @@ public class StringUtil {
             return Optional.empty();
         }
     }
+
+    public static Optional<Boolean> parseBoolean(String text) {
+        if (text == null) {
+            return Optional.empty();
+        }
+
+        String trimmed = text.trim().toLowerCase();
+        if ("true".equals(trimmed)) {
+            return Optional.of(true);
+        }
+        if ("false".equals(trimmed)) {
+            return Optional.of(false);
+        }
+        return Optional.empty();
+    }
 }

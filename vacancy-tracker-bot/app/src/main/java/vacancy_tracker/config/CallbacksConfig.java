@@ -3,15 +3,13 @@ package vacancy_tracker.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.services.telegram.callback.handlers.CallbackHandler;
-import vacancy_tracker.services.telegram.callback.handlers.settings.*;
+import vacancy_tracker.services.telegram.callback.handlers.settings.filters.*;
+import vacancy_tracker.services.telegram.callback.handlers.settings.notification.ToggleEmptyNotificationHandler;
+import vacancy_tracker.services.telegram.callback.handlers.settings.notification.ToggleNotificationCallbackHandler;
 import vacancy_tracker.services.telegram.callback.parsers.PaginationCallbackParser;
-import vacancy_tracker.services.telegram.mappers.CallbackItemMapper;
-import vacancy_tracker.services.telegram.view.PaginatedKeyboardBuilder;
-import vacancy_tracker.services.vacancy.LocationsService;
+import vacancy_tracker.services.telegram.view.keyboard.PaginatedKeyboardBuilder;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Configuration
@@ -27,7 +25,9 @@ public class CallbacksConfig {
                                                   SetExperienceCallbackHandler setExperienceCallbackHandler,
                                                   SetTownCallbackHandler setTownCallbackHandler,
                                                   CancelChangeCallbackHandler cancelChangeCallbackHandler,
-                                                  ResetFiltersCallbackHandler resetFiltersCallbackHandler) {
+                                                  ResetFiltersCallbackHandler resetFiltersCallbackHandler,
+                                                  ToggleNotificationCallbackHandler onOffNotificationCallbackHandler,
+                                                  ToggleEmptyNotificationHandler toggleEmptyNotificationHandler) {
         return List.of(
                 setMaxSalaryCallbackHandler,
                 setMinSalaryCallbackHandler,
@@ -37,21 +37,15 @@ public class CallbacksConfig {
                 setExperienceCallbackHandler,
                 setTownCallbackHandler,
                 cancelChangeCallbackHandler,
-                resetFiltersCallbackHandler
+                resetFiltersCallbackHandler,
+                onOffNotificationCallbackHandler,
+                toggleEmptyNotificationHandler
         );
     }
 
     @Bean
-    public PaginatedKeyboardBuilder regionsPaginationBuilder(PaginationCallbackParser regionsPaginationCallbackParser,
-                                                             LocationsService locationsService,
-                                                             CallbackItemMapper mapper) {
-        var builder = new PaginatedKeyboardBuilder(regionsPaginationCallbackParser);
-        var regions = locationsService.getAllRegionsBasic();
-        var items = new LinkedList<CallbackItem>();
-
-        regions.forEach(r -> items.add(mapper.fromRegion(r)));
-        builder.setDefaultItems(items);
-        return builder;
+    public PaginatedKeyboardBuilder regionsPaginationBuilder(PaginationCallbackParser regionsPaginationCallbackParser) {
+        return new PaginatedKeyboardBuilder(regionsPaginationCallbackParser);
     }
 
     @Bean
