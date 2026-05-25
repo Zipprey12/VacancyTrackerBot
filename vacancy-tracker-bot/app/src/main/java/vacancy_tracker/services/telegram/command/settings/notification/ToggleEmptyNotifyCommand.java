@@ -4,9 +4,9 @@ import org.springframework.stereotype.Component;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.command.CompletableMessageCommand;
 import vacancy_tracker.services.telegram.command.handlers.NotificationChangingCompletionHandler;
-import vacancy_tracker.services.telegram.command.publishers.UpdatingMessagePublisher;
+import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.settings.NotificationService;
-import vacancy_tracker.services.telegram.view.formatters.ToggleEmptyNotifyMessageFormatter;
+import vacancy_tracker.services.telegram.view.formatters.notification.ToggleEmptyNotifyMessageFormatter;
 
 
 @Component
@@ -18,7 +18,7 @@ public class ToggleEmptyNotifyCommand extends CompletableMessageCommand {
     private final NotificationService service;
     private final ToggleEmptyNotifyMessageFormatter messageFormatter;
 
-    protected ToggleEmptyNotifyCommand(UpdatingMessagePublisher publisher,
+    protected ToggleEmptyNotifyCommand(SendingAndUpdatingMessagePublisher publisher,
                                        NotificationChangingCompletionHandler handler,
                                        NotificationService service,
                                        ToggleEmptyNotifyMessageFormatter messageFormatter) {

@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
-import vacancy_tracker.model.telegram.view.CallBackDataProvider;
+import vacancy_tracker.model.telegram.callback.CallBackDataProvider;
 
 import java.util.ArrayList;
 import java.util.List;

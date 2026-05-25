@@ -14,10 +14,10 @@ import vacancy_tracker.model.telegram.CallingSource;
 @NoArgsConstructor
 public class MessageData {
 
-    Long chatId;
-    Integer messageId;
-    String text;
-    CallingSource source;
+    private Long chatId;
+    private Integer messageId;
+    private String text;
+    private CallingSource source;
 
     public static MessageData create(MaybeInaccessibleMessage message) {
         return MessageData.builder()

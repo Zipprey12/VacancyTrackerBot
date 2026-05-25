@@ -6,7 +6,7 @@ import vacancy_tracker.services.telegram.command.CompletableMessageCommand;
 import vacancy_tracker.services.telegram.command.handlers.NotificationChangingCompletionHandler;
 import vacancy_tracker.services.telegram.command.publishers.UpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.settings.NotificationService;
-import vacancy_tracker.services.telegram.view.formatters.NotificationSettingsMessageFormatter;
+import vacancy_tracker.services.telegram.view.formatters.notification.NotificationSettingsMessageFormatter;
 
 @Component
 public class ToggleNotificationCommand extends CompletableMessageCommand {
@@ -25,7 +25,6 @@ public class ToggleNotificationCommand extends CompletableMessageCommand {
 
         this.service = notificationService;
         this.messageFormatter = messageFormatter;
-
         setOnComplete(handler);
     }
 

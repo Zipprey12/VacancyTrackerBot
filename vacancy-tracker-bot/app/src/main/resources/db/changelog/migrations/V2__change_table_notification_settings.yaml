@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: vacancy-tracker
+      changes:
+        - addColumn:
+            tableName: notification_settings
+            columns:
+              - column:
+                  name: last_notification_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+
+        - createIndex:
+            tableName: notification_settings
+            indexName: idx_notification_enabled
+            columns:
+              - column:
+                  name: is_enabled
+
+        - createIndex:
+            tableName: notification_settings
+            indexName: idx_notification_enabled_next_at
+            columns:
+              - column:
+                  name: is_enabled
+              - column:
+                  name: next_notification_at

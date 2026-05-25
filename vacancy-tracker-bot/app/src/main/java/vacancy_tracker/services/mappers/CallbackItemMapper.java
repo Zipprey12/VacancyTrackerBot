@@ -1,4 +1,4 @@
-package vacancy_tracker.services.telegram.mappers;
+package vacancy_tracker.services.mappers;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

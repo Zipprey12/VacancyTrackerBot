@@ -1,0 +1,112 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: vacancy-tracker
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: chat_id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+        - createTable:
+            tableName: sessions
+            columns:
+              - column:
+                  name: chat_id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    foreignKeyName: fk_sessions_users
+                    references: users(chat_id)
+              - column:
+                  name: interceptor_command_key
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: true
+
+        - createTable:
+            tableName: search_filters
+            columns:
+              - column:
+                  name: chat_id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    foreignKeyName: fk_search_filters_users
+                    references: users(chat_id)
+              - column:
+                  name: text
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: min_salary
+                  type: INTEGER
+                  constraints:
+                    nullable: true
+              - column:
+                  name: max_salary
+                  type: INTEGER
+                  constraints:
+                    nullable: true
+              - column:
+                  name: experience
+                  type: FLOAT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: modified_from
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: region_id
+                  type: INTEGER
+                  constraints:
+                    nullable: true
+              - column:
+                  name: town_id
+                  type: INTEGER
+                  constraints:
+                    nullable: true
+
+        - createTable:
+            tableName: notification_settings
+            columns:
+              - column:
+                  name: chat_id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    foreignKeyName: fk_notification_settings_users
+                    references: users(chat_id)
+              - column:
+                  name: interval_seconds
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: next_notification_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+              - column:
+                  name: is_enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: notify_when_vacancies_not_found
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

@@ -24,6 +24,12 @@ public abstract class CompletableMessageCommand implements Describable, Completa
     @Setter(AccessLevel.PROTECTED)
     private CommandCompletionHandler onComplete;
 
+    protected CompletableMessageCommand(MessagePublisher publisher) {
+        this.publisher = publisher;
+        this.key = null;
+        this.description = null;
+    }
+
     protected CompletableMessageCommand(String key, String description, MessagePublisher publisher) {
         this.key = key;
         this.description = description;
@@ -40,8 +46,6 @@ public abstract class CompletableMessageCommand implements Describable, Completa
         this.onComplete = onComplete;
     }
 
-    protected abstract void executeAndPopulateMessage(OutgoingMessage messageData);
-
     @Override
     public void execute(MessageData message) {
         var outgoingMessage = new OutgoingMessage(message);
@@ -50,9 +54,15 @@ public abstract class CompletableMessageCommand implements Describable, Completa
     }
 
     public void endExecution(MessageData message) {
-        if (onComplete != null) {
+        endExecution(message, true);
+    }
+
+    public void endExecution(MessageData message, boolean isSuccess) {
+        if (onComplete != null && isSuccess) {
             onComplete.onComplete(this, message);
         }
         log.debug("Выполнение команды {} завершено", this.key);
     }
+
+    protected abstract void executeAndPopulateMessage(OutgoingMessage messageData);
 }

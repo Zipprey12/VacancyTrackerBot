@@ -7,7 +7,7 @@ import java.util.Optional;
 public class FloatInterceptor extends InputInterceptor<Float> {
 
     @Override
-    protected Optional<Float> tryCastPreparedInput(String text, long chatId) {
+    protected Optional<Float> tryCastPreparedInput(String text) {
         return StringUtil.parseFloat(text);
     }
 }

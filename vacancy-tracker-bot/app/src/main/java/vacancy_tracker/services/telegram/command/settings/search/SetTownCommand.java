@@ -10,7 +10,7 @@ import vacancy_tracker.services.telegram.command.interceptors.TextInterceptor;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SearchFiltersService;
-import vacancy_tracker.services.telegram.view.formatters.TownsSelectionMessageFormatter;
+import vacancy_tracker.services.telegram.view.formatters.filter.TownsSelectionMessageFormatter;
 
 @Component
 public class SetTownCommand extends InputInterceptingCommand<String> {

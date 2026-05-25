@@ -45,7 +45,7 @@ public class AdvancedKeyboardBuilder {
 
     protected InlineKeyboardRow createItemRow(CallbackItem item) {
         InlineKeyboardRow row = new InlineKeyboardRow();
-        InlineKeyboardButton button = new InlineKeyboardButton(item.displayedName());
+        InlineKeyboardButton button = new InlineKeyboardButton(item.getDisplayedName());
         var data = parser.createSelectItemCallback(item);
 
         button.setCallbackData(data);

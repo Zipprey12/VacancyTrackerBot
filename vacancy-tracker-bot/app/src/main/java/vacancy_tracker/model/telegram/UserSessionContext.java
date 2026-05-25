@@ -9,9 +9,7 @@ import vacancy_tracker.services.telegram.command.interceptors.InputInterceptor;
 public class UserSessionContext {
 
     private final long chatId;
-
     private InputInterceptor<?> inputInterceptor;
-    private boolean isLastMessageFromBot = false;
 
     public void deleteInterceptor() {
         inputInterceptor = null;

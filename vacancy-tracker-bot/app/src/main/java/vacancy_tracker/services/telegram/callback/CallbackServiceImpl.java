@@ -1,7 +1,6 @@
 package vacancy_tracker.services.telegram.callback;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -20,7 +19,7 @@ public class CallbackServiceImpl implements CallbackService {
     private final Map<String, CallbackHandler> callbackHandlers;
     private final MessageSender sender;
 
-    public CallbackServiceImpl(@Qualifier("callbackHandlers") List<CallbackHandler> callbackHandlers,
+    public CallbackServiceImpl(List<CallbackHandler> callbackHandlers,
                                MessageSender sender) {
         this.callbackHandlers = callbackHandlers.stream()
                 .collect(Collectors.toMap(

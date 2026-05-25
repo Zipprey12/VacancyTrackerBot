@@ -13,16 +13,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class NotificationSettings {
 
+    private long chatId;
     private Duration interval;
     private LocalDateTime nextNotificationAt;
+    private LocalDateTime lastNotificationAt;
 
     private boolean isEnabled;
     private boolean notifyWhenVacanciesNotFound;
-
-    public void setInterval(Duration interval) {
-        this.interval = interval;
-        scheduleNext();
-    }
 
     public boolean isTimeToNotify() {
         return nextNotificationAt != null
@@ -33,11 +30,5 @@ public class NotificationSettings {
         if (interval != null) {
             this.nextNotificationAt = LocalDateTime.now().plus(interval);
         }
-    }
-
-    public void disable() {
-        interval = null;
-        nextNotificationAt = null;
-        isEnabled = false;
     }
 }

@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import vacancy_tracker.model.telegram.CallingSource;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.services.telegram.command.handlers.FiltersChangingCompletionHandler;
+import vacancy_tracker.services.telegram.command.handlers.CommandCompletionHandler;
 import vacancy_tracker.services.telegram.command.interceptors.InputInterceptor;
 import vacancy_tracker.services.telegram.command.publishers.MessagePublisher;
 import vacancy_tracker.services.telegram.session.SessionsService;
@@ -26,13 +26,23 @@ public abstract class InputInterceptingCommand<T> extends CompletableMessageComm
     @Setter(AccessLevel.PROTECTED)
     private boolean triggerEvent = true;
 
-    @Setter(AccessLevel.PROTECTED)
-    private String errorMessage;
+    protected InputInterceptingCommand(String key,
+                                       MessagePublisher publisher,
+                                       CommandCompletionHandler handler,
+                                       InputInterceptor<T> inputInterceptor,
+                                       SessionsService sessionsService) {
+
+        super(key, null, publisher, handler);
+        inputInterceptor.setHandler(this);
+
+        this.sessionsService = sessionsService;
+        this.inputInterceptor = inputInterceptor;
+    }
 
     protected InputInterceptingCommand(String key,
                                        String description,
                                        MessagePublisher publisher,
-                                       FiltersChangingCompletionHandler handler,
+                                       CommandCompletionHandler handler,
                                        InputInterceptor<T> inputInterceptor,
                                        SessionsService sessionsService) {
         super(key, description, publisher, handler);
@@ -59,8 +69,8 @@ public abstract class InputInterceptingCommand<T> extends CompletableMessageComm
     }
 
     @Override
-    public void endExecution(MessageData message) {
-        super.endExecution(message);
+    public void endExecution(MessageData message, boolean isSuccess) {
+        super.endExecution(message, isSuccess);
         disableInterceptor(message.getChatId());
     }
 
@@ -75,9 +85,16 @@ public abstract class InputInterceptingCommand<T> extends CompletableMessageComm
     @Override
     public void handleInvalidValue(MessageData messageData) {
         if (triggerEvent) {
-            endExecution(messageData);
+            endExecution(messageData, false);
         }
-        getPublisher().publish(createInvalidOutgoingMessage(messageData));
+        getPublisher().publish(createInvalidOutgoingMessage(messageData, null));
+    }
+
+    public void handleInvalidValue(MessageData messageData, String reason) {
+        if (triggerEvent) {
+            endExecution(messageData, false);
+        }
+        getPublisher().publish(createInvalidOutgoingMessage(messageData, reason));
     }
 
     protected abstract void executeWithParameter(MessageData messageData, T parameter);
@@ -86,9 +103,9 @@ public abstract class InputInterceptingCommand<T> extends CompletableMessageComm
         return fullCommand.replaceFirst(getKey(), "").trim();
     }
 
-    protected void handleWithParameters(MessageData message, String parameter) {
-        var id = message.getChatId();
-        inputInterceptor.tryHandleInput(parameter, id);
+    protected void handleWithParameters(MessageData messageData, String parameter) {
+        messageData.setText(parameter);
+        inputInterceptor.processInput(messageData);
     }
 
     protected void enableInterceptor(long chatId) {
@@ -104,10 +121,10 @@ public abstract class InputInterceptingCommand<T> extends CompletableMessageComm
         log.debug("Отключен перехватчик ввода для {}", getKey());
     }
 
-    private OutgoingMessage createInvalidOutgoingMessage(MessageData messageData) {
+    private OutgoingMessage createInvalidOutgoingMessage(MessageData messageData, String text) {
         var message = new OutgoingMessage(messageData);
         message.setSource(CallingSource.CHAT);
-        message.setText(Objects.requireNonNullElse(errorMessage, "Неверный формат данных"));
+        message.setText(Objects.requireNonNullElse(text, "Неверный формат данных"));
         return message;
     }
 }

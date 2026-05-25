@@ -1,5 +1,6 @@
 package vacancy_tracker.services.telegram.command.interceptors;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import vacancy_tracker.model.telegram.dto.MessageData;
@@ -10,13 +11,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public abstract class InputInterceptor<T> {
 
-    public static final int MIN_LENGTH = 0;
+    public static final int MIN_LENGTH = 1;
     public static final int MAX_LENGTH = 100;
 
     @Setter
+    @Getter
     private InputHandler<T> handler;
 
-    protected abstract Optional<T> tryCastPreparedInput(String text, long chatId);
+    protected abstract Optional<T> tryCastPreparedInput(String text);
 
     protected int getMinLength() {
         return MIN_LENGTH;
@@ -27,7 +29,7 @@ public abstract class InputInterceptor<T> {
     }
 
     public void processInput(MessageData message) {
-        var value = tryHandleInput(message.getText(), message.getChatId());
+        var value = tryHandleInput(message.getText());
         if (value.isEmpty()) {
             handler.handleInvalidValue(message);
         } else {
@@ -35,7 +37,7 @@ public abstract class InputInterceptor<T> {
         }
     }
 
-    public Optional<T> tryHandleInput(String text, long chatId) {
+    protected Optional<T> tryHandleInput(String text) {
         if (text == null || text.isBlank()) {
             return Optional.empty();
         }
@@ -44,6 +46,6 @@ public abstract class InputInterceptor<T> {
         if (trimmed.length() < getMinLength() || trimmed.length() > getMaxLength()) {
             return Optional.empty();
         }
-        return tryCastPreparedInput(trimmed, chatId);
+        return tryCastPreparedInput(trimmed);
     }
 }

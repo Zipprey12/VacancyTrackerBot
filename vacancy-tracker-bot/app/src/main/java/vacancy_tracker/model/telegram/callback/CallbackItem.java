@@ -1,13 +1,22 @@
 package vacancy_tracker.model.telegram.callback;
 
-import vacancy_tracker.model.telegram.view.CallBackDataProvider;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public record CallbackItem(String callbackPrefix, String displayedName, Object key) implements CallBackDataProvider {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class CallbackItem implements CallBackDataProvider {
 
     public static final char PARTS_SEPARATOR = ' ';
 
-    public CallbackItem(String callback, String displayedName) {
-        this(callback, displayedName, null);
+    private String callbackPrefix;
+    private String displayedName;
+    private Object key;
+
+    public CallbackItem(String callbackPrefix, String displayedName) {
+        this(callbackPrefix, displayedName, null);
     }
 
     @Override
@@ -17,6 +26,9 @@ public record CallbackItem(String callbackPrefix, String displayedName, Object k
 
     @Override
     public String getCallback() {
-        return callbackPrefix + PARTS_SEPARATOR + (key == null ? "" : key.toString());
+        if (key == null) {
+            return callbackPrefix;
+        }
+        return callbackPrefix + PARTS_SEPARATOR + key;
     }
 }

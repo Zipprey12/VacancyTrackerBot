@@ -22,7 +22,6 @@ public class SimpleSearchFiltersService implements SearchFiltersService {
     @Override
     public VacancySearchFilter get(long sessionId) {
         var existed = repository.get(sessionId);
-
         if (existed.isPresent()) {
             return existed.get();
         }

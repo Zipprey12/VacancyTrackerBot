@@ -14,7 +14,7 @@ import vacancy_tracker.services.telegram.command.publishers.MessagePublisher;
 import vacancy_tracker.services.telegram.command.publishers.UpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.command.settings.search.SetRegionCommand;
 import vacancy_tracker.services.telegram.settings.SearchFiltersService;
-import vacancy_tracker.services.telegram.view.formatters.RegionsSelectionMessageFormatter;
+import vacancy_tracker.services.telegram.view.formatters.filter.RegionsSelectionMessageFormatter;
 import vacancy_tracker.services.vacancy.LocationsService;
 
 import java.util.Optional;

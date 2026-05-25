@@ -5,6 +5,8 @@ import org.springframework.stereotype.Repository;
 import vacancy_tracker.model.telegram.NotificationSettings;
 import vacancy_tracker.repository.NotificationSettingsRepository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,5 +40,25 @@ public class InMemoryNotificationSettingsRepository implements NotificationSetti
             log.debug("Созданы настройки уведомлений по умолчанию для сессии {}", id);
             return new NotificationSettings();
         });
+    }
+
+    @Override
+    public List<NotificationSettings> findAllDue(LocalDateTime dateTime, boolean onlyEnabled) {
+        return storage.values().stream()
+                .filter(settings -> {
+                    if (onlyEnabled && !settings.isEnabled()) {
+                        return false;
+                    }
+                    return settings.getNextNotificationAt() != null
+                            && !settings.getNextNotificationAt().isAfter(dateTime);
+                })
+                .toList();
+    }
+
+    @Override
+    public List<NotificationSettings> findEnabled() {
+        return storage.values().stream()
+                .filter(NotificationSettings::isEnabled)
+                .toList();
     }
 }

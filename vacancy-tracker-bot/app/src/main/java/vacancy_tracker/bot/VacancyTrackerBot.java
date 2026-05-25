@@ -22,7 +22,7 @@ public class VacancyTrackerBot implements SpringLongPollingBot, LongPollingSingl
     @Getter
     private final String botToken;
 
-    public VacancyTrackerBot(@Value("${bot.data.token}") String botToken,
+    public VacancyTrackerBot(@Value("${bot.token}") String botToken,
                              BotNavigator navigator,
                              SessionsService sessionsService,
                              CallbackService callbackService) {

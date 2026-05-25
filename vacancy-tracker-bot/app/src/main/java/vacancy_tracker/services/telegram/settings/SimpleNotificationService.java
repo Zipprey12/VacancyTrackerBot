@@ -1,15 +1,24 @@
 package vacancy_tracker.services.telegram.settings;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import vacancy_tracker.model.telegram.NotificationSettings;
 import vacancy_tracker.repository.NotificationSettingsRepository;
+import vacancy_tracker.services.telegram.notification.NotificationQueueService;
+
+import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class SimpleNotificationService implements NotificationService {
 
     private final NotificationSettingsRepository repository;
+    private final NotificationQueueService queueService;
+
+    public SimpleNotificationService(NotificationSettingsRepository repository,
+                                     @Lazy NotificationQueueService queueService) {
+        this.repository = repository;
+        this.queueService = queueService;
+    }
 
     @Override
     public NotificationSettings get(long sessionId) {
@@ -18,11 +27,18 @@ public class SimpleNotificationService implements NotificationService {
 
     @Override
     public void save(long sessionId, NotificationSettings settings) {
+        queueService.schedule(sessionId, settings);
         repository.save(sessionId, settings);
     }
 
     @Override
     public void remove(long sessionId) {
         repository.remove(sessionId);
+        queueService.cancel(sessionId);
+    }
+
+    @Override
+    public List<NotificationSettings> findEnabled() {
+        return repository.findEnabled();
     }
 }

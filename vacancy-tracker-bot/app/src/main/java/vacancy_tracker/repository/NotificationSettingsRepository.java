@@ -2,6 +2,8 @@ package vacancy_tracker.repository;
 
 import vacancy_tracker.model.telegram.NotificationSettings;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface NotificationSettingsRepository {
@@ -13,4 +15,8 @@ public interface NotificationSettingsRepository {
     void remove(long sessionId);
 
     NotificationSettings getOrCreate(long sessionId);
+
+    List<NotificationSettings> findAllDue(LocalDateTime dateTime, boolean onlyEnabled);
+
+    List<NotificationSettings> findEnabled();
 }

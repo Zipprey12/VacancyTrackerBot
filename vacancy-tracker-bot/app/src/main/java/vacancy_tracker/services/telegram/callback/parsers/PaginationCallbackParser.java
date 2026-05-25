@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static vacancy_tracker.model.telegram.callback.CallbackItem.PARTS_SEPARATOR;
+import static vacancy_tracker.model.telegram.callback.CompositeCallbackItem.ARGS_PREFIX;
 
-public class PaginationCallbackParser extends CallbackParser {
+public class PaginationCallbackParser extends AdvancedParser {
 
     public static final String PAGE_PREFIX = "page_";
-    public static final String ARGS_PREFIX = "args_";
 
     public PaginationCallbackParser(String prefix) {
         super(prefix);
@@ -29,25 +29,20 @@ public class PaginationCallbackParser extends CallbackParser {
             return builder.isEmpty(true).build();
         }
 
-        int pageIndex = callbackData.lastIndexOf(PARTS_SEPARATOR + PAGE_PREFIX);
-        if (pageIndex <= 0) {
-            return builder.isSelection(true)
-                    .selectedKey(callbackData.substring(getPrefix().length() + 1))
-                    .build();
+        var pageIndex = callbackData.lastIndexOf(PARTS_SEPARATOR + PAGE_PREFIX);
+        var argsIndex = callbackData.indexOf(PARTS_SEPARATOR + ARGS_PREFIX);
+        var firstKeyIndex = firstPositive(pageIndex, argsIndex);
 
+        if (pageIndex <= 0 && argsIndex <= 0) {
+            return builder.isSelection(true)
+                    .selectedKey(extractSelectedKey(callbackData, -1))
+                    .build();
         }
 
-        int pageStart = pageIndex + 1 + PAGE_PREFIX.length();
-        int argsIndex = callbackData.indexOf(PARTS_SEPARATOR + ARGS_PREFIX, pageStart);
-        int pageEnd = argsIndex >= 0 ? argsIndex : callbackData.length();
-        int argsStart = argsIndex >= 0 ? argsIndex + 1 + ARGS_PREFIX.length() : -1;
-        int targetPage = StringUtil.parseInt(callbackData.substring(pageStart, pageEnd))
-                .orElse(0);
-
         return builder.isPageNavigation(true)
-                .prefix(callbackData.substring(0, pageIndex))
-                .targetPage(targetPage)
-                .args(argsStart >= 0 ? splitArgs(callbackData.substring(argsStart)) : null)
+                .selectedKey(extractSelectedKey(callbackData, firstKeyIndex))
+                .targetPage(pageIndex > 0 ? extractPage(callbackData, pageIndex, argsIndex) : 0)
+                .args(argsIndex > 0 ? extractArgs(callbackData) : null)
                 .build();
     }
 
@@ -57,19 +52,23 @@ public class PaginationCallbackParser extends CallbackParser {
 
     public String createSelectPageCallback(int pageNumber, List<Object> args) {
         var callbackData = createSelectPageCallback(pageNumber);
-        if (args == null || args.isEmpty()) {
-            return callbackData;
-        }
+        if (args == null || args.isEmpty()) return callbackData;
         var argsString = args.stream()
                 .map(Object::toString)
                 .collect(Collectors.joining("_"));
         return callbackData + PARTS_SEPARATOR + ARGS_PREFIX + argsString;
     }
 
-    private List<String> splitArgs(String argsString) {
-        if (argsString == null || argsString.isEmpty()) {
-            return List.of();
-        }
-        return List.of(argsString.split("_"));
+    private int extractPage(String callbackData, int pageIndex, int argsIndex) {
+        var pageStart = pageIndex + 1 + PAGE_PREFIX.length();
+        var pageEnd = argsIndex > 0 ? argsIndex : callbackData.length();
+        return StringUtil.parseInt(callbackData.substring(pageStart, pageEnd)).orElse(0);
+    }
+
+    private int firstPositive(int a, int b) {
+        if (a > 0 && b > 0) return Math.min(a, b);
+        if (a > 0) return a;
+        if (b > 0) return b;
+        return -1;
     }
 }

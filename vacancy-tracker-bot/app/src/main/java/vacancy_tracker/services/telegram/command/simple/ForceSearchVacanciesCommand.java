@@ -2,7 +2,10 @@ package vacancy_tracker.services.telegram.command.simple;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import vacancy_tracker.model.api.dto.VacancySearchFilter;
 import vacancy_tracker.model.api.entity.Vacancy;
+import vacancy_tracker.model.telegram.CallingSource;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.command.CompletableMessageCommand;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
@@ -33,11 +36,24 @@ public class ForceSearchVacanciesCommand extends CompletableMessageCommand {
         this.messageFormatter = messageFormatter;
     }
 
+    public void executeWithFilter(long chatId, VacancySearchFilter filter) {
+        var message = new OutgoingMessage();
+        message.setParseMode(ParseMode.MARKDOWN);
+        message.setChatId(chatId);
+        message.setSource(CallingSource.CHAT);
+
+        fillVacancies(message, filter);
+        getPublisher().publish(message);
+    }
+
     @Override
     protected void executeAndPopulateMessage(OutgoingMessage messageData) {
         long id = messageData.getChatId();
         var filter = settingsService.get(id);
+        fillVacancies(messageData, filter);
+    }
 
+    private void fillVacancies(OutgoingMessage messageData, VacancySearchFilter filter) {
         try {
             List<Vacancy> vacancies = vacanciesService.search(filter).join();
             messageData.setText(generateText(vacancies));

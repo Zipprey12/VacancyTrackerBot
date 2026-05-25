@@ -1,4 +1,4 @@
-package vacancy_tracker.services.telegram.view.formatters;
+package vacancy_tracker.services.telegram.view.formatters.notification;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -6,13 +6,13 @@ import vacancy_tracker.model.telegram.NotificationSettings;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.view.keyboard.KeyboardBuilder;
+import vacancy_tracker.services.telegram.view.utils.DurationFormatUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static vacancy_tracker.model.telegram.callback.NotificationSettingCallbackKeys.*;
-import static vacancy_tracker.services.telegram.view.utils.DatesFormatUtil.formatDuration;
 
 @Component
 public class NotificationSettingsMessageFormatter {
@@ -34,7 +34,7 @@ public class NotificationSettingsMessageFormatter {
                 "⏰ *Следующее оповещение:* " +
                 formatNextTime(settings.getNextNotificationAt()) +
                 "\n🔄 *Интервал:* " +
-                formatDuration(settings.getInterval()) +
+                DurationFormatUtil.format(settings.getInterval()) +
                 "\n📭 *Уведомлять при отсутствии вакансий:* " +
                 (settings.isNotifyWhenVacanciesNotFound() ? "да" : "нет") + "\n";
     }

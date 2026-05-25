@@ -2,13 +2,13 @@ package vacancy_tracker.services.telegram.command.settings.search;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import vacancy_tracker.model.telegram.callback.CallBackDataProvider;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.model.telegram.view.CallBackDataProvider;
 import vacancy_tracker.model.telegram.view.FilterOptions;
 import vacancy_tracker.services.telegram.command.CompletableMessageCommand;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.settings.SearchFiltersService;
-import vacancy_tracker.services.telegram.view.formatters.FiltersMessageFormatter;
+import vacancy_tracker.services.telegram.view.formatters.filter.FiltersMessageFormatter;
 import vacancy_tracker.services.telegram.view.keyboard.KeyboardBuilder;
 
 import java.util.Arrays;

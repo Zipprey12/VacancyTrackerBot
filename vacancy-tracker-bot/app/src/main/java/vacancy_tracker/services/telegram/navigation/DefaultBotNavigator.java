@@ -8,6 +8,8 @@ import vacancy_tracker.services.telegram.command.CompletableMessageCommand;
 import vacancy_tracker.services.telegram.command.executors.MessageCommandExecutor;
 import vacancy_tracker.services.telegram.session.SessionsService;
 
+import java.util.concurrent.CompletableFuture;
+
 @Component
 @RequiredArgsConstructor
 public class DefaultBotNavigator implements BotNavigator {
@@ -25,41 +27,52 @@ public class DefaultBotNavigator implements BotNavigator {
             return;
         }
 
-        var session = sessionsService.getSession(message.getChatId());
-        var inputInterceptor = session.getInputInterceptor();
         var messageData = MessageData.create(message);
+        var chatId = message.getChatId();
+        var text = message.getText();
 
-        if (message.getText().startsWith("/")) {
+        if (text.startsWith("/")) {
+            clearInterceptor(chatId);
             executeOrHelp(messageData);
-
-            if (inputInterceptor != null) {
-                session.setInputInterceptor(null);
-                sessionsService.save(session);
-            }
             return;
         }
 
+        var inputInterceptor = sessionsService.getSession(chatId).getInputInterceptor();
         if (inputInterceptor != null) {
             inputInterceptor.processInput(messageData);
             return;
         }
+
         executeOrHelp(messageData);
     }
 
     @Override
     public void showInitMessage(MessageData message) {
-        initCommand.execute(message);
-        helpCommand.execute(message);
+        CompletableFuture.runAsync(() -> {
+            initCommand.execute(message);
+            helpCommand.execute(message);
+        });
     }
 
     @Override
     public void showHelpMessage(MessageData message) {
-        helpCommand.execute(message);
+        CompletableFuture.runAsync(() -> helpCommand.execute(message));
     }
 
     private void executeOrHelp(MessageData messageData) {
-        if (!executor.execute(messageData)) {
-            helpCommand.execute(messageData);
+        executor.execute(messageData)
+                .thenAccept(executed -> {
+                    if (Boolean.FALSE.equals(executed)) {
+                        helpCommand.execute(messageData);
+                    }
+                });
+    }
+
+    private void clearInterceptor(long chatId) {
+        var session = sessionsService.getSession(chatId);
+        if (session.getInputInterceptor() != null) {
+            session.setInputInterceptor(null);
+            sessionsService.save(session);
         }
     }
 }

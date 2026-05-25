@@ -1,4 +1,4 @@
-package vacancy_tracker.services.telegram.view.formatters;
+package vacancy_tracker.services.telegram.view.formatters.notification;
 
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.telegram.callback.CallbackItem;

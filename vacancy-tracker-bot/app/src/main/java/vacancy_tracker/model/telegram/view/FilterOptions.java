@@ -2,6 +2,7 @@ package vacancy_tracker.model.telegram.view;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import vacancy_tracker.model.telegram.callback.CallBackDataProvider;
 
 import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.*;
 

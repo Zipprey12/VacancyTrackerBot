@@ -14,7 +14,7 @@ import vacancy_tracker.services.telegram.command.publishers.MessagePublisher;
 import vacancy_tracker.services.telegram.command.publishers.UpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.command.settings.search.SetTownCommand;
 import vacancy_tracker.services.telegram.settings.SearchFiltersService;
-import vacancy_tracker.services.telegram.view.formatters.TownsSelectionMessageFormatter;
+import vacancy_tracker.services.telegram.view.formatters.filter.TownsSelectionMessageFormatter;
 import vacancy_tracker.services.vacancy.LocationsService;
 
 import java.util.Optional;

@@ -11,6 +11,10 @@ import java.util.stream.Collectors;
 public class VacanciesMessageFormatter {
 
     public String format(List<Vacancy> vacancies) {
+        if (vacancies == null || vacancies.isEmpty()) {
+            return formatEmptyResult();
+        }
+
         return "`Пока что я просто вывожу 10 последних вакансий!`\n\n" +
                 vacancies.stream()
                         .map(this::format)
@@ -22,7 +26,7 @@ public class VacanciesMessageFormatter {
                 """                    
                         💼 *%s*
                         🏢 %s
-                        💰 %s руб.
+                        💰 %s
                         📍 %s
                         🔗 [Подробнее](%s)""",
                 vacancy.getName(),
@@ -34,11 +38,14 @@ public class VacanciesMessageFormatter {
     }
 
     public String getSalaryString(int min, int max) {
+        if (min == 0 && max == 0) {
+            return "не указана";
+        }
         if (min == 0) {
-            return String.valueOf(max);
+            return max + " руб.";
         }
         if (max == 0) {
-            return String.valueOf(min);
+            return min + " руб.";
         }
         return min + " - " + max;
     }
@@ -51,5 +58,9 @@ public class VacanciesMessageFormatter {
             return location.getRegion().getName();
         }
         return "Не указан";
+    }
+
+    public String formatEmptyResult() {
+        return "🔍 Новых вакансий не найдено";
     }
 }

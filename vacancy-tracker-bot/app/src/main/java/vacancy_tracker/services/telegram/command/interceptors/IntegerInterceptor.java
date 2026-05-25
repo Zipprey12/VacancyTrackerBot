@@ -7,7 +7,7 @@ import java.util.Optional;
 public class IntegerInterceptor extends InputInterceptor<Integer> {
 
     @Override
-    protected Optional<Integer> tryCastPreparedInput(String text, long chatId) {
+    protected Optional<Integer> tryCastPreparedInput(String text) {
         return StringUtil.parseInt(text);
     }
 }

@@ -33,6 +33,9 @@ public class HelpCommand extends CompletableMessageCommand {
         StringBuilder builder = new StringBuilder();
         builder.append(MESSAGE_HEADER);
         for (var command : commands) {
+            if (command.getKey() == null) {
+                continue;
+            }
             builder.append(prepareKey(command.getKey()))
                     .append(" - ")
                     .append(command.getDescription())

@@ -1,0 +1,6 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/migrations/V1__create_initial_tables.yaml
+
+  - include:
+      file: db/changelog/migrations/V2__change_table_notification_settings.yaml

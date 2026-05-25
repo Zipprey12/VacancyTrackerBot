@@ -2,8 +2,6 @@ package vacancy_tracker.services.telegram.view.utils;
 
 import lombok.experimental.UtilityClass;
 
-import java.time.Duration;
-
 @UtilityClass
 public class DatesFormatUtil {
 
@@ -38,21 +36,6 @@ public class DatesFormatUtil {
         } else {
             return "лет";
         }
-    }
-
-    public static String formatDuration(Duration duration) {
-        if (duration == null) {
-            return "не установлен";
-        }
-        long hours = duration.toHours();
-        if (hours < 24) {
-            return hours + " ч.";
-        }
-        long days = duration.toDays();
-        if (days < 7) {
-            return days + " дн.";
-        }
-        return (days / 7) + " нед.";
     }
 
     private static String getDeclensionForLong(long years) {

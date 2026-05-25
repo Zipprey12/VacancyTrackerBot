@@ -18,7 +18,6 @@ public interface LocationsService {
 
     Optional<Location> getLocationByTownId(int townId);
 
-    //todo
     List<Region> getAllRegionsBasic();
 
     boolean isInitialized();

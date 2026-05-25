@@ -1,11 +1,11 @@
-package vacancy_tracker.services.telegram.view.formatters;
+package vacancy_tracker.services.telegram.view.formatters.filter;
 
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.api.entity.Region;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.services.telegram.mappers.CallbackItemMapper;
+import vacancy_tracker.services.mappers.CallbackItemMapper;
 import vacancy_tracker.services.telegram.view.keyboard.PaginatedKeyboardBuilder;
 
 import java.util.Comparator;

@@ -5,7 +5,7 @@ import java.util.Optional;
 public class TextInterceptor extends InputInterceptor<String> {
 
     @Override
-    protected Optional<String> tryCastPreparedInput(String text, long chatId) {
+    protected Optional<String> tryCastPreparedInput(String text) {
         return Optional.of(text);
     }
 }

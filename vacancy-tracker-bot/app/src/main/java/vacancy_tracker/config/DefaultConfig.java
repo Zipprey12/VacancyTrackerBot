@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 @Configuration
 public class DefaultConfig {
 
-    @Value("${bot.data.token}")
+    @Value("${bot.token}")
     private String botToken;
 
     @Bean

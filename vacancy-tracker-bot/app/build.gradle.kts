@@ -6,14 +6,12 @@
  */
 
 plugins {
-    // Apply the application plugin to add support for building a CLI application in Java.
     application
     id("org.springframework.boot") version "3.2.5"
     id("io.spring.dependency-management") version "1.1.5"
 }
 
 repositories {
-    // Use Maven Central for resolving dependencies.
     mavenCentral()
 }
 
@@ -27,19 +25,19 @@ dependencies {
     implementation("org.telegram:telegrambots-client:9.5.0")
 
     implementation("org.mapstruct:mapstruct:1.6.3")
-
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
-
     annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 
-    // Use JUnit test framework.
-    testImplementation(libs.junit)
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.liquibase:liquibase-core")
+    runtimeOnly("org.postgresql:postgresql")
 
-    // This dependency is used by the application.
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+    testImplementation(libs.junit)
     implementation(libs.guava)
 }
 
-// Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -47,6 +45,5 @@ java {
 }
 
 application {
-    // Define the main class for the application.
     mainClass = "vacancy_tracker.App"
 }

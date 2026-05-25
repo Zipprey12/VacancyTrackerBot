@@ -5,7 +5,7 @@ import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.command.CompletableMessageCommand;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.settings.NotificationService;
-import vacancy_tracker.services.telegram.view.formatters.NotificationSettingsMessageFormatter;
+import vacancy_tracker.services.telegram.view.formatters.notification.NotificationSettingsMessageFormatter;
 
 @Component
 public class SetNotificationSettingsCommand extends CompletableMessageCommand {
