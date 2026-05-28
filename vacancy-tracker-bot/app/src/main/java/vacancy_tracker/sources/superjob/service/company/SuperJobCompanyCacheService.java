@@ -1,37 +1,39 @@
 package vacancy_tracker.sources.superjob.service.company;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import vacancy_tracker.model.api.entity.Company;
+import vacancy_tracker.model.api.Company;
 import vacancy_tracker.sources.superjob.model.response.SuperJobCompanyResponse;
 import vacancy_tracker.sources.superjob.repository.SuperJobCompaniesRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class SuperJobCompanyCacheService {
 
     private final SuperJobCompaniesRepository companyRepository;
     private final SuperJobCompaniesApiClient companiesClient;
 
-    //todo
-    @Lazy
-    private SuperJobCompanyCacheService self;
+    private final SuperJobCompanyCacheService self;
 
-    private static final int CACHE_UPDATE_DURATION_IN_MINUTES = 10;
+    public SuperJobCompanyCacheService(SuperJobCompaniesRepository companyRepository,
+                                       SuperJobCompaniesApiClient companiesClient,
+                                       @Lazy SuperJobCompanyCacheService self) {
+        this.companyRepository = companyRepository;
+        this.companiesClient = companiesClient;
+        this.self = self;
+    }
+
+    private static final int CACHE_UPDATE_DURATION_IN_MINUTES = 60;
 
     public Optional<Company> getCompany(int id) {
 
         var cached = companyRepository.findById(id);
-
         if (cached.isPresent()) {
             var company = cached.get();
 
@@ -40,7 +42,6 @@ public class SuperJobCompanyCacheService {
             }
             return Optional.of(company);
         }
-
         return fetchAndCacheCompany(id);
     }
 
@@ -57,7 +58,7 @@ public class SuperJobCompanyCacheService {
                         .build());
 
         company.setName(apiCompany.getTitle() != null ? apiCompany.getTitle() : "ID: " + apiCompany.getId());
-        company.setLink(apiCompany.getLink());
+        company.setUrl(apiCompany.getLink());
         company.setLastUpdateAt(Timestamp.valueOf(LocalDateTime.now()));
 
         return companyRepository.save(company);
@@ -69,8 +70,7 @@ public class SuperJobCompanyCacheService {
     }
 
     @Async
-    public CompletableFuture<Void> refreshCompanyAsync(int id) {
+    public void refreshCompanyAsync(int id) {
         fetchAndCacheCompany(id);
-        return CompletableFuture.completedFuture(null);
     }
 }

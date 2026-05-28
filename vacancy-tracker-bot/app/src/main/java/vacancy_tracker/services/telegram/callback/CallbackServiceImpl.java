@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import vacancy_tracker.model.telegram.callback.CommonCallbackKeys;
+import vacancy_tracker.model.telegram.callback.CommonCallbacks;
 import vacancy_tracker.services.telegram.callback.handlers.CallbackHandler;
 import vacancy_tracker.services.telegram.message.MessageSender;
 
@@ -36,8 +36,9 @@ public class CallbackServiceImpl implements CallbackService {
             throw new IllegalArgumentException("Update не содержит Callback");
         }
 
+        log.info(callback.getData());
         var key = getKey(callback);
-        if (!key.equals(CommonCallbackKeys.IGNORE.getKey())) {
+        if (!key.equals(CommonCallbacks.IGNORE.getKey())) {
             callHandler(callback, key);
         }
         sender.answerCallback(callback.getId());

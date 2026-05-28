@@ -19,8 +19,6 @@ public class SearchFilterEntity {
     @Column(name = "chat_id")
     private Long chatId;
 
-    // @OneToOne и @MapsId — убрать полностью
-
     @Column(name = "text")
     private String text;
 

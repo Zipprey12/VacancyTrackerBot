@@ -21,15 +21,21 @@ public class CompositeCallbackItem extends CallbackItem {
 
     @Override
     public String getCallback() {
-        return super.getCallback() + createArgsString();
+        String part;
+        if (getKey() == null) {
+            part = getCallbackPrefix();
+        } else {
+            part = super.getCallback();
+        }
+        return part + createArgsString();
     }
 
     private String createArgsString() {
         if (args == null || args.length == 0) {
             return "";
         }
-        return ARGS_PREFIX + Arrays.stream(args)
+        return PARTS_SEPARATOR + ARGS_PREFIX + Arrays.stream(args)
                 .map(Object::toString)
-                .collect(Collectors.joining(" "));
+                .collect(Collectors.joining("&"));
     }
 }

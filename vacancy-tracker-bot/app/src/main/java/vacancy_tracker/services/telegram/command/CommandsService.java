@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CommandsService {
 
     @Getter(AccessLevel.PROTECTED)
-    private final ConcurrentHashMap<String, CompletableMessageCommand> shownCommands;
+    private final ConcurrentHashMap<String, MessageCommand> shownCommands;
 
     private final ConcurrentHashMap<String, InputInterceptingCommand<?>> inputInterceptingCommands;
 
@@ -24,7 +24,7 @@ public class CommandsService {
     }
 
     @Autowired
-    public void setShownCommands(List<CompletableMessageCommand> commands) {
+    public void setShownCommands(List<MessageCommand> commands) {
         commands.stream()
                 .filter(c -> c.getDescription() != null)
                 .forEach(c -> this.shownCommands.put(c.getKey(), c));
@@ -37,7 +37,7 @@ public class CommandsService {
                 .forEach(c -> this.inputInterceptingCommands.put(c.getKey(), c));
     }
 
-    public Optional<CompletableMessageCommand> getShown(String commandText) {
+    public Optional<MessageCommand> getShown(String commandText) {
         var key = getKey(commandText);
         var command = shownCommands.get(key);
         if (command == null) {

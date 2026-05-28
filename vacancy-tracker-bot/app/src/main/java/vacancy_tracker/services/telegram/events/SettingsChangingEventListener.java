@@ -5,15 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import vacancy_tracker.services.telegram.command.CompletableMessageCommand;
+import vacancy_tracker.services.telegram.command.SimpleMessageCommand;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class SettingsChangingEventListener {
 
-    private final CompletableMessageCommand setSearchSettingsCommand;
-    private final CompletableMessageCommand setNotificationSettingsCommand;
+    private final SimpleMessageCommand setSearchSettingsCommand;
+    private final SimpleMessageCommand setNotificationSettingsCommand;
 
     @Async
     @EventListener

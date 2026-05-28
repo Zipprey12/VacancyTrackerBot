@@ -28,13 +28,13 @@ public class ToggleEmptyNotifyMessageFormatter {
 
     private OutgoingMessage initWhenOn() {
         var text = """
-                📬 *Уведомления при отсутствии вакансий*
+                📬 *Уведомления* при отсутствии вакансий *включены*
                 
                 Вы *будете* получать сообщения, даже если новых вакансий не найдено.""";
 
         var list = List.of(
                 backButton(),
-                new CallbackItem(SET_EMPTY_NOTIFY.getKey(), "Не уведомлять при отсутствии", false));
+                new CallbackItem(SET_EMPTY_NOTIFY.getKey(), "Не уведомлять", false));
 
         var keyboard = KeyboardBuilder.buildInlineKeyboard(list, 2);
         var message = new OutgoingMessage();
@@ -45,13 +45,13 @@ public class ToggleEmptyNotifyMessageFormatter {
 
     private OutgoingMessage initWhenOff() {
         var text = """
-                📭 *Уведомления при отсутствии вакансий*
+                📭 *Уведомления* при отсутствии вакансий *выключены*
                 
                 Вы *не будете* получать сообщения, если новых вакансий не найдено.""";
 
         var list = List.of(
                 backButton(),
-                new CallbackItem(SET_EMPTY_NOTIFY.getKey(), "Уведомлять при отсутствии", true));
+                new CallbackItem(SET_EMPTY_NOTIFY.getKey(), "Уведомлять", true));
 
         var keyboard = KeyboardBuilder.buildInlineKeyboard(list, 2);
         var message = new OutgoingMessage();
@@ -61,6 +61,6 @@ public class ToggleEmptyNotifyMessageFormatter {
     }
 
     private CallbackItem backButton() {
-        return new CallbackItem(CANCEL_CHANGE.getKey(), "◀️ Назад");
+        return new CallbackItem(CANCEL_CHANGE.getKey(), "Отмена");
     }
 }

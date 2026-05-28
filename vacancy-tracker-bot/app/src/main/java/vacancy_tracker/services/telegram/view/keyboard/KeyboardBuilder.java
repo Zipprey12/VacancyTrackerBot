@@ -36,7 +36,7 @@ public class KeyboardBuilder {
         return new InlineKeyboardMarkup(List.of(row));
     }
 
-    private static InlineKeyboardButton createInlineButton(CallBackDataProvider dataProvider) {
+    public static InlineKeyboardButton createInlineButton(CallBackDataProvider dataProvider) {
         var button = new InlineKeyboardButton(dataProvider.getText());
         button.setCallbackData(dataProvider.getCallback());
         return button;

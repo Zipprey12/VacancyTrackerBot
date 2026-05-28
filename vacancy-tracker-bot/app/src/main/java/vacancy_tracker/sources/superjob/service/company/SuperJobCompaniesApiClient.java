@@ -33,7 +33,6 @@ public class SuperJobCompaniesApiClient extends SuperJobApiClient {
                     url, HttpMethod.GET, entity, SuperJobCompanyResponse.class);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                log.debug("Получена компания: id={}, title={}", companyId, response.getBody().getTitle());
                 return Optional.of(response.getBody());
             }
         } catch (HttpClientErrorException.NotFound e) {
@@ -41,7 +40,6 @@ public class SuperJobCompaniesApiClient extends SuperJobApiClient {
         } catch (Exception e) {
             log.error("Ошибка при запросе компании id={}: {}", companyId, e.getMessage());
         }
-
         return Optional.empty();
     }
 }

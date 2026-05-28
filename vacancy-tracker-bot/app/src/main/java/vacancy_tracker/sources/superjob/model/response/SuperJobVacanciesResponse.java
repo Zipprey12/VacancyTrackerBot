@@ -1,11 +1,13 @@
 package vacancy_tracker.sources.superjob.model.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import vacancy_tracker.model.api.dto.MetaDto;
+import lombok.Getter;
+import lombok.Setter;
 import vacancy_tracker.sources.superjob.model.dto.SuperJobVacancyDto;
 
 import java.util.List;
 
+@Getter
 public class SuperJobVacanciesResponse {
 
     @JsonProperty("objects")
@@ -14,19 +16,13 @@ public class SuperJobVacanciesResponse {
     private Integer total;
     private Boolean more;
 
+    @Setter
+    private Integer offset;
+
+    @Setter
+    private Integer page;
+
     public List<SuperJobVacancyDto> getVacanciesSafe() {
         return vacancies != null ? vacancies : List.of();
-    }
-
-    public boolean hasVacancies() {
-        return vacancies != null && !vacancies.isEmpty();
-    }
-
-    public MetaDto toMetaDto(Integer limit, Integer offset) {
-        return MetaDto.builder()
-                .total(total)
-                .limit(limit)
-                .offset(offset)
-                .build();
     }
 }

@@ -38,7 +38,7 @@ public class TimeSelectionMessageFormatter {
                 createItem("15:00", 15),
                 createItem("18:00", 18),
                 createItem("21:00", 21),
-                new CallbackItem(CANCEL_CHANGE.getKey(), "Отмена")
+                new CallbackItem(CANCEL_CHANGE.getKey(), "Оставить текущее")
         ), 2);
     }
 

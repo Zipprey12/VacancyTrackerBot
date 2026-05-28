@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import vacancy_tracker.model.telegram.callback.CallbackData;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.callback.parsers.CallbackParser;
-import vacancy_tracker.services.telegram.command.CompletableMessageDataHandler;
+import vacancy_tracker.services.telegram.handlers.ParametrizedDataHandler;
 
 import java.util.Optional;
 
@@ -15,12 +15,12 @@ import java.util.Optional;
 public abstract class ParsingDataCallbackHandler<T> extends CallbackHandler {
 
     @Getter
-    private final CompletableMessageDataHandler handler;
+    private final ParametrizedDataHandler<T> handler;
 
     @Getter(AccessLevel.PROTECTED)
     private final CallbackParser callbackParser;
 
-    protected ParsingDataCallbackHandler(String callbackKey, CompletableMessageDataHandler handler) {
+    protected ParsingDataCallbackHandler(String callbackKey, ParametrizedDataHandler<T> handler) {
         super(callbackKey);
         this.handler = handler;
         this.callbackParser = initCallbackParser();
@@ -28,7 +28,9 @@ public abstract class ParsingDataCallbackHandler<T> extends CallbackHandler {
 
     protected abstract Optional<T> tryCastSelectedValue(String value);
 
-    public abstract void handleCastedData(T data, MessageData messageData);
+    public void handleCastedData(T data, MessageData messageData) {
+        handler.handleWithParameter(messageData, data);
+    }
 
     @Override
     public void handle(CallbackQuery callbackQuery) {
@@ -36,14 +38,17 @@ public abstract class ParsingDataCallbackHandler<T> extends CallbackHandler {
         var callbackData = callbackParser.parse(text);
 
         var messageData = MessageData.create(callbackQuery.getMessage());
-        if (callbackData.isEmpty()) {
-            executeWithNoArgs(messageData);
+        if (callbackData.hasEmptyKey()) {
+            executeWithEmptyKey(messageData, null);
         } else {
             select(callbackData, messageData);
         }
     }
 
-    protected void executeWithNoArgs(MessageData messageData) {
+    protected void executeWithEmptyKey(MessageData messageData, CallbackData data) {
+        if (data.args() != null) {
+            log.error("Аргументы Callback {} не были обработаны", data.prefix());
+        }
         handler.execute(messageData);
     }
 

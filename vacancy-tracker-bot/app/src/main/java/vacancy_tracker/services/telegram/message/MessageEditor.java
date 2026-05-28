@@ -7,13 +7,13 @@ import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 
 public interface MessageEditor {
 
-    void edit(EditMessageText editMessageText);
+    boolean edit(EditMessageText editMessageText);
 
-    void edit(EditMessageReplyMarkup editMessageReplyMarkup);
+    boolean edit(EditMessageReplyMarkup editMessageReplyMarkup);
 
-    void edit(String text, long chatId, int messageId);
+    boolean edit(String text, long chatId, int messageId);
 
-    void edit(InlineKeyboardMarkup inlineKeyboardMarkup, long chatId, int messageId);
+    boolean edit(InlineKeyboardMarkup inlineKeyboardMarkup, long chatId, int messageId);
 
-    void edit(OutgoingMessage commandMessageData);
+    boolean edit(OutgoingMessage commandMessageData);
 }

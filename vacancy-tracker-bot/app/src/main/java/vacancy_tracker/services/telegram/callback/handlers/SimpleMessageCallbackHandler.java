@@ -4,14 +4,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import vacancy_tracker.model.telegram.dto.MessageData;
-import vacancy_tracker.services.telegram.command.MessageDataHandler;
+import vacancy_tracker.services.telegram.handlers.ExecutableMessageHandler;
 
 public class SimpleMessageCallbackHandler extends CallbackHandler {
 
     @Getter(AccessLevel.PROTECTED)
-    private final MessageDataHandler handler;
+    private final ExecutableMessageHandler handler;
 
-    public SimpleMessageCallbackHandler(String callbackKey, MessageDataHandler handler) {
+    public SimpleMessageCallbackHandler(String callbackKey, ExecutableMessageHandler handler) {
         super(callbackKey);
         this.handler = handler;
     }

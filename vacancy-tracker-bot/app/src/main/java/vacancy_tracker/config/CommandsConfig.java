@@ -4,8 +4,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import vacancy_tracker.services.api.location.LocationsService;
 import vacancy_tracker.services.telegram.view.formatters.filter.RegionsSelectionMessageFormatter;
-import vacancy_tracker.services.vacancy.LocationsService;
 
 @Configuration
 @RequiredArgsConstructor

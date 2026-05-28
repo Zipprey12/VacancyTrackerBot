@@ -3,7 +3,7 @@ package vacancy_tracker.sources.superjob.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import vacancy_tracker.model.api.entity.Company;
+import vacancy_tracker.model.api.Company;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -16,7 +16,6 @@ public class SuperJobCompaniesRepository {
     private final HashMap<Integer, Company> companies = new HashMap<>();
 
     public Optional<Company> findById(int id) {
-        log.debug("Получение Company с id: {} из репозитория", id);
         return Optional.ofNullable(companies.get(id));
     }
 

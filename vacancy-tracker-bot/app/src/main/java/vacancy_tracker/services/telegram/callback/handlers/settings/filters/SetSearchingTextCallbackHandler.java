@@ -1,36 +1,25 @@
 package vacancy_tracker.services.telegram.callback.handlers.settings.filters;
 
 import org.springframework.stereotype.Component;
-import vacancy_tracker.model.api.dto.VacancySearchFilter;
-import vacancy_tracker.model.telegram.callback.CommonCallbackKeys;
+import vacancy_tracker.model.telegram.callback.CommonCallbacks;
 import vacancy_tracker.model.telegram.view.FilterOptions;
-import vacancy_tracker.services.telegram.command.settings.search.SetSearchingTextCommand;
-import vacancy_tracker.services.telegram.settings.SearchFiltersService;
+import vacancy_tracker.services.telegram.callback.handlers.ParsingDataCallbackHandler;
+import vacancy_tracker.services.telegram.command.settings.filter.SetSearchingTextCommand;
 
 import java.util.Optional;
 
 @Component
-public class SetSearchingTextCallbackHandler extends FiltersParsingCallbackHandler<String> {
+public class SetSearchingTextCallbackHandler extends ParsingDataCallbackHandler<String> {
 
     private static final String KEY = FilterOptions.KEYWORDS.getCallback();
 
-    public SetSearchingTextCallbackHandler(SetSearchingTextCommand command,
-                                           SearchFiltersService settingsService) {
-        super(KEY, settingsService, command);
-    }
-
-    @Override
-    protected void changeSettings(String value, VacancySearchFilter filter) {
-        if (value.isEmpty()) {
-            filter.setText(null);
-        } else {
-            filter.setText(value);
-        }
+    public SetSearchingTextCallbackHandler(SetSearchingTextCommand command) {
+        super(KEY, command);
     }
 
     @Override
     protected Optional<String> tryCastSelectedValue(String value) {
-        if (value.equals(CommonCallbackKeys.NULL.getKey())) {
+        if (value.equals(CommonCallbacks.NULL.getKey())) {
             return Optional.of("");
         }
         return Optional.of(value);

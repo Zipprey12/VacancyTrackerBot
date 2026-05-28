@@ -29,11 +29,4 @@ public class SuperJobVacancyDto {
 
     @JsonProperty("date_published")
     private String creationDate;
-
-    @JsonProperty("employment_type")
-    private String employmentType;
-
-    @JsonProperty("schedule_type")
-    private String scheduleType;
-
 }

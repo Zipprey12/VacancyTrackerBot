@@ -14,7 +14,7 @@ import vacancy_tracker.services.telegram.view.formatters.notification.TimeSelect
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static vacancy_tracker.services.DateUtil.withTime;
+import static vacancy_tracker.services.DateUtil.nextTime;
 
 @Component
 public class SetNotificationTimeCommand extends InputInterceptingCommand<LocalTime> {
@@ -29,22 +29,18 @@ public class SetNotificationTimeCommand extends InputInterceptingCommand<LocalTi
                                          NotificationService notificationService,
                                          NotificationChangingCompletionHandler handler,
                                          TimeSelectionMessageFormatter messageFormatter) {
-        super(KEY, publisher, handler, new TimeInterceptor(), sessionsService);
+        super(KEY, null, publisher, handler, new TimeInterceptor(), sessionsService);
         this.notificationService = notificationService;
         this.messageFormatter = messageFormatter;
     }
 
     @Override
-    protected void executeWithParameter(MessageData messageData, LocalTime parameter) {
+    protected void executeWithParameters(MessageData messageData, LocalTime parameter) {
         var sessionId = messageData.getChatId();
         var settings = notificationService.get(sessionId);
-        var next = settings.getNextNotificationAt();
-        if (next == null) {
-            next = LocalDateTime.now();
-        }
+        var next = nextTime(LocalDateTime.now(), parameter);
 
-        var corrected = withTime(next, parameter);
-        settings.setNextNotificationAt(corrected);
+        settings.setNextNotificationAt(next);
         notificationService.save(sessionId, settings);
     }
 

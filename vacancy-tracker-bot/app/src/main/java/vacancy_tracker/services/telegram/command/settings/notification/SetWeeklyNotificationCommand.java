@@ -5,9 +5,9 @@ import vacancy_tracker.model.telegram.NotificationSettings;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.DateUtil;
+import vacancy_tracker.services.telegram.actions.message.AfterDayOfWeekSelectedMessage;
 import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
 import vacancy_tracker.services.telegram.command.interceptors.IntegerInterceptor;
-import vacancy_tracker.services.telegram.command.messages.AfterDayOfWeekSelectedMessage;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.NotificationService;
@@ -31,7 +31,7 @@ public class SetWeeklyNotificationCommand extends InputInterceptingCommand<Integ
                                            NotificationService service,
                                            WeeklyNotificationMessageFormatter messageFormatter,
                                            AfterDayOfWeekSelectedMessage afterDayOfWeekSelectedMessage) {
-        super(KEY, publisher, null, new IntegerInterceptor(), sessionsService);
+        super(KEY, null, publisher, null, new IntegerInterceptor(), sessionsService);
         this.service = service;
         this.messageFormatter = messageFormatter;
         this.afterDayOfWeekSelectedMessage = afterDayOfWeekSelectedMessage;
@@ -44,7 +44,7 @@ public class SetWeeklyNotificationCommand extends InputInterceptingCommand<Integ
     }
 
     @Override
-    protected void executeWithParameter(MessageData messageData, Integer parameter) {
+    protected void executeWithParameters(MessageData messageData, Integer parameter) {
         if (parameter < 1 || parameter > 7) {
             handleInvalidValue(messageData, "Номер дня недели должен быть от 1 до 7");
             return;

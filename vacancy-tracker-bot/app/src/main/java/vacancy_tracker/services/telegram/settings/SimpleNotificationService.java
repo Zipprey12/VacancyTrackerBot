@@ -27,6 +27,10 @@ public class SimpleNotificationService implements NotificationService {
 
     @Override
     public void save(long sessionId, NotificationSettings settings) {
+        var last = settings.getLastNotificationAt();
+        if (last != null && last.isAfter(settings.getNextNotificationAt())) {
+            settings.setLastNotificationAt(settings.getNextNotificationAt());
+        }
         queueService.schedule(sessionId, settings);
         repository.save(sessionId, settings);
     }

@@ -1,0 +1,478 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: vacancy-tracker
+      changes:
+        - createTable:
+            tableName: regions
+            columns:
+              - column:
+                  name: code
+                  type: INTEGER
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(128)
+                  constraints:
+                    nullable: false
+
+              - renameColumn:
+                  tableName: search_filters
+                  oldColumnName: region_id
+                  newColumnName: region_code
+                  columnDataType: INTEGER
+
+              - addForeignKeyConstraint:
+                  baseTableName: search_filters
+                  baseColumnNames: region_code
+                  constraintName: fk_search_filters_region
+                  referencedTableName: regions
+                  referencedColumnNames: code
+
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 1 }
+              - column: { name: name, value: "Республика Адыгея" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 2 }
+              - column: { name: name, value: "Республика Башкортостан" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 3 }
+              - column: { name: name, value: "Республика Бурятия" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 4 }
+              - column: { name: name, value: "Республика Алтай" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 5 }
+              - column: { name: name, value: "Республика Дагестан" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 6 }
+              - column: { name: name, value: "Республика Ингушетия" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 7 }
+              - column: { name: name, value: "Кабардино-Балкарская Республика" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 8 }
+              - column: { name: name, value: "Республика Калмыкия" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 9 }
+              - column: { name: name, value: "Карачаево-Черкесская Республика" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 10 }
+              - column: { name: name, value: "Республика Карелия" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 11 }
+              - column: { name: name, value: "Республика Коми" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 12 }
+              - column: { name: name, value: "Республика Марий Эл" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 13 }
+              - column: { name: name, value: "Республика Мордовия" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 14 }
+              - column: { name: name, value: "Республика Саха" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 15 }
+              - column: { name: name, value: "Республика Северная Осетия - Алания" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 16 }
+              - column: { name: name, value: "Республика Татарстан" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 17 }
+              - column: { name: name, value: "Республика Тыва" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 18 }
+              - column: { name: name, value: "Удмуртская Республика" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 19 }
+              - column: { name: name, value: "Республика Хакасия" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 20 }
+              - column: { name: name, value: "Чеченская Республика" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 21 }
+              - column: { name: name, value: "Чувашская Республика" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 22 }
+              - column: { name: name, value: "Алтайский край" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 23 }
+              - column: { name: name, value: "Краснодарский край" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 24 }
+              - column: { name: name, value: "Красноярский край" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 25 }
+              - column: { name: name, value: "Приморский край" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 26 }
+              - column: { name: name, value: "Ставропольский край" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 27 }
+              - column: { name: name, value: "Хабаровский край" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 28 }
+              - column: { name: name, value: "Амурская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 29 }
+              - column: { name: name, value: "Архангельская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 30 }
+              - column: { name: name, value: "Астраханская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 31 }
+              - column: { name: name, value: "Белгородская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 32 }
+              - column: { name: name, value: "Брянская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 33 }
+              - column: { name: name, value: "Владимирская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 34 }
+              - column: { name: name, value: "Волгоградская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 35 }
+              - column: { name: name, value: "Вологодская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 36 }
+              - column: { name: name, value: "Воронежская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 37 }
+              - column: { name: name, value: "Ивановская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 38 }
+              - column: { name: name, value: "Иркутская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 39 }
+              - column: { name: name, value: "Калининградская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 40 }
+              - column: { name: name, value: "Калужская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 41 }
+              - column: { name: name, value: "Камчатский край" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 42 }
+              - column: { name: name, value: "Кемеровская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 43 }
+              - column: { name: name, value: "Кировская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 44 }
+              - column: { name: name, value: "Костромская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 45 }
+              - column: { name: name, value: "Курганская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 46 }
+              - column: { name: name, value: "Курская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 47 }
+              - column: { name: name, value: "Ленинградская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 48 }
+              - column: { name: name, value: "Липецкая область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 49 }
+              - column: { name: name, value: "Магаданская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 50 }
+              - column: { name: name, value: "Московская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 51 }
+              - column: { name: name, value: "Мурманская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 52 }
+              - column: { name: name, value: "Нижегородская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 53 }
+              - column: { name: name, value: "Новгородская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 54 }
+              - column: { name: name, value: "Новосибирская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 55 }
+              - column: { name: name, value: "Омская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 56 }
+              - column: { name: name, value: "Оренбургская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 57 }
+              - column: { name: name, value: "Орловская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 58 }
+              - column: { name: name, value: "Пензенская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 59 }
+              - column: { name: name, value: "Пермский край" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 60 }
+              - column: { name: name, value: "Псковская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 61 }
+              - column: { name: name, value: "Ростовская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 62 }
+              - column: { name: name, value: "Рязанская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 63 }
+              - column: { name: name, value: "Самарская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 64 }
+              - column: { name: name, value: "Саратовская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 65 }
+              - column: { name: name, value: "Сахалинская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 66 }
+              - column: { name: name, value: "Свердловская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 67 }
+              - column: { name: name, value: "Смоленская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 68 }
+              - column: { name: name, value: "Тамбовская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 69 }
+              - column: { name: name, value: "Тверская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 70 }
+              - column: { name: name, value: "Томская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 71 }
+              - column: { name: name, value: "Тульская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 72 }
+              - column: { name: name, value: "Тюменская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 73 }
+              - column: { name: name, value: "Ульяновская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 74 }
+              - column: { name: name, value: "Челябинская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 75 }
+              - column: { name: name, value: "Забайкальский край" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 76 }
+              - column: { name: name, value: "Ярославская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 77 }
+              - column: { name: name, value: "Москва" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 78 }
+              - column: { name: name, value: "Санкт-Петербург" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 79 }
+              - column: { name: name, value: "Еврейская автономная область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 83 }
+              - column: { name: name, value: "Ненецкий автономный округ" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 86 }
+              - column: { name: name, value: "Ханты-Мансийский автономный округ" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 87 }
+              - column: { name: name, value: "Чукотский автономный округ" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 89 }
+              - column: { name: name, value: "Ямало-Ненецкий автономный округ" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 90 }
+              - column: { name: name, value: "Запорожская область" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 91 }
+              - column: { name: name, value: "Республика Крым" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 92 }
+              - column: { name: name, value: "Севастополь" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 93 }
+              - column: { name: name, value: "Донецкая Народная Республика" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 94 }
+              - column: { name: name, value: "Луганская Народная Республика" }
+        - insert:
+            tableName: regions
+            columns:
+              - column: { name: code, valueNumeric: 95 }
+              - column: { name: name, value: "Херсонская область" }

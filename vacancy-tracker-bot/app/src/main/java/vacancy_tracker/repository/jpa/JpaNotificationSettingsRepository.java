@@ -45,6 +45,7 @@ public class JpaNotificationSettingsRepository implements NotificationSettingsRe
                 .map(mapper::toDto)
                 .orElseGet(() -> {
                     var settings = new NotificationSettings();
+                    settings.setChatId(chatId);
                     save(chatId, settings);
                     return settings;
                 });

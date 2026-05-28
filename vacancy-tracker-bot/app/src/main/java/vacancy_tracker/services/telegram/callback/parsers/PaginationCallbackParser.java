@@ -1,11 +1,9 @@
 package vacancy_tracker.services.telegram.callback.parsers;
 
+import vacancy_tracker.model.telegram.callback.CallbackArgs;
 import vacancy_tracker.model.telegram.callback.CallbackData;
-import vacancy_tracker.model.telegram.callback.CommonCallbackKeys;
+import vacancy_tracker.model.telegram.callback.CommonCallbacks;
 import vacancy_tracker.services.StringUtil;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static vacancy_tracker.model.telegram.callback.CallbackItem.PARTS_SEPARATOR;
 import static vacancy_tracker.model.telegram.callback.CompositeCallbackItem.ARGS_PREFIX;
@@ -21,42 +19,46 @@ public class PaginationCallbackParser extends AdvancedParser {
     @Override
     public CallbackData parse(String callbackData) {
         var builder = CallbackData.builder();
+        builder.prefix(getPrefix());
 
-        if (CommonCallbackKeys.IGNORE.getKey().equals(callbackData)) {
+        if (CommonCallbacks.IGNORE.getKey().equals(callbackData)) {
             return builder.isIgnored(true).build();
         }
         if (callbackData.equals(getPrefix())) {
-            return builder.isEmpty(true).build();
+            return builder.hasEmptyKey(true).build();
         }
 
         var pageIndex = callbackData.lastIndexOf(PARTS_SEPARATOR + PAGE_PREFIX);
         var argsIndex = callbackData.indexOf(PARTS_SEPARATOR + ARGS_PREFIX);
         var firstKeyIndex = firstPositive(pageIndex, argsIndex);
 
-        if (pageIndex <= 0 && argsIndex <= 0) {
+        if (firstKeyIndex < 0) {
             return builder.isSelection(true)
                     .selectedKey(extractSelectedKey(callbackData, -1))
                     .build();
-        }
+        } else {
+            var key = extractSelectedKey(callbackData, firstKeyIndex);
+            if (key == null) builder.hasEmptyKey(true);
+            else builder.selectedKey(key);
 
-        return builder.isPageNavigation(true)
-                .selectedKey(extractSelectedKey(callbackData, firstKeyIndex))
-                .targetPage(pageIndex > 0 ? extractPage(callbackData, pageIndex, argsIndex) : 0)
-                .args(argsIndex > 0 ? extractArgs(callbackData) : null)
-                .build();
+            if (pageIndex > 0) {
+                builder.isPageNavigation(true)
+                        .targetPage(extractPage(callbackData, pageIndex, argsIndex));
+            }
+            builder.args(argsIndex > 0 ? extractArgs(callbackData, argsIndex) : null);
+            return builder.build();
+        }
     }
 
     public String createSelectPageCallback(int pageNumber) {
         return getPrefix() + PARTS_SEPARATOR + PAGE_PREFIX + pageNumber;
     }
 
-    public String createSelectPageCallback(int pageNumber, List<Object> args) {
+    public String createSelectPageCallback(int pageNumber, CallbackArgs args) {
         var callbackData = createSelectPageCallback(pageNumber);
         if (args == null || args.isEmpty()) return callbackData;
-        var argsString = args.stream()
-                .map(Object::toString)
-                .collect(Collectors.joining("_"));
-        return callbackData + PARTS_SEPARATOR + ARGS_PREFIX + argsString;
+
+        return callbackData + PARTS_SEPARATOR + ARGS_PREFIX + args;
     }
 
     private int extractPage(String callbackData, int pageIndex, int argsIndex) {

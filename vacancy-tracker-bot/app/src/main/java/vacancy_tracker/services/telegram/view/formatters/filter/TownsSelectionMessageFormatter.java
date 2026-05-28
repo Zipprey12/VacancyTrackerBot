@@ -3,15 +3,18 @@ package vacancy_tracker.services.telegram.view.formatters.filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import vacancy_tracker.model.api.entity.Location;
-import vacancy_tracker.model.api.entity.Region;
-import vacancy_tracker.model.api.entity.Town;
+import vacancy_tracker.model.api.ExtendedRegion;
+import vacancy_tracker.model.api.Location;
+import vacancy_tracker.model.api.Town;
+import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.services.api.location.LocationsService;
 import vacancy_tracker.services.mappers.CallbackItemMapper;
-import vacancy_tracker.services.telegram.view.keyboard.PaginatedKeyboardBuilder;
-import vacancy_tracker.services.vacancy.LocationsService;
+import vacancy_tracker.services.telegram.view.keyboard.CallbackPaginatedKeyboardBuilder;
 
 import java.util.List;
+
+import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.CANCEL_CHANGE;
 
 @Component
 @RequiredArgsConstructor
@@ -36,8 +39,11 @@ public class TownsSelectionMessageFormatter {
             Вы можете ввести название (или его часть) для поиска еще раз
             """;
 
+    private static final CallbackItem RESET_ITEM = new CallbackItem(CANCEL_CHANGE.getKey(),
+            "Оставить только регион");
+
     private final LocationsService locationsService;
-    private final PaginatedKeyboardBuilder townsPaginationBuilder;
+    private final CallbackPaginatedKeyboardBuilder townsPaginationBuilder;
     private final CallbackItemMapper mapper;
 
     public void fillMessage(OutgoingMessage message, Location location) {
@@ -58,7 +64,7 @@ public class TownsSelectionMessageFormatter {
             return;
         }
 
-        var regionId = String.valueOf(location.getRegion().getId());
+        var regionId = String.valueOf(location.getRegion().getCode());
         var keyboard = buildKeyboard(filtered, page, regionId, filter);
         message.setText(filter == null ? MAIN_HEADER : HEADER_WITH_FILTER);
         message.setKeyboardMarkup(keyboard);
@@ -68,13 +74,12 @@ public class TownsSelectionMessageFormatter {
         if (location == null || location.getRegion() == null) {
             return List.of();
         }
-        return locationsService.getRegionById(location.getRegion().getId())
-                .map(Region::getTowns)
+        return locationsService.getRegionByCode(location.getRegion().getCode())
+                .map(ExtendedRegion::getTowns)
                 .filter(t -> !t.isEmpty())
                 .orElse(List.of());
     }
 
-    //todo Перенести логику фильтра в LocationService
     private List<Town> filterTowns(List<Town> towns, String filterText) {
         if (filterText == null) {
             return towns;
@@ -90,8 +95,10 @@ public class TownsSelectionMessageFormatter {
                 .map(mapper::fromTown)
                 .toList();
         if (filter != null) {
-            return townsPaginationBuilder.build(items, page, List.of(regionId, filter));
+            return townsPaginationBuilder.build(items, page, 10,
+                    List.of(regionId, filter), List.of(RESET_ITEM));
         }
-        return townsPaginationBuilder.build(items, page, regionId);
+        List<Object> args = regionId == null ? null : List.of(regionId);
+        return townsPaginationBuilder.build(items, page, 10, args, List.of(RESET_ITEM));
     }
 }

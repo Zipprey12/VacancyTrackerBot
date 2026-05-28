@@ -26,9 +26,7 @@ public class SimpleSearchFiltersService implements SearchFiltersService {
             return existed.get();
         }
 
-        var filter = VacancySearchFilter.builder()
-                .limit(10)
-                .build();
+        var filter = new VacancySearchFilter();
 
         repository.save(sessionId, filter);
         return filter;

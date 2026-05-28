@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-public class SuperJobApiClient {
+public abstract class SuperJobApiClient {
 
     @Value("${superjob.secretKey}")
     private String appKey;

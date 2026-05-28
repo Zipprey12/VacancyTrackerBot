@@ -3,7 +3,7 @@ package vacancy_tracker.controllers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import vacancy_tracker.services.vacancy.OAuthService;
+import vacancy_tracker.services.api.OAuthService;
 
 import java.util.Map;
 
@@ -13,12 +13,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OAuthController {
 
-    private final Map<String, OAuthService> OAuthServices;
+    private final Map<String, OAuthService> oAuthServiceMap;
 
     @GetMapping("/{source}")
     public boolean handleRedirect(@PathVariable String source,
                                   @RequestParam("code") String code) {
-        var service = OAuthServices.get(source);
+        var service = oAuthServiceMap.get(source);
         if (source == null) {
             log.error("Ошибка: неизвестный источник авторизации: {}", source);
             return false;

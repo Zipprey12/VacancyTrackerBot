@@ -2,7 +2,7 @@ package vacancy_tracker.sources.superjob.model.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import vacancy_tracker.model.api.dto.RegionDto;
+import vacancy_tracker.sources.superjob.model.dto.SuperJobRegionDto;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
 public class SuperJobRegionsResponse {
 
     @JsonProperty("objects")
-    List<RegionDto> regions;
+    List<SuperJobRegionDto> regions;
 
     Boolean more;
 

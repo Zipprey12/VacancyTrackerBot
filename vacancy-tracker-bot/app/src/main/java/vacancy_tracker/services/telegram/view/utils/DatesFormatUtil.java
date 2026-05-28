@@ -2,6 +2,9 @@ package vacancy_tracker.services.telegram.view.utils;
 
 import lombok.experimental.UtilityClass;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @UtilityClass
 public class DatesFormatUtil {
 
@@ -21,6 +24,13 @@ public class DatesFormatUtil {
         String formattedNumber = formatDecimal(years);
         String declension = getDeclension(years);
         return formattedNumber + " " + declension;
+    }
+
+    public static String formatDateTime(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return "";
+        }
+        return dateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
     }
 
     public static String getDeclension(double years) {

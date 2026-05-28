@@ -8,21 +8,21 @@ import vacancy_tracker.model.telegram.callback.CallbackData;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.services.telegram.callback.parsers.PaginationCallbackParser;
-import vacancy_tracker.services.telegram.command.CompletableMessageDataHandler;
-import vacancy_tracker.services.telegram.view.keyboard.PaginatedKeyboardBuilder;
+import vacancy_tracker.services.telegram.handlers.ParametrizedDataHandler;
+import vacancy_tracker.services.telegram.view.keyboard.CallbackPaginatedKeyboardBuilder;
 
 import java.util.List;
 
 public abstract class NavigationCallbackHandler<T> extends ParsingDataCallbackHandler<T> {
 
     @Getter(AccessLevel.PROTECTED)
-    private final PaginatedKeyboardBuilder keyboardBuilder;
+    private final CallbackPaginatedKeyboardBuilder keyboardBuilder;
 
     protected NavigationCallbackHandler(String callbackKey,
-                                        CompletableMessageDataHandler handler) {
+                                        ParametrizedDataHandler<T> handler) {
         super(callbackKey, handler);
 
-        this.keyboardBuilder = new PaginatedKeyboardBuilder((PaginationCallbackParser) getCallbackParser());
+        this.keyboardBuilder = new CallbackPaginatedKeyboardBuilder((PaginationCallbackParser) getCallbackParser());
     }
 
     @Getter(AccessLevel.PROTECTED)
@@ -37,20 +37,19 @@ public abstract class NavigationCallbackHandler<T> extends ParsingDataCallbackHa
         var message = callbackQuery.getMessage();
         var messageData = MessageData.create(message);
 
-        if (data.isEmpty()) {
-            executeWithNoArgs(messageData);
-            return;
-        }
         if (data.isIgnored()) {
             return;
         }
-
         if (data.isPageNavigation()) {
             navigate(messageData, data);
             return;
         }
         if (data.isSelection()) {
             select(data, messageData);
+            return;
+        }
+        if (data.hasEmptyKey()) {
+            executeWithEmptyKey(messageData, data);
         }
     }
 

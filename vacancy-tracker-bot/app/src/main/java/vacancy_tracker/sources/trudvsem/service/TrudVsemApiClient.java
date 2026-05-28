@@ -2,15 +2,15 @@ package vacancy_tracker.sources.trudvsem.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 import vacancy_tracker.model.api.dto.VacancySearchFilter;
 import vacancy_tracker.sources.trudvsem.model.TrudVsemResponse;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Slf4j
@@ -18,75 +18,75 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TrudVsemApiClient {
 
-    private static final String BASE_URL = "http://opendata.trudvsem.ru/api/v1/vacancies";
     public static final int COUNT_LIMIT = 10;
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static final String BASE_URL = "http://opendata.trudvsem.ru/api/v1/vacancies";
 
     private final RestTemplate restTemplate;
 
-    public Optional<TrudVsemResponse> searchVacancies(VacancySearchFilter filter) {
+    public Optional<TrudVsemResponse> searchVacancies(VacancySearchFilter filter, int limit, int offset) {
         try {
-            String url = buildUrl(filter);
+            String url = buildUrl(filter, limit, offset);
             log.info("Requesting vacancies from: {}", url);
 
-            ResponseEntity<TrudVsemResponse> response = restTemplate.getForEntity(
-                    url,
-                    TrudVsemResponse.class
+            var headers = new HttpHeaders();
+            headers.set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+            var entity = new HttpEntity<>(headers);
+
+            ResponseEntity<TrudVsemResponse> response = restTemplate.exchange(
+                    url, HttpMethod.GET, entity, TrudVsemResponse.class
             );
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                var vacancies = response.getBody().getVacancies();
-                log.info("Found {} vacancies", vacancies != null ? vacancies.size() : 0);
+                var body = response.getBody();
+                var vacancies = body.getVacanciesSafe();
+                log.info("TrudVsem: Получено {} вакансий из {}", vacancies != null ?
+                        vacancies.size() : 0, body.getMeta().getTotal());
                 return Optional.of(response.getBody());
+
             } else {
-                log.warn("Received non-OK response: {}", response.getStatusCode());
+                log.warn("TrudVsem: получен код {}", response.getStatusCode());
                 return Optional.empty();
             }
         } catch (Exception e) {
-            log.error("Failed to fetch vacancies from trudvsem.ru", e);
+            log.error("TrudVsem: ошибка при получении вакансий", e);
             return Optional.empty();
         }
     }
 
+    private String buildUrl(VacancySearchFilter filter, int limit, int offset) {
+        StringBuilder url = new StringBuilder(BASE_URL);
 
-    public Optional<TrudVsemResponse> searchByKeyword(String keyword, int limit) {
-        VacancySearchFilter filter = VacancySearchFilter.builder()
-                .text(keyword)
-                .limit(limit)
-                .build();
-        return searchVacancies(filter);
-    }
+        if (filter.getLocation() != null && filter.getLocation().getRegion() != null) {
+            url.append("/region/")
+                    .append(buildRegionString(filter.getLocation().getRegion().getCode()));
+        }
 
-    public boolean ping() {
-        try {
-            ResponseEntity<String> response = restTemplate.getForEntity("http://opendata.trudvsem.ru/api", String.class);
-            return response.getStatusCode().is2xxSuccessful();
-        } catch (RestClientException e) {
-            return false;
-        }
-    }
+        url.append("?offset=").append(offset)
+                .append("&limit=").append(Math.clamp(limit, 0, COUNT_LIMIT));
 
-    private String buildUrl(VacancySearchFilter filter) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(BASE_URL);
-
-        if (filter.getText() != null) {
-            builder.queryParam("text", filter.getText());
-        }
-        if (filter.getLocation() != null) {
-            builder.queryParam("regionCode", filter.getLocation());
-        }
-        if (filter.getOffset() != null) {
-            builder.queryParam("offset", filter.getOffset());
-        }
-        if (filter.getLimit() != null) {
-            builder.queryParam("limit", Math.min(filter.getLimit(), COUNT_LIMIT));
-        }
         if (filter.getModifiedFrom() != null) {
-            builder.queryParam("modifiedFrom", filter.getModifiedFrom());
+            url.append("&modifiedFrom=")
+                    .append(getDateTimeString(filter.getModifiedFrom()));
+        }
+        if (filter.getText() != null && !filter.getText().isBlank()) {
+            url.append("&text=").append(filter.getText());
+        }
+        if (filter.getExperience() != null) {
+            url.append("&experienceTo=").append(filter.getExperience().intValue());
         }
         if (filter.getMinSalary() != null) {
-            builder.queryParam("salaryMin", filter.getMinSalary());
+            url.append("&salaryMin=").append(filter.getMinSalary());
         }
+        return url.toString();
+    }
 
-        return builder.toUriString();
+    private String getDateTimeString(LocalDateTime dateTime) {
+        return dateTime.atOffset(ZoneOffset.UTC).format(FORMATTER);
+    }
+
+    private String buildRegionString(int regionCode) {
+        return String.format("%02d", regionCode) + "00000000000";
     }
 }

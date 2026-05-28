@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -18,83 +19,67 @@ public class DefaultMessageEditor implements MessageEditor {
     private final TelegramClient client;
 
     @Override
-    public void edit(EditMessageText editMessageText) {
-        try {
-            client.execute(editMessageText);
-        } catch (Exception e) {
-            var messageId = editMessageText.getMessageId();
-            var chatId = editMessageText.getChatId();
-            handleException(e, chatId, messageId);
-        }
+    public boolean edit(EditMessageText editText) {
+        return tryExecute(editText, editText.getChatId(), editText.getMessageId());
     }
 
     @Override
-    public void edit(EditMessageReplyMarkup editMessageReplyMarkup) {
-        try {
-            client.execute(editMessageReplyMarkup);
-        } catch (Exception e) {
-            var messageId = editMessageReplyMarkup.getMessageId();
-            var chatId = editMessageReplyMarkup.getChatId();
-            handleException(e, chatId, messageId);
-        }
+    public boolean edit(EditMessageReplyMarkup editMarkup) {
+        return tryExecute(editMarkup, editMarkup.getChatId(), editMarkup.getMessageId());
     }
 
     @Override
-    public void edit(String text, long chatId, int messageId) {
+    public boolean edit(String text, long chatId, int messageId) {
         var editMessage = EditMessageText.builder()
                 .messageId(messageId)
                 .chatId(chatId)
                 .text(text)
                 .parseMode(ParseMode.MARKDOWN)
                 .build();
-        try {
-            client.execute(editMessage);
-        } catch (Exception e) {
-            handleException(e, chatId, messageId);
-        }
+        return tryExecute(editMessage, String.valueOf(chatId), messageId);
     }
 
     @Override
-    public void edit(InlineKeyboardMarkup inlineKeyboardMarkup, long chatId, int messageId) {
-        var editMessageReplyMarkup = EditMessageReplyMarkup.builder()
+    public boolean edit(InlineKeyboardMarkup inlineKeyboardMarkup, long chatId, int messageId) {
+        var editMarkup = EditMessageReplyMarkup.builder()
                 .replyMarkup(inlineKeyboardMarkup)
                 .chatId(chatId)
                 .messageId(messageId)
                 .build();
-        try {
-            client.execute(editMessageReplyMarkup);
-        } catch (Exception e) {
-            handleException(e, chatId, messageId);
-        }
+        return tryExecute(editMarkup, String.valueOf(chatId), messageId);
     }
 
     @Override
-    public void edit(OutgoingMessage commandMessageData) {
+    public boolean edit(OutgoingMessage message) {
         var editMessage = EditMessageText.builder()
-                .messageId(commandMessageData.getMessageId())
-                .chatId(commandMessageData.getChatId())
-                .text(commandMessageData.getText())
-                .parseMode(commandMessageData.getParseMode())
+                .messageId(message.getMessageId())
+                .chatId(message.getChatId())
+                .text(message.getText())
+                .parseMode(message.getParseMode())
                 .build();
 
-        edit(editMessage);
+        if (!edit(editMessage)) {
+            return false;
+        }
 
-        var keyboard = commandMessageData.getKeyboardMarkup();
+        var keyboard = message.getKeyboardMarkup();
         if (keyboard != null) {
-            var editMarkup = EditMessageReplyMarkup.builder()
-                    .messageId(commandMessageData.getMessageId())
-                    .chatId(commandMessageData.getChatId())
-                    .replyMarkup(keyboard)
-                    .build();
-            edit(editMarkup);
+            return edit(keyboard, message.getChatId(), message.getMessageId());
+        }
+        return true;
+    }
+
+    private boolean tryExecute(BotApiMethod<?> method, String chatId, int messageId) {
+        try {
+            client.execute(method);
+            return true;
+        } catch (Exception e) {
+            handleException(e, chatId, messageId);
+            return false;
         }
     }
 
     private void handleException(Exception e, String chatId, int messageId) {
-        log.error("Ошибка при изменении сообщения: {} в чате {}", messageId, chatId, e);
-    }
-
-    private void handleException(Exception e, long chatId, int messageId) {
         log.error("Ошибка при изменении сообщения: {} в чате {}", messageId, chatId, e);
     }
 }

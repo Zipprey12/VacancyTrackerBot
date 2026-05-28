@@ -2,8 +2,10 @@ package vacancy_tracker.services;
 
 import lombok.experimental.UtilityClass;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 
 @UtilityClass
 public class DateUtil {
@@ -33,5 +35,16 @@ public class DateUtil {
 
     public static LocalDateTime withTime(LocalDateTime dateTime, LocalTime time) {
         return dateTime.toLocalDate().atTime(time);
+    }
+
+    public static long toUnixSeconds(LocalDateTime dateTime) {
+        if (dateTime == null) return 0;
+        return dateTime.atZone(ZoneId.systemDefault()).toEpochSecond();
+    }
+
+    public static LocalDateTime fromUnixSeconds(long unixSeconds) {
+        return Instant.ofEpochSecond(unixSeconds)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
     }
 }

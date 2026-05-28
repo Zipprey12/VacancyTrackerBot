@@ -22,17 +22,23 @@ public class NotificationQueueService {
 
     @PostConstruct
     public void initialize() {
-        log.info("Инициализация очереди нотификаций...");
-        queue.clear();
+        try {
+            log.info("Инициализация очереди нотификаций...");
+            queue.clear();
 
-        var activeSettings = notificationService.findEnabled();
-        log.info("Найдено активных нотификаций: {}", activeSettings.size());
+            var activeSettings = notificationService.findEnabled();
+            log.info("Найдено активных нотификаций: {}", activeSettings.size());
 
-        activeSettings.forEach(s ->
-                queue.add(s.getChatId(), s.getNextNotificationAt())
-        );
+            for (var settings : activeSettings) {
+                if (settings.getChatId() > 0 && settings.getNextNotificationAt() != null) {
+                    queue.add(settings.getChatId(), settings.getNextNotificationAt());
+                }
+            }
 
-        log.info("Очередь нотификаций инициализирована");
+            log.info("Очередь нотификаций инициализирована");
+        } catch (Exception e) {
+            log.error("Ошибка инициализации очереди: {}", e.getMessage(), e);
+        }
     }
 
     @Async

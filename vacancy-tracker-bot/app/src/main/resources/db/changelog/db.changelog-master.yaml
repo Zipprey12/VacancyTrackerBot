@@ -4,3 +4,6 @@ databaseChangeLog:
 
   - include:
       file: db/changelog/migrations/V2__change_table_notification_settings.yaml
+
+  - include:
+      file: db/changelog/migrations/V3__create_regions_table.yaml

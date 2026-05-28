@@ -12,6 +12,7 @@ import vacancy_tracker.services.telegram.settings.NotificationService;
 import vacancy_tracker.services.telegram.view.formatters.notification.NotificationHoursSelectionFormatter;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 
 @Component
 
@@ -35,7 +36,7 @@ public class SetHoursNotificationCommand extends InputInterceptingCommand<Durati
     }
 
     @Override
-    protected void executeWithParameter(MessageData messageData, Duration parameter) {
+    protected void executeWithParameters(MessageData messageData, Duration parameter) {
         if (parameter.isNegative() || parameter.compareTo(MIN_INTERVAL) < 0) {
             handleInvalidValue(messageData, "Интервал не может быть меньше 5 минут");
             return;
@@ -43,7 +44,19 @@ public class SetHoursNotificationCommand extends InputInterceptingCommand<Durati
 
         var settings = notificationService.get(messageData.getChatId());
         settings.setInterval(parameter);
-        settings.scheduleNext();
+
+        var now = LocalDateTime.now();
+        var previous = settings.getLastNotificationAt();
+        if (previous == null) {
+            settings.setNextNotificationAt(now);
+        } else {
+            var next = previous.plus(parameter);
+            if (next.isBefore(now)) {
+                settings.setNextNotificationAt(now);
+            } else {
+                settings.setNextNotificationAt(next);
+            }
+        }
         notificationService.save(messageData.getChatId(), settings);
     }
 

@@ -4,7 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import vacancy_tracker.model.telegram.dto.MessageData;
-import vacancy_tracker.services.telegram.command.InputHandler;
+import vacancy_tracker.services.telegram.handlers.IdentifiableDataHandler;
+import vacancy_tracker.services.telegram.handlers.InputErrorHandler;
 
 import java.util.Optional;
 
@@ -16,7 +17,11 @@ public abstract class InputInterceptor<T> {
 
     @Setter
     @Getter
-    private InputHandler<T> handler;
+    private IdentifiableDataHandler<T> dataHandler;
+
+    @Getter
+    @Setter
+    private InputErrorHandler errorHandler;
 
     protected abstract Optional<T> tryCastPreparedInput(String text);
 
@@ -31,9 +36,9 @@ public abstract class InputInterceptor<T> {
     public void processInput(MessageData message) {
         var value = tryHandleInput(message.getText());
         if (value.isEmpty()) {
-            handler.handleInvalidValue(message);
+            errorHandler.handleInvalidValue(message);
         } else {
-            handler.handleWithParameter(message, value.get());
+            dataHandler.handleWithParameter(message, value.get());
         }
     }
 

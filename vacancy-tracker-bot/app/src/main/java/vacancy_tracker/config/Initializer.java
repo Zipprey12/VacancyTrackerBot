@@ -3,7 +3,7 @@ package vacancy_tracker.config;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import vacancy_tracker.services.vacancy.LocationsService;
+import vacancy_tracker.services.api.location.LocationsService;
 
 @Component
 @RequiredArgsConstructor

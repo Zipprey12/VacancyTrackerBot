@@ -4,10 +4,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
+import vacancy_tracker.model.api.Location;
 import vacancy_tracker.model.api.dto.VacancySearchFilter;
-import vacancy_tracker.model.api.entity.Location;
 import vacancy_tracker.model.telegram.entities.SearchFilterEntity;
-import vacancy_tracker.services.vacancy.LocationsService;
+import vacancy_tracker.services.api.location.LocationsService;
 
 @Mapper(componentModel = "spring")
 public abstract class SearchFilterMapper {
@@ -16,8 +16,7 @@ public abstract class SearchFilterMapper {
     protected LocationsService locationsService;
 
     @Mapping(target = "location", expression = "java(toLocation(entity))")
-    @Mapping(target = "offset", ignore = true)
-    @Mapping(target = "limit", ignore = true)
+    @Mapping(target = "requestType", ignore = true)
     public abstract VacancySearchFilter toDto(SearchFilterEntity entity);
 
     @Mapping(target = "regionId", expression = "java(toRegionId(filter))")
@@ -32,7 +31,7 @@ public abstract class SearchFilterMapper {
         if (entity.getTownId() != null) {
             return locationsService.getLocationByTownId(entity.getTownId()).orElse(null);
         } else {
-            return locationsService.getLocationByRegionId(entity.getRegionId()).orElse(null);
+            return locationsService.getLocationByRegionCode(entity.getRegionId()).orElse(null);
         }
     }
 
@@ -40,7 +39,7 @@ public abstract class SearchFilterMapper {
         if (filter.getLocation() == null || filter.getLocation().getRegion() == null) {
             return null;
         }
-        return filter.getLocation().getRegion().getId();
+        return filter.getLocation().getRegion().getCode();
     }
 
     protected Integer toTownId(VacancySearchFilter filter) {

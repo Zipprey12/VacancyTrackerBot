@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import vacancy_tracker.model.telegram.dto.MessageData;
-import vacancy_tracker.services.telegram.command.CompletableMessageCommand;
-import vacancy_tracker.services.telegram.command.executors.MessageCommandExecutor;
+import vacancy_tracker.services.telegram.command.SimpleMessageCommand;
+import vacancy_tracker.services.telegram.command.callers.MessageCommandCaller;
 import vacancy_tracker.services.telegram.session.SessionsService;
 
 import java.util.concurrent.CompletableFuture;
@@ -14,11 +14,11 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class DefaultBotNavigator implements BotNavigator {
 
-    private final CompletableMessageCommand initCommand;
-    private final CompletableMessageCommand helpCommand;
+    private final SimpleMessageCommand initCommand;
+    private final SimpleMessageCommand helpCommand;
 
     private final SessionsService sessionsService;
-    private final MessageCommandExecutor executor;
+    private final MessageCommandCaller executor;
 
     @Override
     public void navigate(Update update) {

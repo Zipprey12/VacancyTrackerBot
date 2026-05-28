@@ -9,9 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import vacancy_tracker.model.api.dto.RegionDto;
-import vacancy_tracker.model.api.entity.Region;
-import vacancy_tracker.model.api.entity.Town;
+import vacancy_tracker.sources.superjob.model.dto.SuperJobRegionDto;
+import vacancy_tracker.sources.superjob.model.dto.SuperJobTownDto;
 import vacancy_tracker.sources.superjob.model.response.SuperJobCitiesResponse;
 import vacancy_tracker.sources.superjob.model.response.SuperJobRegionsResponse;
 import vacancy_tracker.sources.superjob.service.SuperJobApiClient;
@@ -35,8 +34,8 @@ public class SuperJobLocationsApiClient extends SuperJobApiClient {
     @Value("${superjob.api.citiesUrl}")
     private String citiesUrl;
 
-    public List<Region> findAllRegionsWithoutCities() {
-        List<Region> regions = new LinkedList<>();
+    public List<SuperJobRegionDto> findAllRegionsWithoutCities() {
+        List<SuperJobRegionDto> regions = new LinkedList<>();
 
         try {
             HttpEntity<String> entity = new HttpEntity<>(createHeaders());
@@ -48,14 +47,10 @@ public class SuperJobLocationsApiClient extends SuperJobApiClient {
                 log.info("SuperJob: Получено {} регионов", regionResponse.getTotal());
                 regionResponse.getRegions()
                         .stream()
-                        .sorted(Comparator.comparing(RegionDto::getName))
+                        .sorted(Comparator.comparing(SuperJobRegionDto::getName))
                         .forEach(r -> {
                             if (r.getCountryId() == RUSSIA_INDEX) {
-                                var region = Region.builder()
-                                        .id(r.getId())
-                                        .name(r.getName())
-                                        .build();
-                                regions.add(region);
+                                regions.add(r);
                             }
                         });
             }
@@ -63,12 +58,11 @@ public class SuperJobLocationsApiClient extends SuperJobApiClient {
         } catch (Exception e) {
             log.error("Ошибка при попытке получения регионов: ", e);
         }
-
         return regions;
     }
 
-    public List<Town> getAllTowns() {
-        List<Town> cities = new LinkedList<>();
+    public List<SuperJobTownDto> getAllTowns() {
+        List<SuperJobTownDto> towns = new LinkedList<>();
 
         try {
             HttpEntity<String> entity = new HttpEntity<>(createHeaders());
@@ -78,21 +72,13 @@ public class SuperJobLocationsApiClient extends SuperJobApiClient {
             var citiesResponse = response.getBody();
             if (response.getStatusCode().is2xxSuccessful() && citiesResponse != null) {
                 log.info("SuperJob: Получено {} городов", citiesResponse.getTotal());
-                citiesResponse.getCities().forEach(t -> {
-                    var town = Town.builder()
-                            .id(t.getId())
-                            .regionId(t.getRegionId())
-                            .name(t.getName())
-                            .build();
-                    cities.add(town);
-                });
+                towns.addAll(citiesResponse.getCities());
             }
 
         } catch (Exception e) {
             log.error("Ошибка при попытке получения регионов: ", e);
         }
-
-        return cities;
+        return towns;
     }
 
     private String buildRegionsUrl() {

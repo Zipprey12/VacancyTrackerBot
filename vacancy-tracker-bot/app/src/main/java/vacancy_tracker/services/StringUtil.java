@@ -5,46 +5,31 @@ import lombok.experimental.UtilityClass;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Optional;
+import java.util.function.Function;
 
 @UtilityClass
 public class StringUtil {
 
     public static Optional<Integer> parseInt(String text) {
-        if (text == null) {
-            return Optional.empty();
-        }
-        try {
-            return Optional.of(Integer.parseInt(text));
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        }
+        return parseNumber(text, Integer::parseInt);
+    }
+
+    public static Optional<Long> parseLong(String text) {
+        return parseNumber(text, Long::parseLong);
     }
 
     public static Optional<Float> parseFloat(String text) {
-        if (text == null) {
-            return Optional.empty();
-        }
-        try {
-            String normalized = text.replace(',', '.');
-            return Optional.of(Float.parseFloat(normalized));
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        }
+        if (text == null) return Optional.empty();
+        return parseNumber(text.replace(',', '.'), Float::parseFloat);
     }
 
     public static Optional<Boolean> parseBoolean(String text) {
-        if (text == null) {
-            return Optional.empty();
-        }
-
-        String trimmed = text.trim().toLowerCase();
-        if ("true".equals(trimmed)) {
-            return Optional.of(true);
-        }
-        if ("false".equals(trimmed)) {
-            return Optional.of(false);
-        }
-        return Optional.empty();
+        if (text == null) return Optional.empty();
+        return switch (text.trim().toLowerCase()) {
+            case "true" -> Optional.of(true);
+            case "false" -> Optional.of(false);
+            default -> Optional.empty();
+        };
     }
 
     public static Optional<LocalTime> parseTime(String text) {
@@ -58,6 +43,15 @@ public class StringUtil {
                 .map(parts -> Duration.ofHours(parts[0])
                         .plusMinutes(parts[1])
                         .plusSeconds(parts[2]));
+    }
+
+    private static <T> Optional<T> parseNumber(String text, Function<String, T> parser) {
+        if (text == null) return Optional.empty();
+        try {
+            return Optional.of(parser.apply(text));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
     }
 
     private static Optional<long[]> parseTimeParts(String text) {

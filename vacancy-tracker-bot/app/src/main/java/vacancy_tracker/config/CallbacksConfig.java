@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import vacancy_tracker.services.telegram.callback.parsers.PaginationCallbackParser;
+import vacancy_tracker.services.telegram.view.keyboard.CallbackPaginatedKeyboardBuilder;
 import vacancy_tracker.services.telegram.view.keyboard.PaginatedKeyboardBuilder;
 
 @Configuration
@@ -11,12 +12,17 @@ import vacancy_tracker.services.telegram.view.keyboard.PaginatedKeyboardBuilder;
 public class CallbacksConfig {
 
     @Bean
-    public PaginatedKeyboardBuilder regionsPaginationBuilder(PaginationCallbackParser regionsPaginationCallbackParser) {
-        return new PaginatedKeyboardBuilder(regionsPaginationCallbackParser);
+    public CallbackPaginatedKeyboardBuilder regionsPaginationBuilder(PaginationCallbackParser regionsPaginationCallbackParser) {
+        return new CallbackPaginatedKeyboardBuilder(regionsPaginationCallbackParser);
     }
 
     @Bean
-    public PaginatedKeyboardBuilder townsPaginationBuilder(PaginationCallbackParser townsPaginationCallbackParser) {
-        return new PaginatedKeyboardBuilder(townsPaginationCallbackParser);
+    public CallbackPaginatedKeyboardBuilder townsPaginationBuilder(PaginationCallbackParser townsPaginationCallbackParser) {
+        return new CallbackPaginatedKeyboardBuilder(townsPaginationCallbackParser);
+    }
+
+    @Bean
+    public PaginatedKeyboardBuilder vacanciesPaginationBuilder(PaginationCallbackParser vacanciesPaginationCallbackParser) {
+        return new PaginatedKeyboardBuilder(vacanciesPaginationCallbackParser);
     }
 }

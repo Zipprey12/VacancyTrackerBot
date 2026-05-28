@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vacancy_tracker.model.api.entity.Vacancy;
+import vacancy_tracker.model.api.Vacancy;
 
 import java.util.List;
 

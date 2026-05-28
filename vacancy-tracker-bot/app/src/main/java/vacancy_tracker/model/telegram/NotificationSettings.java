@@ -28,7 +28,16 @@ public class NotificationSettings {
 
     public void scheduleNext() {
         if (interval != null) {
-            this.nextNotificationAt = LocalDateTime.now().plus(interval);
+            var now = LocalDateTime.now();
+            if (nextNotificationAt == null) {
+                nextNotificationAt = now.plus(interval);
+            } else {
+                lastNotificationAt = nextNotificationAt;
+                var next = nextNotificationAt.plus(interval);
+                if (next.isBefore(now)) {
+                    nextNotificationAt = now.plus(interval);
+                } else nextNotificationAt = next;
+            }
         }
     }
 }

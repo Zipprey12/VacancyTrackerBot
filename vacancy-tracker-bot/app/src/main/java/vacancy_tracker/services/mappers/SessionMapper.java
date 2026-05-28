@@ -29,8 +29,8 @@ public class SessionMapper {
         var entity = new SessionEntity();
         entity.setChatId(context.getChatId());
         var interceptor = context.getInputInterceptor();
-        if (interceptor != null && interceptor.getHandler() != null) {
-            entity.setInterceptorCommandKey(interceptor.getHandler().getKey());
+        if (interceptor != null && interceptor.getDataHandler() != null) {
+            entity.setInterceptorCommandKey(interceptor.getDataHandler().getKey());
         }
         return entity;
     }

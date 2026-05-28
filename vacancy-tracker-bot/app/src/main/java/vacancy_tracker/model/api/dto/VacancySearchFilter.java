@@ -4,15 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vacancy_tracker.model.api.entity.Location;
+import vacancy_tracker.model.api.Location;
+import vacancy_tracker.model.api.RequestType;
+
+import java.time.LocalDateTime;
 
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class VacancySearchFilter {
-    private Integer offset;
-    private Integer limit;
 
     private String text;
     private Integer minSalary;
@@ -20,5 +21,6 @@ public class VacancySearchFilter {
     private Location location;
     private Float experience;
 
-    private String modifiedFrom;
+    private LocalDateTime modifiedFrom;
+    private RequestType requestType;
 }
