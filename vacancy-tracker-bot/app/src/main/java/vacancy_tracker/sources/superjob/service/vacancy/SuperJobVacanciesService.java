@@ -3,12 +3,14 @@ package vacancy_tracker.sources.superjob.service.vacancy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import vacancy_tracker.model.api.ExtendedRegion;
-import vacancy_tracker.model.api.Town;
-import vacancy_tracker.model.api.VacanciesSource;
-import vacancy_tracker.model.api.Vacancy;
-import vacancy_tracker.model.api.dto.VacanciesResponse;
-import vacancy_tracker.model.api.dto.VacancySearchFilter;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import vacancy_tracker.model.domain.Region;
+import vacancy_tracker.model.domain.Town;
+import vacancy_tracker.model.domain.VacanciesSource;
+import vacancy_tracker.model.domain.Vacancy;
+import vacancy_tracker.model.search.VacanciesResponse;
+import vacancy_tracker.model.search.VacancySearchFilter;
 import vacancy_tracker.services.api.AsyncVacanciesProvider;
 import vacancy_tracker.services.api.location.LocationsServiceImpl;
 import vacancy_tracker.sources.superjob.model.response.SuperJobVacanciesResponse;
@@ -16,7 +18,6 @@ import vacancy_tracker.sources.superjob.service.company.SuperJobCompanyCacheServ
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 @Slf4j
 @Service
@@ -29,7 +30,6 @@ public class SuperJobVacanciesService implements AsyncVacanciesProvider {
     private final SuperJobVacanciesApiClient apiClient;
     private final SuperJobCompanyCacheService companyService;
     private final LocationsServiceImpl locationsService;
-    private final Executor vacancySearchExecutor;
 
     @Override
     public VacanciesSource getSource() {
@@ -39,54 +39,67 @@ public class SuperJobVacanciesService implements AsyncVacanciesProvider {
     @Override
     public CompletableFuture<VacanciesResponse> find(VacancySearchFilter filter, int limit, int page) {
         log.info("SuperJob поиск вакансий: {}", filter);
-
-        return CompletableFuture.supplyAsync(() -> {
-            var responseOptional = apiClient.searchVacancies(filter, limit, page);
-
-            if (responseOptional.isEmpty()) {
-                log.info("Не было найдено вакансий с Super Job");
-                var emptyResult = new VacanciesResponse();
-                emptyResult.setVacancies(List.of());
-                emptyResult.setSource(SOURCE);
-                return emptyResult;
-            }
-
-            var response = responseOptional.get();
-            var result = createResponse(response);
-            if (filter.getModifiedFrom() != null) {
-                result.setModifiedFrom(filter.getModifiedFrom());
-            }
-            return result;
-
-        }, vacancySearchExecutor);
+        return apiClient.searchVacancies(filter, limit, page)
+                .flatMap(this::createResponse)
+                .switchIfEmpty(Mono.fromCallable(this::createEmptyResponse))
+                .doOnSuccess(r -> {
+                    r.setModifiedFrom(filter.getModifiedFrom());
+                    log.debug("SuperJob: возвращено {} вакансий", r.getVacancies().size());
+                })
+                .toFuture();
     }
 
-    private VacanciesResponse createResponse(SuperJobVacanciesResponse response) {
-        var list = response
-                .getVacanciesSafe()
+    private VacanciesResponse createEmptyResponse() {
+        log.debug("Не было найдено вакансий с SuperJob");
+        var response = new VacanciesResponse();
+        response.setVacancies(List.of());
+        response.setSource(SOURCE);
+        return response;
+    }
+
+    private Mono<VacanciesResponse> createResponse(SuperJobVacanciesResponse response) {
+        var vacancies = response.getVacanciesSafe()
                 .stream()
                 .map(mapper::toEntity)
-                .map(this::fillCompany)
-                .map(this::fillLocation)
                 .toList();
 
-        var result = new VacanciesResponse();
-        result.setVacancies(list);
-        result.setMore(response.getMore());
-        result.setSource(SOURCE);
-        result.setTotal(response.getTotal());
-        result.setOffset(response.getOffset());
-        return result;
+        if (vacancies.isEmpty()) {
+            return Mono.just(buildResponse(List.of(), response));
+        }
+
+        return Flux.fromIterable(vacancies)
+                .flatMap(this::fillCompany, 3)
+                .map(this::fillLocation)
+                .collectList()
+                .map(list -> buildResponse(list, response));
     }
 
-    private Vacancy fillCompany(Vacancy vacancy) {
+    private VacanciesResponse buildResponse(List<Vacancy> vacancies,
+                                            SuperJobVacanciesResponse response) {
+        return VacanciesResponse.builder()
+                .vacancies(vacancies)
+                .more(response.getMore())
+                .source(SOURCE)
+                .total(response.getTotal())
+                .offset(response.getOffset())
+                .build();
+    }
+
+    private Mono<Vacancy> fillCompany(Vacancy vacancy) {
         var id = vacancy.getCompany().getId();
         if (id == null || id <= 0) {
-            return vacancy;
+            return Mono.just(vacancy);
         }
-        var found = companyService.getCompany(id);
-        found.ifPresent(vacancy::setCompany);
-        return vacancy;
+        return companyService.getCompany(id)
+                .map(company -> {
+                    vacancy.setCompany(company);
+                    return vacancy;
+                })
+                .onErrorResume(e -> {
+                    log.warn("Не удалось получить компанию {}: {}", id, e.getMessage());
+                    vacancy.getCompany().setName("Компания " + id);
+                    return Mono.just(vacancy);
+                });
     }
 
     private Vacancy fillLocation(Vacancy vacancy) {
@@ -115,7 +128,7 @@ public class SuperJobVacanciesService implements AsyncVacanciesProvider {
         return true;
     }
 
-    private void fillLocation(ExtendedRegion region, Vacancy vacancy) {
+    private void fillLocation(Region region, Vacancy vacancy) {
         var found = locationsService.getLocationByRegionCode(region.getCode());
         if (found.isEmpty()) {
             return;

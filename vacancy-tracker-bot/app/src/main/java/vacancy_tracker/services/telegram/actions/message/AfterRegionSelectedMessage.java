@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
-import vacancy_tracker.model.api.ExtendedRegion;
+import vacancy_tracker.model.domain.Region;
 import vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
@@ -20,18 +20,6 @@ public class AfterRegionSelectedMessage {
     private static final InlineKeyboardMarkup KEYBOARD_BUTTON = initKeyboard();
 
     private final SendingAndUpdatingMessagePublisher publisher;
-
-    public void publish(MessageData messageData, ExtendedRegion region) {
-        OutgoingMessage outgoingMessage = new OutgoingMessage(messageData);
-        outgoingMessage.setKeyboardMarkup(KEYBOARD_BUTTON);
-        outgoingMessage.setText(createHeader(region));
-
-        publisher.publish(outgoingMessage);
-    }
-
-    private String createHeader(ExtendedRegion region) {
-        return "Выбран регион: *" + region.getName() + "*.";
-    }
 
     private static InlineKeyboardMarkup initKeyboard() {
         var row1 = initSelectCityRow();
@@ -58,5 +46,17 @@ public class AfterRegionSelectedMessage {
         button.setCallbackData(FilterSettingsCallbackKeys.CANCEL_CHANGE.getKey());
         row.add(button);
         return row;
+    }
+
+    public void publish(MessageData messageData, Region region) {
+        OutgoingMessage outgoingMessage = new OutgoingMessage(messageData);
+        outgoingMessage.setKeyboardMarkup(KEYBOARD_BUTTON);
+        outgoingMessage.setText(createHeader(region));
+
+        publisher.publish(outgoingMessage);
+    }
+
+    private String createHeader(Region region) {
+        return "Выбран регион: *" + region.getName() + "*.";
     }
 }

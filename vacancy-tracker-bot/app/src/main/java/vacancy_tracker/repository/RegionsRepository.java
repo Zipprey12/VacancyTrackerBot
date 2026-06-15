@@ -1,6 +1,6 @@
 package vacancy_tracker.repository;
 
-import vacancy_tracker.model.api.entity.RegionEntity;
+import vacancy_tracker.model.persistence.RegionEntity;
 
 import java.util.List;
 

@@ -2,9 +2,9 @@ package vacancy_tracker.services.telegram.actions.message;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import vacancy_tracker.model.telegram.NotificationSettings;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.model.telegram.notification.NotificationSettings;
 import vacancy_tracker.services.telegram.view.keyboard.KeyboardBuilder;
 
 import java.time.LocalDateTime;
@@ -25,6 +25,13 @@ public class AfterDayOfWeekSelectedMessage {
 
     private static final InlineKeyboardMarkup KEYBOARD = buildKeyboard();
 
+    private static InlineKeyboardMarkup buildKeyboard() {
+        return KeyboardBuilder.buildInlineKeyboard(List.of(
+                new CallbackItem(SET_TIME.getKey(), "Изменить время"),
+                new CallbackItem(CANCEL_CHANGE.getKey(), "Оставить текущее")
+        ), 2);
+    }
+
     public void format(OutgoingMessage outgoingMessage, NotificationSettings settings) {
         String time = formatTime(settings.getNextNotificationAt());
         outgoingMessage.setText(String.format(TEXT, time));
@@ -36,12 +43,5 @@ public class AfterDayOfWeekSelectedMessage {
             return "не установлено";
         }
         return nextNotificationAt.format(DateTimeFormatter.ofPattern("HH:mm"));
-    }
-
-    private static InlineKeyboardMarkup buildKeyboard() {
-        return KeyboardBuilder.buildInlineKeyboard(List.of(
-                new CallbackItem(SET_TIME.getKey(), "Изменить время"),
-                new CallbackItem(CANCEL_CHANGE.getKey(), "Оставить текущее")
-        ), 2);
     }
 }

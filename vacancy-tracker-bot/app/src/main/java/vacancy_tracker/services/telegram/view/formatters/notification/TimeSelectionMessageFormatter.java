@@ -2,9 +2,9 @@ package vacancy_tracker.services.telegram.view.formatters.notification;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import vacancy_tracker.model.telegram.NotificationSettings;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.model.telegram.notification.NotificationSettings;
 import vacancy_tracker.services.telegram.view.keyboard.KeyboardBuilder;
 
 import java.time.format.DateTimeFormatter;
@@ -12,8 +12,8 @@ import java.util.List;
 
 import static vacancy_tracker.model.telegram.callback.NotificationSettingCallbackKeys.CANCEL_CHANGE;
 import static vacancy_tracker.model.telegram.callback.NotificationSettingCallbackKeys.SET_TIME;
-import static vacancy_tracker.services.DateUtil.ONE_DAY_SECONDS;
-import static vacancy_tracker.services.DateUtil.ONE_WEEK_SECONDS;
+import static vacancy_tracker.services.util.DateUtil.ONE_DAY_SECONDS;
+import static vacancy_tracker.services.util.DateUtil.ONE_WEEK_SECONDS;
 
 @Component
 public class TimeSelectionMessageFormatter {
@@ -24,11 +24,6 @@ public class TimeSelectionMessageFormatter {
             """;
 
     private static final InlineKeyboardMarkup KEYBOARD = buildKeyboard();
-
-    public void format(OutgoingMessage outgoingMessage, NotificationSettings settings) {
-        outgoingMessage.setText(createText(settings));
-        outgoingMessage.setKeyboardMarkup(KEYBOARD);
-    }
 
     private static InlineKeyboardMarkup buildKeyboard() {
         return KeyboardBuilder.buildInlineKeyboard(List.of(
@@ -44,6 +39,11 @@ public class TimeSelectionMessageFormatter {
 
     private static CallbackItem createItem(String text, int hours) {
         return new CallbackItem(SET_TIME.getKey(), text, hours);
+    }
+
+    public void format(OutgoingMessage outgoingMessage, NotificationSettings settings) {
+        outgoingMessage.setText(createText(settings));
+        outgoingMessage.setKeyboardMarkup(KEYBOARD);
     }
 
     private String createText(NotificationSettings settings) {

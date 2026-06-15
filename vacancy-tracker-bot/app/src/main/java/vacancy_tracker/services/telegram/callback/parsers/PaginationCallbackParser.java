@@ -3,7 +3,7 @@ package vacancy_tracker.services.telegram.callback.parsers;
 import vacancy_tracker.model.telegram.callback.CallbackArgs;
 import vacancy_tracker.model.telegram.callback.CallbackData;
 import vacancy_tracker.model.telegram.callback.CommonCallbacks;
-import vacancy_tracker.services.StringUtil;
+import vacancy_tracker.services.util.StringUtil;
 
 import static vacancy_tracker.model.telegram.callback.CallbackItem.PARTS_SEPARATOR;
 import static vacancy_tracker.model.telegram.callback.CompositeCallbackItem.ARGS_PREFIX;
@@ -39,7 +39,10 @@ public class PaginationCallbackParser extends AdvancedParser {
         } else {
             var key = extractSelectedKey(callbackData, firstKeyIndex);
             if (key == null) builder.hasEmptyKey(true);
-            else builder.selectedKey(key);
+            else {
+                builder.isSelection(true);
+                builder.selectedKey(key);
+            }
 
             if (pageIndex > 0) {
                 builder.isPageNavigation(true)

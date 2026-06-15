@@ -2,22 +2,25 @@ package vacancy_tracker.services.telegram.command.settings.filter;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import vacancy_tracker.model.telegram.ResetFilterFieldType;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
+import vacancy_tracker.model.telegram.dto.LocationSearch;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.model.telegram.settings.ResetFilterFieldType;
 import vacancy_tracker.services.telegram.command.ExtendedMessageCommand;
 import vacancy_tracker.services.telegram.command.handlers.FiltersChangingCompletionHandler;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.SequentialAsyncExecutionStrategy;
+import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SearchFiltersService;
 import vacancy_tracker.services.telegram.view.keyboard.KeyboardBuilder;
 
 import java.util.List;
 
-import static vacancy_tracker.model.telegram.ResetFilterFieldType.ALL;
-import static vacancy_tracker.model.telegram.ResetFilterFieldType.LOCATION;
 import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.CANCEL_CHANGE;
 import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.RESET;
+import static vacancy_tracker.model.telegram.settings.ResetFilterFieldType.ALL;
+import static vacancy_tracker.model.telegram.settings.ResetFilterFieldType.LOCATION;
 
 @Component
 public class ResetFiltersCommand extends ExtendedMessageCommand<ResetFilterFieldType> {
@@ -27,13 +30,27 @@ public class ResetFiltersCommand extends ExtendedMessageCommand<ResetFilterField
 
     private static final InlineKeyboardMarkup KEYBOARD = initKeyboard();
 
+    private final SessionsService sessionsService;
     private final SearchFiltersService settingsService;
+    private final SetRegionCommand setRegionCommand;
 
     public ResetFiltersCommand(SendingAndUpdatingMessagePublisher publisher,
                                FiltersChangingCompletionHandler completionHandler,
-                               SearchFiltersService settingsService) {
-        super(KEY, DESCRIPTION, publisher, completionHandler);
+                               SessionsService sessionsService,
+                               SearchFiltersService settingsService,
+                               SequentialAsyncExecutionStrategy strategy,
+                               SetRegionCommand setRegionCommand) {
+        super(KEY, DESCRIPTION, publisher, strategy, completionHandler);
+        this.sessionsService = sessionsService;
         this.settingsService = settingsService;
+        this.setRegionCommand = setRegionCommand;
+    }
+
+    private static InlineKeyboardMarkup initKeyboard() {
+        return KeyboardBuilder.buildInlineKeyboard(List.of(
+                new CallbackItem(RESET.getKey(), "Сбросить", ALL),
+                new CallbackItem(CANCEL_CHANGE.getKey(), "Отмена")
+        ), 2);
     }
 
     @Override
@@ -49,20 +66,10 @@ public class ResetFiltersCommand extends ExtendedMessageCommand<ResetFilterField
         if (parameter == ALL) {
             settingsService.delete(messageData.getChatId());
         } else {
-            var chatId = messageData.getChatId();
-            var settings = settingsService.get(chatId);
             if (parameter == LOCATION) {
-                settings.setLocation(null);
+                setRegionCommand.executeWithParameters(messageData, new LocationSearch(null, null));
             }
-            settingsService.save(chatId, settings);
         }
-        endExecution(messageData);
-    }
-
-    private static InlineKeyboardMarkup initKeyboard() {
-        return KeyboardBuilder.buildInlineKeyboard(List.of(
-                new CallbackItem(RESET.getKey(), "Сбросить", ALL),
-                new CallbackItem(CANCEL_CHANGE.getKey(), "Отмена")
-        ), 2);
+        sessionsService.disableInterceptor(messageData.getChatId());
     }
 }

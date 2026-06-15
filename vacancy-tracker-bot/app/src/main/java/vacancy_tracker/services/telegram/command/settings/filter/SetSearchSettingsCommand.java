@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.callback.CallBackDataProvider;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.model.telegram.view.FilterOptions;
+import vacancy_tracker.model.telegram.settings.FilterOptions;
 import vacancy_tracker.services.telegram.command.SimpleMessageCommand;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.settings.SearchFiltersService;

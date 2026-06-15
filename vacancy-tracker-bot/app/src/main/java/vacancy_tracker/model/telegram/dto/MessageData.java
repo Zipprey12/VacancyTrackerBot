@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.telegram.telegrambots.meta.api.objects.message.MaybeInaccessibleMessage;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
-import vacancy_tracker.model.telegram.CallingSource;
+import vacancy_tracker.model.telegram.session.CallingSource;
 
 @Builder
 @Data
@@ -18,6 +18,13 @@ public class MessageData {
     private Integer messageId;
     private String text;
     private CallingSource source;
+
+    public MessageData(MessageData source) {
+        chatId = source.chatId;
+        messageId = source.messageId;
+        text = source.text;
+        this.source = source.getSource();
+    }
 
     public static MessageData create(MaybeInaccessibleMessage message) {
         return MessageData.builder()
@@ -34,12 +41,5 @@ public class MessageData {
                 .text(message.getText())
                 .source(CallingSource.CHAT)
                 .build();
-    }
-
-    public MessageData(MessageData source) {
-        chatId = source.chatId;
-        messageId = source.messageId;
-        text = source.text;
-        this.source = source.getSource();
     }
 }

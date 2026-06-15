@@ -36,9 +36,9 @@ public class RedisNotificationQueue implements NotificationQueue {
     }
 
     @Override
-    public List<Long> dequeueBatchLaterThan(LocalDateTime dateTime, int maxCount) {
+    public List<Long> dequeueEarlierThan(LocalDateTime dateTime, int maxCount) {
         var ops = redisTemplate.opsForZSet();
-        double maxScore = toScore(dateTime);
+        long maxScore = toScore(dateTime);
 
         var members = ops.rangeByScore(QUEUE_KEY, 0, maxScore, 0, maxCount);
         if (members == null || members.isEmpty()) {
@@ -60,7 +60,7 @@ public class RedisNotificationQueue implements NotificationQueue {
         log.info("Очередь нотификации очищена");
     }
 
-    private double toScore(LocalDateTime dateTime) {
+    private long toScore(LocalDateTime dateTime) {
         return dateTime.toEpochSecond(ZoneOffset.UTC);
     }
 }

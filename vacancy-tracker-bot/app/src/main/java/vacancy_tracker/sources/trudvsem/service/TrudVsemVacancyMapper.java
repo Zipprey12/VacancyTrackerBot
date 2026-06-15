@@ -2,10 +2,10 @@ package vacancy_tracker.sources.trudvsem.service;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import vacancy_tracker.model.api.Company;
-import vacancy_tracker.model.api.ExtendedRegion;
-import vacancy_tracker.model.api.Location;
-import vacancy_tracker.model.api.Vacancy;
+import vacancy_tracker.model.domain.Company;
+import vacancy_tracker.model.domain.Location;
+import vacancy_tracker.model.domain.Region;
+import vacancy_tracker.model.domain.Vacancy;
 import vacancy_tracker.sources.trudvsem.model.dto.TrudVsemVacancyDto;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public interface TrudVsemVacancyMapper {
             return null;
         }
         return Location.builder()
-                .region(ExtendedRegion.builder()
+                .region(Region.builder()
                         .name(dto.getRegion().getName())
                         .build())
                 .build();

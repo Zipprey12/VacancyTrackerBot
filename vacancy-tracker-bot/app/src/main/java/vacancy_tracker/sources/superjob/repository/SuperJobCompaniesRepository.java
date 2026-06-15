@@ -3,12 +3,12 @@ package vacancy_tracker.sources.superjob.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import vacancy_tracker.model.api.Company;
+import vacancy_tracker.model.domain.Company;
 
 import java.util.HashMap;
 import java.util.Optional;
 
-//Класс нужен для снижения количества запросов к Api
+//Класс для кэширования компаний и уменьшения количества запросов к Api
 @Repository
 @Slf4j
 public class SuperJobCompaniesRepository {

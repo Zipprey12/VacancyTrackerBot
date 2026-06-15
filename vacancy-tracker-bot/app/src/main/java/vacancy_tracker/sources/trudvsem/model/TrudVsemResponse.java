@@ -3,7 +3,7 @@ package vacancy_tracker.sources.trudvsem.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vacancy_tracker.model.api.dto.MetaDto;
+import vacancy_tracker.model.search.MetaDto;
 import vacancy_tracker.sources.trudvsem.model.dto.TrudVsemVacancyDto;
 
 import java.util.List;

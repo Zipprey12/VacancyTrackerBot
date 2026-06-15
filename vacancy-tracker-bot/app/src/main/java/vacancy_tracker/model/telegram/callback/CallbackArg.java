@@ -1,22 +1,19 @@
 package vacancy_tracker.model.telegram.callback;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 
 @Getter
-@RequiredArgsConstructor
 public class CallbackArg {
 
     private final String key;
     private final String value;
 
-    @Override
-    public String toString() {
-        if (key == null) {
-            return value;
-        }
-        return key + ":" + value;
+    public CallbackArg(String key, Object value) {
+        this.key = key;
+        if (value == null) {
+            this.value = null;
+        } else this.value = value.toString();
     }
 
     public static CallbackArg fromString(String text) {
@@ -30,5 +27,13 @@ public class CallbackArg {
         var key = text.substring(0, index);
         var value = text.substring(index + 1);
         return new CallbackArg(key, value);
+    }
+
+    @Override
+    public String toString() {
+        if (key == null) {
+            return value;
+        }
+        return key + ":" + value;
     }
 }

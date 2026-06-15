@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import vacancy_tracker.model.telegram.dto.MessageData;
+import vacancy_tracker.services.telegram.command.CommandsService;
 import vacancy_tracker.services.telegram.command.SimpleMessageCommand;
 import vacancy_tracker.services.telegram.command.callers.MessageCommandCaller;
 import vacancy_tracker.services.telegram.session.SessionsService;
@@ -19,6 +20,8 @@ public class DefaultBotNavigator implements BotNavigator {
 
     private final SessionsService sessionsService;
     private final MessageCommandCaller executor;
+
+    private final CommandsService commandsService;
 
     @Override
     public void navigate(Update update) {
@@ -37,12 +40,14 @@ public class DefaultBotNavigator implements BotNavigator {
             return;
         }
 
-        var inputInterceptor = sessionsService.getSession(chatId).getInputInterceptor();
-        if (inputInterceptor != null) {
-            inputInterceptor.processInput(messageData);
-            return;
+        var handlerKey = sessionsService.getOrCreateSession(chatId).getInputHandlerKey();
+        if (handlerKey != null) {
+            var interceptor = commandsService.getInterceptorByCommandKey(handlerKey);
+            if (interceptor.isPresent()) {
+                interceptor.get().processInput(messageData);
+                return;
+            }
         }
-
         executeOrHelp(messageData);
     }
 
@@ -69,10 +74,6 @@ public class DefaultBotNavigator implements BotNavigator {
     }
 
     private void clearInterceptor(long chatId) {
-        var session = sessionsService.getSession(chatId);
-        if (session.getInputInterceptor() != null) {
-            session.setInputInterceptor(null);
-            sessionsService.save(session);
-        }
+        sessionsService.disableInterceptor(chatId);
     }
 }

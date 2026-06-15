@@ -2,18 +2,19 @@ package vacancy_tracker.services.telegram.command.settings.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import vacancy_tracker.model.api.ExtendedRegion;
-import vacancy_tracker.model.api.Location;
-import vacancy_tracker.model.telegram.CallingSource;
+import vacancy_tracker.model.domain.Location;
+import vacancy_tracker.model.domain.Region;
 import vacancy_tracker.model.telegram.dto.LocationSearch;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.model.telegram.session.CallingSource;
 import vacancy_tracker.services.api.location.LocationsService;
 import vacancy_tracker.services.telegram.actions.message.AfterRegionSelectedMessage;
 import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
 import vacancy_tracker.services.telegram.command.handlers.FiltersChangingCompletionHandler;
 import vacancy_tracker.services.telegram.command.interceptors.LocationInterceptor;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.SequentialAsyncExecutionStrategy;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SearchFiltersService;
 import vacancy_tracker.services.telegram.view.formatters.filter.RegionsSelectionMessageFormatter;
@@ -29,6 +30,7 @@ public class SetRegionCommand extends InputInterceptingCommand<LocationSearch> {
     private final AfterRegionSelectedMessage regionSelectionUpdateMessage;
     private final LocationsService locationsService;
     private final SearchFiltersService settingsService;
+    private final FiltersChangingCompletionHandler completionHandler;
 
     public SetRegionCommand(SendingAndUpdatingMessagePublisher publisher,
                             FiltersChangingCompletionHandler handler,
@@ -36,18 +38,21 @@ public class SetRegionCommand extends InputInterceptingCommand<LocationSearch> {
                             SessionsService sessionsService,
                             AfterRegionSelectedMessage regionSelectionUpdateMessage,
                             LocationsService locationsService,
-                            SearchFiltersService settingsService) {
+                            SearchFiltersService settingsService,
+                            SequentialAsyncExecutionStrategy strategy) {
 
-        super(KEY, DESCRIPTION, publisher, handler, new LocationInterceptor(), sessionsService);
+        super(KEY, DESCRIPTION, publisher, handler, new LocationInterceptor(), sessionsService, strategy);
         this.formatter = messageFormatter;
         this.regionSelectionUpdateMessage = regionSelectionUpdateMessage;
         this.locationsService = locationsService;
         this.settingsService = settingsService;
+        this.completionHandler = handler;
         setTriggerEvent(false);
     }
 
-    public void endExecution(MessageData messageData, ExtendedRegion region) {
+    public void endExecution(MessageData messageData, Region region) {
         disableInterceptor(messageData.getChatId());
+        completionHandler.updateNotificationSettings(messageData.getChatId());
         regionSelectionUpdateMessage.publish(messageData, region);
     }
 
@@ -60,8 +65,10 @@ public class SetRegionCommand extends InputInterceptingCommand<LocationSearch> {
     protected void executeWithParameters(MessageData messageData, LocationSearch parameter) {
         if (parameter.isText()) {
             showFiltered(messageData.getChatId(), parameter.getText());
-        } else {
+        } else if (parameter.isCode()) {
             handleRegionCode(parameter.getCode(), messageData);
+        } else {
+            handleEmpty(messageData.getChatId());
         }
     }
 
@@ -89,14 +96,20 @@ public class SetRegionCommand extends InputInterceptingCommand<LocationSearch> {
         selectRegion(region, messageData);
     }
 
-    private void selectRegion(ExtendedRegion region, MessageData messageData) {
+    private void handleEmpty(long chatId) {
+        var settings = settingsService.get(chatId);
+        settings.setLocation(null);
+        settingsService.save(chatId, null);
+    }
+
+    private void selectRegion(Region region, MessageData messageData) {
         var filters = settingsService.get(messageData.getChatId());
         var location = createLocation(region);
         filters.setLocation(location);
         settingsService.save(messageData.getChatId(), filters);
     }
 
-    private Location createLocation(ExtendedRegion region) {
+    private Location createLocation(Region region) {
         var location = new Location();
         region.setTowns(null);
         location.setRegion(region);

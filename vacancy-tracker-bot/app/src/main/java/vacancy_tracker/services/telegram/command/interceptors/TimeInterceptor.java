@@ -1,6 +1,6 @@
 package vacancy_tracker.services.telegram.command.interceptors;
 
-import vacancy_tracker.services.StringUtil;
+import vacancy_tracker.services.util.StringUtil;
 
 import java.time.LocalTime;
 import java.util.Optional;

@@ -2,7 +2,7 @@ package vacancy_tracker.repository.in_memory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import vacancy_tracker.model.telegram.NotificationSettings;
+import vacancy_tracker.model.telegram.notification.NotificationSettings;
 import vacancy_tracker.repository.NotificationSettingsRepository;
 
 import java.time.LocalDateTime;

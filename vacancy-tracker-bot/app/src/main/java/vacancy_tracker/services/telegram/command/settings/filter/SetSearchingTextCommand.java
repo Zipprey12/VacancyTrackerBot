@@ -9,6 +9,7 @@ import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
 import vacancy_tracker.services.telegram.command.handlers.FiltersChangingCompletionHandler;
 import vacancy_tracker.services.telegram.command.interceptors.TextInterceptor;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.SequentialAsyncExecutionStrategy;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SearchFiltersService;
 import vacancy_tracker.services.telegram.view.keyboard.KeyboardBuilder;
@@ -31,15 +32,19 @@ public class SetSearchingTextCommand extends InputInterceptingCommand<String> {
     public SetSearchingTextCommand(SendingAndUpdatingMessagePublisher publisher,
                                    SessionsService sessionsService,
                                    FiltersChangingCompletionHandler handler,
-                                   SearchFiltersService settingsService) {
-        super(KEY,
-                DESCRIPTION,
-                publisher,
-                handler,
-                new TextInterceptor(),
-                sessionsService
-        );
+                                   SearchFiltersService settingsService,
+                                   SequentialAsyncExecutionStrategy strategy) {
+        super(KEY, DESCRIPTION, publisher, handler,
+                new TextInterceptor(), sessionsService, strategy);
         this.settingsService = settingsService;
+    }
+
+    private static InlineKeyboardMarkup initKeyboard() {
+        var items = List.of(
+                new CallbackItem(CANCEL_CHANGE.getKey(), "Оставить текущий"),
+                new CallbackItem(SET_TEXT.getKey(), "Сбросить", NULL.getKey())
+        );
+        return KeyboardBuilder.buildInlineKeyboard(items, 2);
     }
 
     @Override
@@ -66,13 +71,5 @@ public class SetSearchingTextCommand extends InputInterceptingCommand<String> {
                     secondPart;
         }
         return "Текущий текст для поиска: *" + currentText + "*.\n" + secondPart;
-    }
-
-    private static InlineKeyboardMarkup initKeyboard() {
-        var items = List.of(
-                new CallbackItem(CANCEL_CHANGE.getKey(), "Оставить текущий"),
-                new CallbackItem(SET_TEXT.getKey(), "Сбросить", NULL.getKey())
-        );
-        return KeyboardBuilder.buildInlineKeyboard(items, 2);
     }
 }

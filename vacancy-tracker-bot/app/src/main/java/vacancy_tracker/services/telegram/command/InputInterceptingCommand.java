@@ -3,13 +3,13 @@ package vacancy_tracker.services.telegram.command;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import vacancy_tracker.model.telegram.CallingSource;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.services.telegram.command.execution.strategy.ExecutionStrategy;
+import vacancy_tracker.model.telegram.session.CallingSource;
 import vacancy_tracker.services.telegram.command.handlers.CommandCompletionHandler;
 import vacancy_tracker.services.telegram.command.interceptors.InputInterceptor;
 import vacancy_tracker.services.telegram.command.publishers.MessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.ExecutionStrategy;
 import vacancy_tracker.services.telegram.handlers.IdentifiableDataHandler;
 import vacancy_tracker.services.telegram.handlers.InputErrorHandler;
 import vacancy_tracker.services.telegram.session.SessionsService;
@@ -97,16 +97,12 @@ public abstract class InputInterceptingCommand<T> extends ExtendedMessageCommand
     }
 
     protected void enableInterceptor(long chatId) {
-        var session = sessionsService.getSession(chatId);
-        session.setInputInterceptor(inputInterceptor);
-        sessionsService.save(session);
+        var key = inputInterceptor.getDataHandler().getKey();
+        sessionsService.enableInterceptor(chatId, key);
     }
 
     protected void disableInterceptor(long chatId) {
-        var session = sessionsService.getSession(chatId);
-        session.deleteInterceptor();
-        sessionsService.save(session);
-        log.debug("Отключен перехватчик ввода для {}", getKey());
+        sessionsService.disableInterceptor(chatId);
     }
 
     private OutgoingMessage createInvalidOutgoingMessage(MessageData messageData, String text) {

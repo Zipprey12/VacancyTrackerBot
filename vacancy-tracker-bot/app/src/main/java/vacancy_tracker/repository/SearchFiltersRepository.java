@@ -1,6 +1,6 @@
 package vacancy_tracker.repository;
 
-import vacancy_tracker.model.api.dto.VacancySearchFilter;
+import vacancy_tracker.model.search.VacancySearchFilter;
 
 import java.util.Optional;
 

@@ -3,9 +3,9 @@ package vacancy_tracker.services.telegram.view.formatters.filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import vacancy_tracker.model.api.ExtendedRegion;
-import vacancy_tracker.model.api.Location;
-import vacancy_tracker.model.api.Town;
+import vacancy_tracker.model.domain.Location;
+import vacancy_tracker.model.domain.Region;
+import vacancy_tracker.model.domain.Town;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.api.location.LocationsService;
@@ -75,7 +75,7 @@ public class TownsSelectionMessageFormatter {
             return List.of();
         }
         return locationsService.getRegionByCode(location.getRegion().getCode())
-                .map(ExtendedRegion::getTowns)
+                .map(Region::getTowns)
                 .filter(t -> !t.isEmpty())
                 .orElse(List.of());
     }

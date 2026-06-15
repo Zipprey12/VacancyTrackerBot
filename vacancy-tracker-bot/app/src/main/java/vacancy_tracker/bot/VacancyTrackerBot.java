@@ -1,6 +1,7 @@
 package vacancy_tracker.bot;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
@@ -12,6 +13,7 @@ import vacancy_tracker.services.telegram.callback.CallbackService;
 import vacancy_tracker.services.telegram.navigation.BotNavigator;
 import vacancy_tracker.services.telegram.session.SessionsService;
 
+@Slf4j
 @Component
 public class VacancyTrackerBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
 
@@ -39,6 +41,14 @@ public class VacancyTrackerBot implements SpringLongPollingBot, LongPollingSingl
 
     @Override
     public void consume(Update update) {
+        try {
+            processUpdate(update);
+        } catch (Exception e) {
+            log.error("Неожиданная ошибка при обработке запроса телеграм: {}", e.getMessage(), e);
+        }
+    }
+
+    private void processUpdate(Update update) {
         var callback = update.getCallbackQuery();
         if (callback != null) {
             callbackService.handle(update);
@@ -49,8 +59,10 @@ public class VacancyTrackerBot implements SpringLongPollingBot, LongPollingSingl
             var message = update.getMessage();
             var messageData = MessageData.create(message);
 
-            if (!sessionsService.hasSession(message.getChatId())) {
-                sessionsService.addSession(message.getChatId());
+            var session = sessionsService.getOrCreateSession(message.getChatId());
+            if (session.isNew()) {
+                session.setNew(false);
+                sessionsService.save(session);
                 navigator.showInitMessage(messageData);
                 return;
             }

@@ -1,11 +1,10 @@
 package vacancy_tracker.services.telegram.view.formatters.vacancies;
 
 import org.springframework.stereotype.Component;
-import vacancy_tracker.model.api.Location;
-import vacancy_tracker.model.api.RequestType;
-import vacancy_tracker.model.api.VacanciesSource;
-import vacancy_tracker.model.api.Vacancy;
-import vacancy_tracker.model.api.dto.SearchResult;
+import vacancy_tracker.model.domain.Location;
+import vacancy_tracker.model.domain.VacanciesSource;
+import vacancy_tracker.model.domain.Vacancy;
+import vacancy_tracker.model.search.SearchResult;
 import vacancy_tracker.services.telegram.view.utils.DatesFormatUtil;
 
 import java.time.LocalDateTime;
@@ -17,24 +16,12 @@ public class VacanciesMessageFormatter {
     public static final int MAX_VACANCIES = 10;
     public static final String RUB = " руб.";
 
-    protected void addVacancies(StringBuilder sb, List<Vacancy> vacancies, int maxCount) {
-        int current = 0;
-        for (var vacancy : vacancies) {
-            if (current >= maxCount) {
-                return;
-            }
-            fillMessage(vacancy, sb);
-            sb.append("\n");
-            current++;
-        }
-    }
-
     protected static void addHeader(StringBuilder sb, SearchResult result) {
-        addHeader(sb, result.getRequestType(), result.getModifiedFrom(), result.getTotalCount());
+        addHeader(sb, result.getModifiedFrom(), result.getTotalCount());
     }
 
-    protected static void addHeader(StringBuilder sb, RequestType requestType, LocalDateTime modifiedFrom, long totalCount) {
-        if (requestType == RequestType.SCHEDULED && modifiedFrom != null) {
+    protected static void addHeader(StringBuilder sb, LocalDateTime modifiedFrom, long totalCount) {
+        if (modifiedFrom != null) {
             addScheduledHeader(sb, totalCount, modifiedFrom);
         } else {
             addManualHeader(sb, totalCount);
@@ -53,6 +40,17 @@ public class VacanciesMessageFormatter {
                 .append("\n\n");
     }
 
+    protected void addVacancies(StringBuilder sb, List<Vacancy> vacancies, int maxCount) {
+        int current = 0;
+        for (var vacancy : vacancies) {
+            if (current >= maxCount) {
+                return;
+            }
+            fillMessage(vacancy, sb);
+            sb.append("\n");
+            current++;
+        }
+    }
 
     protected void addSource(StringBuilder sb, VacanciesSource source) {
         sb.append("Источник: *")

@@ -1,7 +1,7 @@
 package vacancy_tracker.repository.in_memory;
 
 import org.springframework.stereotype.Repository;
-import vacancy_tracker.model.api.dto.VacancySearchFilter;
+import vacancy_tracker.model.search.VacancySearchFilter;
 import vacancy_tracker.repository.SearchFiltersRepository;
 
 import java.util.HashMap;

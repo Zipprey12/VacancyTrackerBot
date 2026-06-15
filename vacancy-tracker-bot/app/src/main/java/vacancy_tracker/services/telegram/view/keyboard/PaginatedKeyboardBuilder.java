@@ -25,6 +25,25 @@ public class PaginatedKeyboardBuilder extends AdvancedKeyboardBuilder {
         castedParser = parser;
     }
 
+    public static InlineKeyboardRow createFooterItemsRow(List<CallbackItem> callbackItems) {
+        var buttons = new LinkedList<InlineKeyboardButton>();
+        callbackItems.forEach(i -> buttons.add(KeyboardBuilder.createInlineButton(i)));
+        return new InlineKeyboardRow(buttons);
+    }
+
+    public static InlineKeyboardButton createPageIndicator(int currentPage, int totalPages) {
+        InlineKeyboardButton indicator = new InlineKeyboardButton(
+                (currentPage + 1) + " / " + totalPages
+        );
+        indicator.setCallbackData(CommonCallbacks.IGNORE.getKey());
+        return indicator;
+    }
+
+    public static int calculateTotalPages(int totalItems, int itemsPerPage) {
+        if (totalItems == 0) return 1;
+        return (int) Math.ceil((double) totalItems / itemsPerPage);
+    }
+
     public InlineKeyboardMarkup createNavigationKeyboard(int currentPage, int totalPages, List<Object> args) {
         var row = List.of(createNavigationRow(currentPage, totalPages, args));
         return new InlineKeyboardMarkup(row);
@@ -54,25 +73,6 @@ public class PaginatedKeyboardBuilder extends AdvancedKeyboardBuilder {
             row.add(createNavigationButton(NEXT_TEXT, currentPage + 1, args));
         }
         return row;
-    }
-
-    public static InlineKeyboardRow createFooterItemsRow(List<CallbackItem> callbackItems) {
-        var buttons = new LinkedList<InlineKeyboardButton>();
-        callbackItems.forEach(i -> buttons.add(KeyboardBuilder.createInlineButton(i)));
-        return new InlineKeyboardRow(buttons);
-    }
-
-    public static InlineKeyboardButton createPageIndicator(int currentPage, int totalPages) {
-        InlineKeyboardButton indicator = new InlineKeyboardButton(
-                (currentPage + 1) + " / " + totalPages
-        );
-        indicator.setCallbackData(CommonCallbacks.IGNORE.getKey());
-        return indicator;
-    }
-
-    public static int calculateTotalPages(int totalItems, int itemsPerPage) {
-        if (totalItems == 0) return 1;
-        return (int) Math.ceil((double) totalItems / itemsPerPage);
     }
 
     private InlineKeyboardButton createNavigationButton(String text, int targetPage, List<Object> args) {

@@ -1,8 +1,8 @@
 package vacancy_tracker.services.telegram.callback.handlers.settings.filters;
 
 import org.springframework.stereotype.Component;
-import vacancy_tracker.model.telegram.ResetFilterFieldType;
-import vacancy_tracker.model.telegram.view.FilterOptions;
+import vacancy_tracker.model.telegram.settings.FilterOptions;
+import vacancy_tracker.model.telegram.settings.ResetFilterFieldType;
 import vacancy_tracker.services.telegram.callback.handlers.ParsingDataCallbackHandler;
 import vacancy_tracker.services.telegram.command.settings.filter.ResetFiltersCommand;
 

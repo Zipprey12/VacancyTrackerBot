@@ -2,8 +2,8 @@ package vacancy_tracker.services.api.location;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import vacancy_tracker.model.api.ExtendedRegion;
-import vacancy_tracker.model.api.Location;
+import vacancy_tracker.model.domain.Location;
+import vacancy_tracker.model.domain.Region;
 import vacancy_tracker.repository.LocationsRepository;
 import vacancy_tracker.sources.superjob.service.locations.SuperJobTownsService;
 
@@ -25,12 +25,12 @@ public class LocationsServiceImpl implements LocationsService {
 
     @Override
     public void initialize() {
-        var towns = townsService.getAll();
+        var towns = townsService.getAll().block();
         repository.insertTowns(towns);
     }
 
     @Override
-    public Optional<ExtendedRegion> getRegionByCode(int code) {
+    public Optional<Region> getRegionByCode(int code) {
         return repository.getRegionByCode(code);
     }
 
@@ -62,7 +62,7 @@ public class LocationsServiceImpl implements LocationsService {
     }
 
     @Override
-    public List<ExtendedRegion> getAllRegionsBasic() {
+    public List<Region> getAllRegionsBasic() {
         return repository.getAllRegionsBasic();
     }
 }

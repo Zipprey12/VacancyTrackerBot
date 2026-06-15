@@ -1,17 +1,18 @@
 package vacancy_tracker.services.telegram.command.settings.notification;
 
 import org.springframework.stereotype.Component;
-import vacancy_tracker.model.telegram.NotificationSettings;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.services.DateUtil;
+import vacancy_tracker.model.telegram.notification.NotificationSettings;
 import vacancy_tracker.services.telegram.actions.message.AfterDayOfWeekSelectedMessage;
 import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
 import vacancy_tracker.services.telegram.command.interceptors.IntegerInterceptor;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.SequentialAsyncExecutionStrategy;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.NotificationService;
 import vacancy_tracker.services.telegram.view.formatters.notification.WeeklyNotificationMessageFormatter;
+import vacancy_tracker.services.util.DateUtil;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -30,8 +31,9 @@ public class SetWeeklyNotificationCommand extends InputInterceptingCommand<Integ
                                            SessionsService sessionsService,
                                            NotificationService service,
                                            WeeklyNotificationMessageFormatter messageFormatter,
-                                           AfterDayOfWeekSelectedMessage afterDayOfWeekSelectedMessage) {
-        super(KEY, null, publisher, null, new IntegerInterceptor(), sessionsService);
+                                           AfterDayOfWeekSelectedMessage afterDayOfWeekSelectedMessage,
+                                           SequentialAsyncExecutionStrategy strategy) {
+        super(KEY, null, publisher, null, new IntegerInterceptor(), sessionsService, strategy);
         this.service = service;
         this.messageFormatter = messageFormatter;
         this.afterDayOfWeekSelectedMessage = afterDayOfWeekSelectedMessage;

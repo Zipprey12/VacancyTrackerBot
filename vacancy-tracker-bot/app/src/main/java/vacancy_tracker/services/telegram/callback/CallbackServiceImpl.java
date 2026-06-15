@@ -36,7 +36,7 @@ public class CallbackServiceImpl implements CallbackService {
             throw new IllegalArgumentException("Update не содержит Callback");
         }
 
-        log.info(callback.getData());
+        log.debug("Вызван callback: {}.", callback.getData());
         var key = getKey(callback);
         if (!key.equals(CommonCallbacks.IGNORE.getKey())) {
             callHandler(callback, key);

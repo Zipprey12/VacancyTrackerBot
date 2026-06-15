@@ -9,7 +9,7 @@ public interface NotificationQueue {
 
     void remove(long chatId);
 
-    List<Long> dequeueBatchLaterThan(LocalDateTime dateTime, int maxCount);
+    List<Long> dequeueEarlierThan(LocalDateTime dateTime, int maxCount);
 
     void clear();
 }

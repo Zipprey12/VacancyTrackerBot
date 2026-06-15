@@ -15,27 +15,37 @@ repositories {
     mavenCentral()
 }
 
+val lombokVersion = "1.18.44"
+val mapstructVersion = "1.6.3"
+val telegramVersion = "10.0.0"
+val lombokMapstruct = "0.2.0"
+
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.44")
-    annotationProcessor("org.projectlombok:lombok:1.18.44")
+
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:$lombokMapstruct")
+
+    annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
-
-    implementation("org.telegram:telegrambots-springboot-longpolling-starter:9.5.0")
-    implementation("org.telegram:telegrambots-client:9.5.0")
-
-    implementation("org.mapstruct:mapstruct:1.6.3")
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
-    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
-
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.liquibase:liquibase-core")
-    runtimeOnly("org.postgresql:postgresql")
-
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
-    testImplementation(libs.junit)
+    implementation("org.telegram:telegrambots-springboot-longpolling-starter:$telegramVersion")
+    implementation("org.telegram:telegrambots-client:$telegramVersion")
+
+    implementation("org.mapstruct:mapstruct:$mapstructVersion")
+
+    implementation("org.liquibase:liquibase-core")
+
     implementation(libs.guava)
+
+    runtimeOnly("org.postgresql:postgresql")
+    testImplementation(libs.junit)
 }
 
 java {

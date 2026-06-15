@@ -1,14 +1,14 @@
 package vacancy_tracker.services.telegram.callback.handlers.settings.notification;
 
 import org.springframework.stereotype.Component;
-import vacancy_tracker.model.telegram.IntervalType;
 import vacancy_tracker.model.telegram.callback.NotificationSettingCallbackKeys;
+import vacancy_tracker.model.telegram.notification.IntervalType;
 import vacancy_tracker.services.telegram.callback.handlers.ParsingDataCallbackHandler;
 import vacancy_tracker.services.telegram.command.settings.notification.SetNotificationIntervalCommand;
 
 import java.util.Optional;
 
-import static vacancy_tracker.model.telegram.IntervalType.*;
+import static vacancy_tracker.model.telegram.notification.IntervalType.*;
 
 @Component
 public class NotificationIntervalCallbackHandler extends ParsingDataCallbackHandler<IntervalType> {

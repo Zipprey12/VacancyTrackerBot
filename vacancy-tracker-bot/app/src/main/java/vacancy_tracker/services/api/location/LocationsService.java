@@ -1,7 +1,7 @@
 package vacancy_tracker.services.api.location;
 
-import vacancy_tracker.model.api.ExtendedRegion;
-import vacancy_tracker.model.api.Location;
+import vacancy_tracker.model.domain.Location;
+import vacancy_tracker.model.domain.Region;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,11 +10,11 @@ public interface LocationsService {
 
     void initialize();
 
-    Optional<ExtendedRegion> getRegionByCode(int code);
+    Optional<Region> getRegionByCode(int code);
 
     Optional<Location> getLocationByRegionCode(int code);
 
     Optional<Location> getLocationByTownId(int townId);
 
-    List<ExtendedRegion> getAllRegionsBasic();
+    List<Region> getAllRegionsBasic();
 }

@@ -17,17 +17,15 @@ public abstract class NavigationCallbackHandler<T> extends ParsingDataCallbackHa
 
     @Getter(AccessLevel.PROTECTED)
     private final CallbackPaginatedKeyboardBuilder keyboardBuilder;
+    @Getter(AccessLevel.PROTECTED)
+    @Setter(AccessLevel.PROTECTED)
+    private List<CallbackItem> defaultItems;
 
     protected NavigationCallbackHandler(String callbackKey,
                                         ParametrizedDataHandler<T> handler) {
         super(callbackKey, handler);
-
         this.keyboardBuilder = new CallbackPaginatedKeyboardBuilder((PaginationCallbackParser) getCallbackParser());
     }
-
-    @Getter(AccessLevel.PROTECTED)
-    @Setter(AccessLevel.PROTECTED)
-    private List<CallbackItem> defaultItems;
 
     @Override
     public void handle(CallbackQuery callbackQuery) {

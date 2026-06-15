@@ -23,7 +23,9 @@ public class SuperJobRegionsConnectingService {
 
     @PostConstruct
     public void initialize() {
-        var regions = apiClient.findAllRegionsWithoutCities();
+        var regions = apiClient.findAllRegionsWithoutCities().block();
+        if (regions == null) return;
+
         regions.forEach(r -> {
             var number = savedRegionsService.getCodeByName(r.getName());
             number.ifPresent(n -> {

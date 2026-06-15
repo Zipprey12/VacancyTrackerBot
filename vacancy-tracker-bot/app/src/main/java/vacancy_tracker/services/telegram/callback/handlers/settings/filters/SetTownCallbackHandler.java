@@ -2,19 +2,19 @@ package vacancy_tracker.services.telegram.callback.handlers.settings.filters;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import vacancy_tracker.model.api.Location;
+import vacancy_tracker.model.domain.Location;
 import vacancy_tracker.model.telegram.callback.CallbackData;
 import vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys;
 import vacancy_tracker.model.telegram.dto.LocationSearch;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.services.StringUtil;
 import vacancy_tracker.services.api.location.LocationsService;
 import vacancy_tracker.services.telegram.callback.handlers.NavigationCallbackHandler;
 import vacancy_tracker.services.telegram.command.publishers.MessagePublisher;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.command.settings.filter.SetTownCommand;
 import vacancy_tracker.services.telegram.view.formatters.filter.TownsSelectionMessageFormatter;
+import vacancy_tracker.services.util.StringUtil;
 
 import java.util.Optional;
 

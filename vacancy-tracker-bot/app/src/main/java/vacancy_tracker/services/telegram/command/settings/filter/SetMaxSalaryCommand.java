@@ -9,6 +9,7 @@ import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
 import vacancy_tracker.services.telegram.command.handlers.FiltersChangingCompletionHandler;
 import vacancy_tracker.services.telegram.command.interceptors.IntegerInterceptor;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.SequentialAsyncExecutionStrategy;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SearchFiltersService;
 import vacancy_tracker.services.telegram.view.keyboard.KeyboardBuilder;
@@ -31,12 +32,52 @@ public class SetMaxSalaryCommand extends InputInterceptingCommand<Integer> {
     protected SetMaxSalaryCommand(SendingAndUpdatingMessagePublisher publisher,
                                   SessionsService sessionsService,
                                   SearchFiltersService settingsService,
-                                  FiltersChangingCompletionHandler completionHandler) {
+                                  FiltersChangingCompletionHandler completionHandler,
+                                  SequentialAsyncExecutionStrategy strategy) {
         super(KEY, DESCRIPTION, publisher, completionHandler,
-                new IntegerInterceptor(),
-                sessionsService);
+                new IntegerInterceptor(), sessionsService, strategy);
 
         this.settingsService = settingsService;
+    }
+
+    private static String createText(Integer maxSalary) {
+        String secondPart = "Чтобы *изменить:* выберите вариант из списка или отправьте число. " +
+                "Например:  `150000`";
+
+        return createHeader(maxSalary) + secondPart;
+    }
+
+    private static String createHeader(Integer maxSalary) {
+        String value;
+        if (maxSalary == null || maxSalary <= 0) {
+            value = "не указано";
+        } else {
+            value = NumbersFormatUtil.formatNumber(maxSalary) + " ₽";
+        }
+
+        return "Текущее значение максимальной зарплаты: *" + value + "*\n";
+    }
+
+    private static InlineKeyboardMarkup initKeyboard() {
+        return KeyboardBuilder.buildInlineKeyboard(List.of(
+                createItem(60000),
+                createItem(90000),
+                createItem(125000),
+                createItem(200000),
+                new CallbackItem(SET_MAX_SALARY.getKey(), "Не указано", 0),
+                new CallbackItem(CANCEL_CHANGE.getKey(), "Оставить текущий")
+        ), 2);
+    }
+
+    private static CallbackItem createItem(int salary) {
+        return new CallbackItem(SET_MAX_SALARY.getKey(),
+                formatSalary(salary),
+                salary);
+    }
+
+    private static String formatSalary(int salary) {
+        var formatted = NumbersFormatUtil.formatNumber(salary);
+        return formatted + " ₽";
     }
 
     @Override
@@ -64,45 +105,5 @@ public class SetMaxSalaryCommand extends InputInterceptingCommand<Integer> {
 
         messageData.setText(createText(currentMaxSalary));
         messageData.setKeyboardMarkup(KEYBOARD);
-    }
-
-    private static String createText(Integer maxSalary) {
-        String secondPart = "Чтобы *изменить:* выберите вариант из списка или отправьте число. " +
-                "Например:  `150000`";
-
-        return createHeader(maxSalary) + secondPart;
-    }
-
-    private static String createHeader(Integer maxSalary) {
-        String value;
-        if (maxSalary == null || maxSalary <= 0) {
-            value = "не указано";
-        } else {
-            value = NumbersFormatUtil.formatNumber(maxSalary) + " ₽";
-        }
-
-        return "Текущее значение максимальной зарплаты: *" + value + "*\n";
-    }
-
-    private static InlineKeyboardMarkup initKeyboard() {
-        return KeyboardBuilder.buildInlineKeyboard(List.of(
-                createItem(60000),
-                createItem(90000),
-                createItem(125000),
-                createItem(200000),
-                new CallbackItem("0", SET_MAX_SALARY.getKey(), "Не указано"),
-                new CallbackItem(CANCEL_CHANGE.getKey(), "Оставить текущий")
-        ), 2);
-    }
-
-    private static CallbackItem createItem(int salary) {
-        return new CallbackItem(SET_MAX_SALARY.getKey(),
-                formatSalary(salary),
-                salary);
-    }
-
-    private static String formatSalary(int salary) {
-        var formatted = NumbersFormatUtil.formatNumber(salary);
-        return formatted + " ₽";
     }
 }

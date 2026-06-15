@@ -3,7 +3,6 @@ package vacancy_tracker.services.telegram.message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -24,22 +23,6 @@ public class DefaultMessageEditor implements MessageEditor {
     }
 
     @Override
-    public boolean edit(EditMessageReplyMarkup editMarkup) {
-        return tryExecute(editMarkup, editMarkup.getChatId(), editMarkup.getMessageId());
-    }
-
-    @Override
-    public boolean edit(String text, long chatId, int messageId) {
-        var editMessage = EditMessageText.builder()
-                .messageId(messageId)
-                .chatId(chatId)
-                .text(text)
-                .parseMode(ParseMode.MARKDOWN)
-                .build();
-        return tryExecute(editMessage, String.valueOf(chatId), messageId);
-    }
-
-    @Override
     public boolean edit(InlineKeyboardMarkup inlineKeyboardMarkup, long chatId, int messageId) {
         var editMarkup = EditMessageReplyMarkup.builder()
                 .replyMarkup(inlineKeyboardMarkup)
@@ -56,17 +39,9 @@ public class DefaultMessageEditor implements MessageEditor {
                 .chatId(message.getChatId())
                 .text(message.getText())
                 .parseMode(message.getParseMode())
+                .replyMarkup(message.getKeyboardMarkup())
                 .build();
-
-        if (!edit(editMessage)) {
-            return false;
-        }
-
-        var keyboard = message.getKeyboardMarkup();
-        if (keyboard != null) {
-            return edit(keyboard, message.getChatId(), message.getMessageId());
-        }
-        return true;
+        return edit(editMessage);
     }
 
     private boolean tryExecute(BotApiMethod<?> method, String chatId, int messageId) {

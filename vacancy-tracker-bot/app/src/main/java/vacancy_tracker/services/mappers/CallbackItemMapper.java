@@ -3,8 +3,8 @@ package vacancy_tracker.services.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import vacancy_tracker.model.api.ExtendedRegion;
-import vacancy_tracker.model.api.Town;
+import vacancy_tracker.model.domain.Region;
+import vacancy_tracker.model.domain.Town;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 
 import java.util.List;
@@ -18,14 +18,14 @@ public interface CallbackItemMapper {
     @Mapping(target = "key", source = "code", qualifiedByName = "toStringValue")
     @Mapping(target = "callbackPrefix", constant = REGION_PREFIX)
     @Mapping(target = "displayedName", source = "name")
-    CallbackItem fromRegion(ExtendedRegion region);
+    CallbackItem fromRegion(Region region);
 
     @Mapping(target = "key", source = "id", qualifiedByName = "toStringValue")
     @Mapping(target = "callbackPrefix", constant = TOWN_PREFIX)
     @Mapping(target = "displayedName", source = "name")
     CallbackItem fromTown(Town town);
 
-    List<CallbackItem> fromRegions(List<ExtendedRegion> regions);
+    List<CallbackItem> fromRegions(List<Region> regions);
 
     List<CallbackItem> fromTowns(List<Town> towns);
 

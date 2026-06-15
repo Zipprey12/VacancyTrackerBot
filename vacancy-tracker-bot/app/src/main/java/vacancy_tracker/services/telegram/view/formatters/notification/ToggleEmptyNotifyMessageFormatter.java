@@ -61,6 +61,6 @@ public class ToggleEmptyNotifyMessageFormatter {
     }
 
     private CallbackItem backButton() {
-        return new CallbackItem(CANCEL_CHANGE.getKey(), "Отмена");
+        return new CallbackItem(CANCEL_CHANGE.getKey(), "Назад");
     }
 }

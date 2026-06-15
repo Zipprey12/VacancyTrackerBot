@@ -1,7 +1,7 @@
 package vacancy_tracker.repository.jpa.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import vacancy_tracker.model.telegram.entities.NotificationSettingsEntity;
+import vacancy_tracker.model.persistence.NotificationSettingsEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;

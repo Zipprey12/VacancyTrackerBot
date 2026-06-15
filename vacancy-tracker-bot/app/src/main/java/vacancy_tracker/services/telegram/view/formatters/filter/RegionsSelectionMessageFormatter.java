@@ -4,10 +4,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import vacancy_tracker.model.api.ExtendedRegion;
-import vacancy_tracker.model.telegram.ResetFilterFieldType;
+import vacancy_tracker.model.domain.Region;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.model.telegram.settings.ResetFilterFieldType;
 import vacancy_tracker.services.mappers.CallbackItemMapper;
 import vacancy_tracker.services.telegram.view.keyboard.CallbackPaginatedKeyboardBuilder;
 import vacancy_tracker.services.telegram.view.keyboard.KeyboardBuilder;
@@ -25,8 +25,8 @@ import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys
 public class RegionsSelectionMessageFormatter {
 
     public static final String MAIN_HEADER = """
-            🗺️ *Выберите регион* из списка.
-            Либо *введите его название* (можно часть слова) в сообщении.
+            🗺️ *Выберите регион* из списка или *отправьте сообщением* его *код*.
+            Вы также можете *отправить его название* (можно часть слова) для фильтрации.
             """;
 
     public static final String HEADER_WITH_FILTER = "🗺️ *Выберите регион* из списка.";
@@ -48,12 +48,12 @@ public class RegionsSelectionMessageFormatter {
     private static final InlineKeyboardMarkup EMPTY_ITEMS_KEYBOARD =
             KeyboardBuilder.buildInlineKeyboard(BOTTOM_BUTTONS, 2);
 
-    private final Map<String, ExtendedRegion> regionsByKey;
+    private final Map<String, Region> regionsByKey;
     private final CallbackPaginatedKeyboardBuilder regionsPaginationBuilder;
     private final CallbackItemMapper mapper;
 
     @Getter
-    private List<ExtendedRegion> regions;
+    private List<Region> regions;
 
     @Getter
     private InlineKeyboardMarkup allRegionsKeyboard;
@@ -67,16 +67,16 @@ public class RegionsSelectionMessageFormatter {
         this.regionsByKey = new LinkedHashMap<>();
     }
 
-    public void setRegions(List<ExtendedRegion> regions) {
+    public void setRegions(List<Region> regions) {
         log.info("REGIONS: {}", regions.size());
         this.regions = List.copyOf(regions)
                 .stream()
-                .sorted(Comparator.comparing(ExtendedRegion::getName))
+                .sorted(Comparator.comparing(Region::getName))
                 .toList();
 
         regionsByKey.clear();
         regions.stream()
-                .sorted(Comparator.comparing(ExtendedRegion::getName))
+                .sorted(Comparator.comparing(Region::getName))
                 .forEach(r -> this.regionsByKey.put(r.getName().toLowerCase(), r));
         this.allRegionsKeyboard = createKeyboard(regions, null, 0);
     }
@@ -103,7 +103,7 @@ public class RegionsSelectionMessageFormatter {
         fillRegions(filteredRegions, message, filter, page);
     }
 
-    private List<ExtendedRegion> filterRegions(String filterText) {
+    private List<Region> filterRegions(String filterText) {
         if (filterText == null) {
             return regions;
         }
@@ -113,7 +113,7 @@ public class RegionsSelectionMessageFormatter {
                 .toList();
     }
 
-    private void fillRegions(List<ExtendedRegion> regions, OutgoingMessage message, String filter, int page) {
+    private void fillRegions(List<Region> regions, OutgoingMessage message, String filter, int page) {
         var keyboard = createKeyboard(regions, filter, page);
         message.setText(filter == null ? MAIN_HEADER : HEADER_WITH_FILTER);
         message.setKeyboardMarkup(keyboard);
@@ -124,7 +124,7 @@ public class RegionsSelectionMessageFormatter {
         message.setKeyboardMarkup(EMPTY_ITEMS_KEYBOARD);
     }
 
-    private InlineKeyboardMarkup createKeyboard(List<ExtendedRegion> regions, String filter, int page) {
+    private InlineKeyboardMarkup createKeyboard(List<Region> regions, String filter, int page) {
         var items = regions.stream()
                 .map(mapper::fromRegion)
                 .toList();

@@ -1,12 +1,14 @@
 package vacancy_tracker.services.telegram.notification;
 
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import vacancy_tracker.model.telegram.NotificationSettings;
+import vacancy_tracker.model.telegram.notification.NotificationSettings;
 import vacancy_tracker.services.telegram.settings.NotificationService;
 
 import java.time.LocalDateTime;
@@ -20,7 +22,8 @@ public class NotificationQueueService {
     private final NotificationQueue queue;
     private final NotificationService notificationService;
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
+    @Order(2)
     public void initialize() {
         try {
             log.info("Инициализация очереди нотификаций...");
@@ -34,7 +37,6 @@ public class NotificationQueueService {
                     queue.add(settings.getChatId(), settings.getNextNotificationAt());
                 }
             }
-
             log.info("Очередь нотификаций инициализирована");
         } catch (Exception e) {
             log.error("Ошибка инициализации очереди: {}", e.getMessage(), e);
@@ -55,8 +57,8 @@ public class NotificationQueueService {
         queue.remove(chatId);
     }
 
-    public List<Long> dequeueLaterThan(int maxCount) {
-        return queue.dequeueBatchLaterThan(LocalDateTime.now(), maxCount);
+    public List<Long> getOverdue(int maxCount) {
+        return queue.dequeueEarlierThan(LocalDateTime.now(), maxCount);
     }
 
     public void clear() {

@@ -1,8 +1,8 @@
 package vacancy_tracker.services.api;
 
-import vacancy_tracker.model.api.VacanciesSource;
-import vacancy_tracker.model.api.dto.VacanciesResponse;
-import vacancy_tracker.model.api.dto.VacancySearchFilter;
+import vacancy_tracker.model.domain.VacanciesSource;
+import vacancy_tracker.model.search.VacanciesResponse;
+import vacancy_tracker.model.search.VacancySearchFilter;
 
 import java.util.concurrent.CompletableFuture;
 

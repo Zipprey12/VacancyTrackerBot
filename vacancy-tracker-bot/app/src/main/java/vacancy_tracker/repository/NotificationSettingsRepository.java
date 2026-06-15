@@ -1,6 +1,6 @@
 package vacancy_tracker.repository;
 
-import vacancy_tracker.model.telegram.NotificationSettings;
+import vacancy_tracker.model.telegram.notification.NotificationSettings;
 
 import java.time.LocalDateTime;
 import java.util.List;

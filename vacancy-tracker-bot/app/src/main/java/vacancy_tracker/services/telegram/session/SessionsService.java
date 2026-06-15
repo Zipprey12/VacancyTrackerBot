@@ -1,14 +1,16 @@
 package vacancy_tracker.services.telegram.session;
 
-import vacancy_tracker.model.telegram.UserSessionContext;
+import vacancy_tracker.model.telegram.session.UserSessionContext;
 
 public interface SessionsService {
 
-    UserSessionContext getSession(long chatId);
+    UserSessionContext getOrCreateSession(long chatId);
 
-    boolean hasSession(long chatId);
+    UserSessionContext addSession(long chatId);
 
-    void addSession(long chatId);
+    UserSessionContext save(UserSessionContext session);
 
-    void save(UserSessionContext session);
+    void disableInterceptor(long chatId);
+
+    void enableInterceptor(long chatId, String key);
 }

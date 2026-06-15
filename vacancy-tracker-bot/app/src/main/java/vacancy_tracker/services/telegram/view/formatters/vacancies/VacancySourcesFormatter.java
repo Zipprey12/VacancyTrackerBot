@@ -2,12 +2,12 @@ package vacancy_tracker.services.telegram.view.formatters.vacancies;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import vacancy_tracker.model.api.VacanciesSource;
+import vacancy_tracker.model.domain.VacanciesSource;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.callback.CompositeCallbackItem;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.services.DateUtil;
 import vacancy_tracker.services.telegram.view.keyboard.KeyboardBuilder;
+import vacancy_tracker.services.util.DateUtil;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
@@ -18,10 +18,6 @@ import static vacancy_tracker.model.telegram.callback.VacanciesCallbackKeys.GET_
 @Component
 @RequiredArgsConstructor
 public class VacancySourcesFormatter {
-
-    public void fill(OutgoingMessage message, List<VacanciesSource> sources, long totalCount) {
-        fill(message, sources, totalCount, null);
-    }
 
     public void fill(OutgoingMessage message, List<VacanciesSource> sources, long totalCount, LocalDateTime dateFrom) {
         addText(message, totalCount);

@@ -7,6 +7,7 @@ import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
 import vacancy_tracker.services.telegram.command.handlers.NotificationChangingCompletionHandler;
 import vacancy_tracker.services.telegram.command.interceptors.DurationInterceptor;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.SequentialAsyncExecutionStrategy;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.NotificationService;
 import vacancy_tracker.services.telegram.view.formatters.notification.NotificationHoursSelectionFormatter;
@@ -15,7 +16,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Component
-
 public class SetHoursNotificationCommand extends InputInterceptingCommand<Duration> {
 
     public static final String KEY = "/set_hours_interval";
@@ -26,11 +26,12 @@ public class SetHoursNotificationCommand extends InputInterceptingCommand<Durati
     private final NotificationService notificationService;
 
     protected SetHoursNotificationCommand(SendingAndUpdatingMessagePublisher publisher,
+                                          SequentialAsyncExecutionStrategy executionStrategy,
                                           NotificationChangingCompletionHandler handler,
                                           SessionsService sessionsService,
                                           NotificationService notificationService,
                                           NotificationHoursSelectionFormatter formatter) {
-        super(KEY, DESCRIPTION, publisher, handler, new DurationInterceptor(), sessionsService);
+        super(KEY, DESCRIPTION, publisher, handler, new DurationInterceptor(), sessionsService, executionStrategy);
         this.formatter = formatter;
         this.notificationService = notificationService;
     }

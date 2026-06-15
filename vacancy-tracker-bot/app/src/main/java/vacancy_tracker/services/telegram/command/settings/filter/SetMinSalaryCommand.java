@@ -9,6 +9,7 @@ import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
 import vacancy_tracker.services.telegram.command.handlers.FiltersChangingCompletionHandler;
 import vacancy_tracker.services.telegram.command.interceptors.IntegerInterceptor;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.SequentialAsyncExecutionStrategy;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SearchFiltersService;
 import vacancy_tracker.services.telegram.view.keyboard.KeyboardBuilder;
@@ -31,38 +32,12 @@ public class SetMinSalaryCommand extends InputInterceptingCommand<Integer> {
     protected SetMinSalaryCommand(SendingAndUpdatingMessagePublisher publisher,
                                   SessionsService sessionsService,
                                   SearchFiltersService settingsService,
-                                  FiltersChangingCompletionHandler completionHandler) {
+                                  FiltersChangingCompletionHandler completionHandler,
+                                  SequentialAsyncExecutionStrategy strategy) {
         super(KEY, DESCRIPTION, publisher, completionHandler,
-                new IntegerInterceptor(),
-                sessionsService);
+                new IntegerInterceptor(), sessionsService, strategy);
 
         this.settingsService = settingsService;
-    }
-
-    @Override
-    protected void executeWithParameters(MessageData messageData, Integer parameter) {
-        var chatId = messageData.getChatId();
-        var filters = settingsService.get(chatId);
-        var maxSalary = filters.getMaxSalary();
-
-        if (parameter < 0) {
-            handleInvalidValue(messageData, "Значение зарплаты не может быть отрицательным числом");
-            return;
-        }
-        if (maxSalary != null && parameter > maxSalary) {
-            handleInvalidValue(messageData, "Минимальная зарплата не может превышать максимальную");
-            return;
-        }
-
-        filters.setMinSalary(parameter);
-        settingsService.save(chatId, filters);
-    }
-
-    @Override
-    protected void executeAndPopulateMessage(OutgoingMessage messageData) {
-        var currentMinSalary = settingsService.get(messageData.getChatId()).getMinSalary();
-        messageData.setText(createText(currentMinSalary));
-        messageData.setKeyboardMarkup(KEYBOARD);
     }
 
     private static String createText(Integer minSalary) {
@@ -103,5 +78,31 @@ public class SetMinSalaryCommand extends InputInterceptingCommand<Integer> {
     private static String formatSalary(int salary) {
         var formatted = NumbersFormatUtil.formatNumber(salary);
         return formatted + " ₽";
+    }
+
+    @Override
+    protected void executeWithParameters(MessageData messageData, Integer parameter) {
+        var chatId = messageData.getChatId();
+        var filters = settingsService.get(chatId);
+        var maxSalary = filters.getMaxSalary();
+
+        if (parameter < 0) {
+            handleInvalidValue(messageData, "Значение зарплаты не может быть отрицательным числом");
+            return;
+        }
+        if (maxSalary != null && parameter > maxSalary) {
+            handleInvalidValue(messageData, "Минимальная зарплата не может превышать максимальную");
+            return;
+        }
+
+        filters.setMinSalary(parameter);
+        settingsService.save(chatId, filters);
+    }
+
+    @Override
+    protected void executeAndPopulateMessage(OutgoingMessage messageData) {
+        var currentMinSalary = settingsService.get(messageData.getChatId()).getMinSalary();
+        messageData.setText(createText(currentMinSalary));
+        messageData.setKeyboardMarkup(KEYBOARD);
     }
 }

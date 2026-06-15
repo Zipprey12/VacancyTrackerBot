@@ -1,14 +1,12 @@
 package vacancy_tracker.sources.superjob.service.locations;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Mono;
 import vacancy_tracker.sources.superjob.model.dto.SuperJobRegionDto;
 import vacancy_tracker.sources.superjob.model.dto.SuperJobTownDto;
 import vacancy_tracker.sources.superjob.model.response.SuperJobCitiesResponse;
@@ -16,81 +14,75 @@ import vacancy_tracker.sources.superjob.model.response.SuperJobRegionsResponse;
 import vacancy_tracker.sources.superjob.service.SuperJobApiClient;
 
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class SuperJobLocationsApiClient extends SuperJobApiClient {
 
     public static final int RUSSIA_INDEX = 1;
-
-    private final RestTemplate restTemplate;
 
     @Value("${superjob.api.regionsUrl}")
     private String regionsUrl;
 
     @Value("${superjob.api.citiesUrl}")
-    private String citiesUrl;
+    private String townsUrl;
 
-    public List<SuperJobRegionDto> findAllRegionsWithoutCities() {
-        List<SuperJobRegionDto> regions = new LinkedList<>();
-
-        try {
-            HttpEntity<String> entity = new HttpEntity<>(createHeaders());
-            ResponseEntity<SuperJobRegionsResponse> response = restTemplate.exchange(
-                    buildRegionsUrl(), HttpMethod.GET, entity, SuperJobRegionsResponse.class);
-
-            var regionResponse = response.getBody();
-            if (response.getStatusCode().is2xxSuccessful() && regionResponse != null) {
-                log.info("SuperJob: Получено {} регионов", regionResponse.getTotal());
-                regionResponse.getRegions()
-                        .stream()
-                        .sorted(Comparator.comparing(SuperJobRegionDto::getName))
-                        .forEach(r -> {
-                            if (r.getCountryId() == RUSSIA_INDEX) {
-                                regions.add(r);
-                            }
-                        });
-            }
-
-        } catch (Exception e) {
-            log.error("Ошибка при попытке получения регионов: ", e);
-        }
-        return regions;
+    protected SuperJobLocationsApiClient(WebClient superJobWebClient) {
+        super(superJobWebClient);
     }
 
-    public List<SuperJobTownDto> getAllTowns() {
-        List<SuperJobTownDto> towns = new LinkedList<>();
+    public Mono<List<SuperJobRegionDto>> findAllRegionsWithoutCities() {
+        var url = UriComponentsBuilder.fromHttpUrl(regionsUrl)
+                .queryParam("all", true)
+                .toUriString();
 
-        try {
-            HttpEntity<String> entity = new HttpEntity<>(createHeaders());
-            ResponseEntity<SuperJobCitiesResponse> response = restTemplate.exchange(
-                    buildCitiesUrl(), HttpMethod.GET, entity, SuperJobCitiesResponse.class);
-
-            var citiesResponse = response.getBody();
-            if (response.getStatusCode().is2xxSuccessful() && citiesResponse != null) {
-                log.info("SuperJob: Получено {} городов", citiesResponse.getTotal());
-                towns.addAll(citiesResponse.getCities());
-            }
-
-        } catch (Exception e) {
-            log.error("Ошибка при попытке получения регионов: ", e);
-        }
-        return towns;
+        return getWebClient()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(SuperJobRegionsResponse.class)
+                .map(response -> {
+                    log.info("SuperJob: Получено {} регионов", response.getTotal());
+                    return response.getRegions()
+                            .stream()
+                            .filter(r -> r.getCountryId() == RUSSIA_INDEX)
+                            .sorted(Comparator.comparing(SuperJobRegionDto::getName))
+                            .toList();
+                })
+                .doOnError(WebClientResponseException.class,
+                        e -> log.error("SuperJob: ошибка получения регионов, статус {}",
+                                e.getStatusCode()))
+                .doOnError(e -> !(e instanceof WebClientResponseException),
+                        e -> log.error("SuperJob: ошибка при получении регионов", e))
+                .onErrorReturn(List.of());
     }
 
-    private String buildRegionsUrl() {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(regionsUrl);
-        builder.queryParam("all", true);
-        return builder.toUriString();
+    public Mono<List<SuperJobTownDto>> getAllTowns() {
+        var url = buildTownsUrl();
+
+        return getWebClient()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(SuperJobCitiesResponse.class)
+                .retry(3)
+                .map(response -> {
+                    log.info("SuperJob: Получено {} городов", response.getTotal());
+                    return response.getCities();
+                })
+                .doOnError(WebClientResponseException.class,
+                        e -> log.error("SuperJob: ошибка получения городов, статус {}",
+                                e.getStatusCode()))
+                .doOnError(e -> !(e instanceof WebClientResponseException),
+                        e -> log.error("SuperJob: ошибка при получении городов", e))
+                .onErrorReturn(List.of());
     }
 
-    private String buildCitiesUrl() {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(citiesUrl);
-        builder.queryParam("all", true);
-        builder.queryParam("id_country", RUSSIA_INDEX);
-        return builder.toUriString();
+    private String buildTownsUrl() {
+        return UriComponentsBuilder.fromHttpUrl(townsUrl)
+                .queryParam("all", true)
+                .queryParam("id_country", RUSSIA_INDEX)
+                .toUriString();
     }
 }

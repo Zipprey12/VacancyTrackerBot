@@ -9,6 +9,7 @@ import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
 import vacancy_tracker.services.telegram.command.handlers.FiltersChangingCompletionHandler;
 import vacancy_tracker.services.telegram.command.interceptors.FloatInterceptor;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.SequentialAsyncExecutionStrategy;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SearchFiltersService;
 import vacancy_tracker.services.telegram.view.keyboard.KeyboardBuilder;
@@ -31,39 +32,17 @@ public class SetExperienceCommand extends InputInterceptingCommand<Float> {
     public SetExperienceCommand(SendingAndUpdatingMessagePublisher publisher,
                                 SessionsService sessionsService,
                                 SearchFiltersService settingsService,
-                                FiltersChangingCompletionHandler completionHandler) {
+                                FiltersChangingCompletionHandler completionHandler,
+                                SequentialAsyncExecutionStrategy strategy) {
 
         super(KEY, DESCRIPTION, publisher,
                 completionHandler,
                 new FloatInterceptor(),
-                sessionsService
+                sessionsService,
+                strategy
         );
 
         this.settingsService = settingsService;
-    }
-
-    @Override
-    protected void executeWithParameters(MessageData messageData, Float experience) {
-        var chatId = messageData.getChatId();
-        var filters = settingsService.get(chatId);
-        if (experience < 0) {
-            handleInvalidValue(messageData);
-            return;
-        }
-        if (experience == 0) {
-            filters.setExperience(null);
-        } else {
-            filters.setExperience(experience);
-        }
-        settingsService.save(chatId, filters);
-    }
-
-    @Override
-    protected void executeAndPopulateMessage(OutgoingMessage messageData) {
-        var currentExperience = settingsService.get(messageData.getChatId()).getExperience();
-
-        messageData.setText(createText(currentExperience));
-        messageData.setKeyboardMarkup(KEYBOARD);
     }
 
     private static String createText(Float experience) {
@@ -91,5 +70,29 @@ public class SetExperienceCommand extends InputInterceptingCommand<Float> {
     private static CallbackItem createItem(int experience) {
         return new CallbackItem(SET_EXPERIENCE.getKey(),
                 DatesFormatUtil.formatYears(experience), experience);
+    }
+
+    @Override
+    protected void executeWithParameters(MessageData messageData, Float experience) {
+        var chatId = messageData.getChatId();
+        var filters = settingsService.get(chatId);
+        if (experience < 0) {
+            handleInvalidValue(messageData);
+            return;
+        }
+        if (experience == 0) {
+            filters.setExperience(null);
+        } else {
+            filters.setExperience(experience);
+        }
+        settingsService.save(chatId, filters);
+    }
+
+    @Override
+    protected void executeAndPopulateMessage(OutgoingMessage messageData) {
+        var currentExperience = settingsService.get(messageData.getChatId()).getExperience();
+
+        messageData.setText(createText(currentExperience));
+        messageData.setKeyboardMarkup(KEYBOARD);
     }
 }

@@ -2,16 +2,17 @@ package vacancy_tracker.services.telegram.command.settings.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import vacancy_tracker.model.api.Town;
-import vacancy_tracker.model.telegram.CallingSource;
+import vacancy_tracker.model.domain.Town;
 import vacancy_tracker.model.telegram.dto.LocationSearch;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.model.telegram.session.CallingSource;
 import vacancy_tracker.services.api.location.LocationsService;
 import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
 import vacancy_tracker.services.telegram.command.handlers.FiltersChangingCompletionHandler;
 import vacancy_tracker.services.telegram.command.interceptors.LocationInterceptor;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.SequentialAsyncExecutionStrategy;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SearchFiltersService;
 import vacancy_tracker.services.telegram.view.formatters.filter.TownsSelectionMessageFormatter;
@@ -34,13 +35,10 @@ public class SetTownCommand extends InputInterceptingCommand<LocationSearch> {
                           SessionsService sessionsService,
                           SearchFiltersService settingsService,
                           TownsSelectionMessageFormatter formatter,
-                          LocationsService locationsService) {
-        super(KEY,
-                DESCRIPTION,
-                publisher,
-                handler,
-                new LocationInterceptor(),
-                sessionsService);
+                          LocationsService locationsService,
+                          SequentialAsyncExecutionStrategy strategy) {
+        super(KEY, DESCRIPTION, publisher, handler,
+                new LocationInterceptor(), sessionsService, strategy);
 
         this.settingsService = settingsService;
         this.formatter = formatter;
@@ -79,7 +77,7 @@ public class SetTownCommand extends InputInterceptingCommand<LocationSearch> {
     private void handleCode(int townId, MessageData messageData) {
         var town = selectTown(townId, messageData.getChatId());
         if (town.isPresent()) {
-            endExecution(messageData);
+            endExecution(messageData, true);
         }
     }
 

@@ -2,10 +2,10 @@ package vacancy_tracker.sources.superjob.service.vacancy;
 
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import vacancy_tracker.model.api.Company;
-import vacancy_tracker.model.api.Location;
-import vacancy_tracker.model.api.Town;
-import vacancy_tracker.model.api.Vacancy;
+import vacancy_tracker.model.domain.Company;
+import vacancy_tracker.model.domain.Location;
+import vacancy_tracker.model.domain.Town;
+import vacancy_tracker.model.domain.Vacancy;
 import vacancy_tracker.sources.superjob.model.dto.SuperJobTownDto;
 import vacancy_tracker.sources.superjob.model.dto.SuperJobVacancyDto;
 

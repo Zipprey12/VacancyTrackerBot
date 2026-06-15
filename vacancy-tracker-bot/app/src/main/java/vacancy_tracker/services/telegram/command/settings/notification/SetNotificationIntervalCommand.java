@@ -1,11 +1,13 @@
 package vacancy_tracker.services.telegram.command.settings.notification;
 
 import org.springframework.stereotype.Component;
-import vacancy_tracker.model.telegram.IntervalType;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.model.telegram.notification.IntervalType;
+import vacancy_tracker.services.telegram.actions.settings.notification.SetDailyNotificationAction;
 import vacancy_tracker.services.telegram.command.ExtendedMessageCommand;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.SequentialAsyncExecutionStrategy;
 import vacancy_tracker.services.telegram.settings.NotificationService;
 import vacancy_tracker.services.telegram.view.formatters.notification.NotificationIntervalMessageFormatter;
 
@@ -13,27 +15,28 @@ import vacancy_tracker.services.telegram.view.formatters.notification.Notificati
 public class SetNotificationIntervalCommand extends ExtendedMessageCommand<IntervalType> {
 
     public static final String KEY = "/set_interval";
-    public static final String DESCRIPTION = "Задать интервал отправки уведомлений";
+    public static final String DESCRIPTION = "Настроить время отправки уведомлений";
 
     private final NotificationService notificationService;
     private final NotificationIntervalMessageFormatter messageFormatter;
 
     private final SetHoursNotificationCommand setHoursIntervalCommand;
     private final SetWeeklyNotificationCommand setWeeklyNotificationCommand;
-    private final SetDailyNotificationCommand setDailyNotificationCommand;
+    private final SetDailyNotificationAction setDailyNotificationAction;
 
     protected SetNotificationIntervalCommand(SendingAndUpdatingMessagePublisher publisher,
                                              NotificationService notificationService,
                                              NotificationIntervalMessageFormatter messageFormatter,
                                              SetHoursNotificationCommand setHoursIntervalCommand,
                                              SetWeeklyNotificationCommand setWeeklyNotificationCommand,
-                                             SetDailyNotificationCommand setDailyNotificationCommand) {
-        super(KEY, DESCRIPTION, publisher);
+                                             SetDailyNotificationAction setDailyNotificationAction,
+                                             SequentialAsyncExecutionStrategy strategy) {
+        super(KEY, DESCRIPTION, publisher, strategy);
         this.notificationService = notificationService;
         this.messageFormatter = messageFormatter;
         this.setHoursIntervalCommand = setHoursIntervalCommand;
         this.setWeeklyNotificationCommand = setWeeklyNotificationCommand;
-        this.setDailyNotificationCommand = setDailyNotificationCommand;
+        this.setDailyNotificationAction = setDailyNotificationAction;
     }
 
     @Override
@@ -46,7 +49,7 @@ public class SetNotificationIntervalCommand extends ExtendedMessageCommand<Inter
     protected void executeWithParameters(MessageData messageData, IntervalType parameter) {
         switch (parameter) {
             case HOURS -> setHoursIntervalCommand.execute(messageData);
-            case DAILY -> setDailyNotificationCommand.execute(messageData);
+            case DAILY -> setDailyNotificationAction.execute(messageData);
             case WEEKLY -> setWeeklyNotificationCommand.execute(messageData);
         }
     }

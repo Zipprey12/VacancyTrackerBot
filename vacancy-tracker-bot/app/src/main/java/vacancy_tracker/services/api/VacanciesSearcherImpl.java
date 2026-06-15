@@ -1,10 +1,10 @@
 package vacancy_tracker.services.api;
 
 import org.springframework.stereotype.Service;
-import vacancy_tracker.model.api.VacanciesSource;
-import vacancy_tracker.model.api.dto.SearchResult;
-import vacancy_tracker.model.api.dto.VacanciesResponse;
-import vacancy_tracker.model.api.dto.VacancySearchFilter;
+import vacancy_tracker.model.domain.VacanciesSource;
+import vacancy_tracker.model.search.SearchResult;
+import vacancy_tracker.model.search.VacanciesResponse;
+import vacancy_tracker.model.search.VacancySearchFilter;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -29,13 +29,18 @@ public class VacanciesSearcherImpl implements VacanciesSearcher {
                 .map(p -> p.find(filter, limit, page))
                 .toList();
 
+        var modifiedFrom = filter.getModifiedFrom();
         return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
                 .thenApply(v -> {
-                    var result = new SearchResult(filter.getRequestType());
+                    var res = new SearchResult(filter.getRequestType());
                     futures.stream()
                             .map(CompletableFuture::join)
-                            .forEach(result::addResponse);
-                    return result;
+                            .forEach(r -> {
+                                r.setModifiedFrom(modifiedFrom);
+                                res.addResponse(r);
+                            });
+                    res.setModifiedFrom(modifiedFrom);
+                    return res;
                 });
     }
 
@@ -52,6 +57,7 @@ public class VacanciesSearcherImpl implements VacanciesSearcher {
                 .thenApply(response -> {
                     SearchResult result = new SearchResult(filter.getRequestType());
                     result.addResponse(response);
+                    response.setModifiedFrom(response.getModifiedFrom());
                     return result;
                 });
     }

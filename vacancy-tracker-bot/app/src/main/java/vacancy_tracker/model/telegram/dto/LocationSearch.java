@@ -2,7 +2,7 @@ package vacancy_tracker.model.telegram.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import vacancy_tracker.services.StringUtil;
+import vacancy_tracker.services.util.StringUtil;
 
 import java.util.Optional;
 

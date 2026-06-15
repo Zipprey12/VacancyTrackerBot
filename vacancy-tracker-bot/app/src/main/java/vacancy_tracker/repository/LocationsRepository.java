@@ -1,7 +1,7 @@
 package vacancy_tracker.repository;
 
-import vacancy_tracker.model.api.ExtendedRegion;
-import vacancy_tracker.model.api.Town;
+import vacancy_tracker.model.domain.Region;
+import vacancy_tracker.model.domain.Town;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,17 +10,17 @@ public interface LocationsRepository {
 
     void insertTowns(List<Town> towns);
 
-    void insertRegions(List<ExtendedRegion> regions);
+    void insertRegions(List<Region> regions);
 
-    Optional<ExtendedRegion> getRegionByTownId(int townId);
+    Optional<Region> getRegionByTownId(int townId);
 
-    Optional<ExtendedRegion> getRegionByCode(int regionId);
+    Optional<Region> getRegionByCode(int regionId);
 
-    Optional<ExtendedRegion> getRegionBasicByCode(int regionId);
+    Optional<Region> getRegionBasicByCode(int regionId);
 
     Optional<Town> getTownById(int townId);
 
-    List<ExtendedRegion> getAllRegionsBasic();
+    List<Region> getAllRegionsBasic();
 
     boolean isInitialized();
 }

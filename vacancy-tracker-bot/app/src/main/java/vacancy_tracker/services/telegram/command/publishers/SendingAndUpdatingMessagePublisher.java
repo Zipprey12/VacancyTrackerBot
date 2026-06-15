@@ -3,13 +3,15 @@ package vacancy_tracker.services.telegram.command.publishers;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.message.MessageEditor;
 import vacancy_tracker.services.telegram.message.MessageSender;
 
-import static vacancy_tracker.model.telegram.CallingSource.CALLBACK;
+import static vacancy_tracker.model.telegram.session.CallingSource.CALLBACK;
 
+@Slf4j
 @Getter
 @Component
 @RequiredArgsConstructor
@@ -28,10 +30,12 @@ public class SendingAndUpdatingMessagePublisher implements MessagePublisher {
     }
 
     protected void edit(OutgoingMessage messageData) {
+        log.debug("Called edit message {} in chat {}", messageData.getMessageId(), messageData.getChatId());
         editor.edit(messageData);
     }
 
     protected void send(OutgoingMessage messageData) {
+        log.debug("Called send message {} to chat {}", messageData.getMessageId(), messageData.getChatId());
         sender.send(messageData);
     }
 }

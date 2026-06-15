@@ -1,18 +1,15 @@
 package vacancy_tracker.sources.superjob.service;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.reactive.function.client.WebClient;
 
 public abstract class SuperJobApiClient {
 
-    @Value("${superjob.secretKey}")
-    private String appKey;
+    @Getter
+    private final WebClient webClient;
 
-    protected HttpHeaders createHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Api-App-Id", appKey);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return headers;
+    protected SuperJobApiClient(@Qualifier("superJobWebClient") WebClient webClient) {
+        this.webClient = webClient;
     }
 }

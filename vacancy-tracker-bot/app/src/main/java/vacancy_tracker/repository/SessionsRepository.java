@@ -1,6 +1,6 @@
 package vacancy_tracker.repository;
 
-import vacancy_tracker.model.telegram.UserSessionContext;
+import vacancy_tracker.model.telegram.session.UserSessionContext;
 
 import java.util.Optional;
 

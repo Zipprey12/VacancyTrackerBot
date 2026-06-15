@@ -6,6 +6,7 @@ import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.command.ExtendedMessageCommand;
 import vacancy_tracker.services.telegram.command.handlers.NotificationChangingCompletionHandler;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.SequentialAsyncExecutionStrategy;
 import vacancy_tracker.services.telegram.settings.NotificationService;
 import vacancy_tracker.services.telegram.view.formatters.notification.ToggleEmptyNotifyMessageFormatter;
 
@@ -22,8 +23,9 @@ public class ToggleEmptyNotifyCommand extends ExtendedMessageCommand<Boolean> {
     protected ToggleEmptyNotifyCommand(SendingAndUpdatingMessagePublisher publisher,
                                        NotificationChangingCompletionHandler handler,
                                        NotificationService service,
-                                       ToggleEmptyNotifyMessageFormatter messageFormatter) {
-        super(KEY, DESCRIPTION, publisher);
+                                       ToggleEmptyNotifyMessageFormatter messageFormatter,
+                                       SequentialAsyncExecutionStrategy strategy) {
+        super(KEY, DESCRIPTION, publisher, strategy);
         this.service = service;
         this.messageFormatter = messageFormatter;
         setOnComplete(handler);
@@ -42,6 +44,5 @@ public class ToggleEmptyNotifyCommand extends ExtendedMessageCommand<Boolean> {
         var settings = service.get(chatId);
         settings.setNotifyWhenVacanciesNotFound(parameter);
         service.save(chatId, settings);
-        endExecution(messageData);
     }
 }

@@ -11,7 +11,7 @@ import vacancy_tracker.services.telegram.view.formatters.notification.Notificati
 public class SetNotificationSettingsCommand extends SimpleMessageCommand {
 
     public static final String KEY = "/notification";
-    public static final String DESCRIPTION = "настройка уведомлений";
+    public static final String DESCRIPTION = "Настройка уведомлений";
 
     private final NotificationService settingsService;
     private final NotificationSettingsMessageFormatter messageFormatter;

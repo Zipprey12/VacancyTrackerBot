@@ -1,7 +1,7 @@
 package vacancy_tracker.repository.in_memory;
 
 import org.springframework.stereotype.Repository;
-import vacancy_tracker.model.telegram.UserSessionContext;
+import vacancy_tracker.model.telegram.session.UserSessionContext;
 import vacancy_tracker.repository.SessionsRepository;
 
 import java.util.Map;

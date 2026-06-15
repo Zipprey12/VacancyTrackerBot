@@ -3,8 +3,8 @@ package vacancy_tracker.services.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import vacancy_tracker.model.telegram.NotificationSettings;
-import vacancy_tracker.model.telegram.entities.NotificationSettingsEntity;
+import vacancy_tracker.model.persistence.NotificationSettingsEntity;
+import vacancy_tracker.model.telegram.notification.NotificationSettings;
 
 import java.time.Duration;
 

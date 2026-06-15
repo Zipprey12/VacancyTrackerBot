@@ -3,10 +3,12 @@ package vacancy_tracker.services.telegram.view.formatters.vacancies;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import vacancy_tracker.model.api.dto.SearchResult;
-import vacancy_tracker.model.api.dto.VacanciesResponse;
+import vacancy_tracker.model.search.SearchResult;
+import vacancy_tracker.model.search.VacanciesResponse;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.view.utils.DatesFormatUtil;
+
+import java.time.LocalDateTime;
 
 @Slf4j
 @Component
@@ -18,7 +20,7 @@ public class VacancyPageFormatter extends VacanciesMessageFormatter {
     public void fillMessage(OutgoingMessage message, SearchResult result) {
         var responses = result.getVacanciesResponses();
         if (responses == null || responses.isEmpty()) {
-            fillEmptyResult(message, result);
+            fillEmptyResult(message, result.getModifiedFrom());
             return;
         }
         var stringBuilder = new StringBuilder();
@@ -35,8 +37,18 @@ public class VacancyPageFormatter extends VacanciesMessageFormatter {
         message.setText(stringBuilder.toString());
     }
 
-    private void fillEmptyResult(OutgoingMessage message, SearchResult result) {
-        var from = result.getModifiedFrom();
+    public void fillMessage(OutgoingMessage message, VacanciesResponse response) {
+        if (response.isEmpty()) {
+            fillEmptyResult(message, response.getModifiedFrom());
+            return;
+        }
+        var sb = new StringBuilder();
+        addHeader(sb, response.getModifiedFrom(), response.getTotal());
+        add(sb, response, response.getVacancies().size());
+        message.setText(sb.toString());
+    }
+
+    private void fillEmptyResult(OutgoingMessage message, LocalDateTime from) {
         if (from == null) {
             message.setText(EMPTY_RESULT);
             return;

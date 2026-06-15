@@ -4,9 +4,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
-import vacancy_tracker.model.api.Location;
-import vacancy_tracker.model.api.dto.VacancySearchFilter;
-import vacancy_tracker.model.telegram.entities.SearchFilterEntity;
+import vacancy_tracker.model.domain.Location;
+import vacancy_tracker.model.persistence.SearchFilterEntity;
+import vacancy_tracker.model.search.VacancySearchFilter;
 import vacancy_tracker.services.api.location.LocationsService;
 
 @Mapper(componentModel = "spring")

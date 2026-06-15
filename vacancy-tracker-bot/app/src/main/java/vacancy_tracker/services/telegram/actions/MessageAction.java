@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.services.telegram.command.execution.strategy.ExecutionStrategy;
 import vacancy_tracker.services.telegram.command.publishers.MessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.ExecutionStrategy;
 import vacancy_tracker.services.telegram.handlers.ExecutableMessageHandler;
 
 @RequiredArgsConstructor
@@ -22,6 +22,7 @@ public abstract class MessageAction implements ExecutableMessageHandler {
     public void execute(MessageData message) {
         var outgoingMessage = new OutgoingMessage(message);
         executionStrategy.execute(
+                message.getChatId(),
                 () -> executeAndPopulateMessage(outgoingMessage),
                 () -> {
                     if (outgoingMessage.getText() != null) {

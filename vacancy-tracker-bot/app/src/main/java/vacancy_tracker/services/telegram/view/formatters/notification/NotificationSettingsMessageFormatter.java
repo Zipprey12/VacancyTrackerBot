@@ -2,9 +2,9 @@ package vacancy_tracker.services.telegram.view.formatters.notification;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import vacancy_tracker.model.telegram.NotificationSettings;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.model.telegram.notification.NotificationSettings;
 import vacancy_tracker.services.telegram.view.keyboard.KeyboardBuilder;
 import vacancy_tracker.services.telegram.view.utils.DurationFormatUtil;
 

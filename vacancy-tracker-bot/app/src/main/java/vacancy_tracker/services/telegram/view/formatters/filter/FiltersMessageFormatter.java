@@ -1,8 +1,8 @@
 package vacancy_tracker.services.telegram.view.formatters.filter;
 
 import org.springframework.stereotype.Component;
-import vacancy_tracker.model.api.Location;
-import vacancy_tracker.model.api.dto.VacancySearchFilter;
+import vacancy_tracker.model.domain.Location;
+import vacancy_tracker.model.search.VacancySearchFilter;
 import vacancy_tracker.services.telegram.view.utils.DatesFormatUtil;
 
 @Component
@@ -16,7 +16,7 @@ public class FiltersMessageFormatter {
     private static final String FOOTER = """
             
             
-            _При изменении любого параметра в следующем уведомлении будут показаны все подходящие вакансии (а не только новые)._
+            _При изменении любого параметра в следующем запланированном уведомлении будут показаны все подходящие вакансии (а не только новые)._
             """;
 
     public String format(VacancySearchFilter filter) {
@@ -37,7 +37,7 @@ public class FiltersMessageFormatter {
 
     private void appendText(StringBuilder sb, String text) {
         sb.append("\uD83D\uDD0D *Ключевые слова:* ");
-        sb.append(text == null ? "__не задано__" : text);
+        sb.append(text == null || text.isBlank() ? "__не задано__" : text);
     }
 
     private void appendLocation(StringBuilder sb, Location location) {

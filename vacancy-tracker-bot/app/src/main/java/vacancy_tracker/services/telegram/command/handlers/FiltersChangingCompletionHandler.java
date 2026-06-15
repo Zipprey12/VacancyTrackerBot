@@ -28,7 +28,7 @@ public class FiltersChangingCompletionHandler implements CommandCompletionHandle
         CompletableFuture.runAsync(() -> updateNotificationSettings(chatId));
     }
 
-    private void updateNotificationSettings(long chatId) {
+    public void updateNotificationSettings(long chatId) {
         var settings = notificationService.get(chatId);
         settings.setLastNotificationAt(null);
         notificationService.save(chatId, settings);

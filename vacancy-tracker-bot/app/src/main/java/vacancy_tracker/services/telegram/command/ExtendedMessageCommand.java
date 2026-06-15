@@ -6,13 +6,16 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.model.telegram.execution.ExecutionResult;
 import vacancy_tracker.services.telegram.SupportsCompletionCheck;
-import vacancy_tracker.services.telegram.command.execution.strategy.ExecutionStrategy;
 import vacancy_tracker.services.telegram.command.handlers.CommandCompletionHandler;
 import vacancy_tracker.services.telegram.command.publishers.MessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.ExecutionStrategy;
 import vacancy_tracker.services.telegram.handlers.ParametrizedDataHandler;
 
 import java.util.concurrent.CompletableFuture;
+
+import static vacancy_tracker.model.telegram.execution.ExecutionFailReason.EXCEPTION;
 
 @Slf4j
 @Getter
@@ -26,16 +29,10 @@ public abstract class ExtendedMessageCommand<T> extends AbstractMessageCommand i
     @Setter(AccessLevel.PROTECTED)
     private boolean triggerEvent = true;
 
-    private final ExecutionStrategy executionStrategy;
-
     protected ExtendedMessageCommand(String key, String description,
                                      MessagePublisher publisher,
-                                     CommandCompletionHandler handler) {
-        this(key, description, publisher, ExecutionStrategy.sync(), handler);
-    }
-
-    protected ExtendedMessageCommand(String key, String description, MessagePublisher publisher) {
-        this(key, description, publisher, ExecutionStrategy.sync(), null);
+                                     ExecutionStrategy strategy) {
+        this(key, description, publisher, strategy, null);
     }
 
     protected ExtendedMessageCommand(String key, String description,
@@ -44,25 +41,28 @@ public abstract class ExtendedMessageCommand<T> extends AbstractMessageCommand i
                                      CommandCompletionHandler handler) {
         super(key, description, executionStrategy, publisher);
         this.onComplete = handler;
-        this.executionStrategy = ExecutionStrategy.sync();
     }
 
     @Override
-    public CompletableFuture<Boolean> executeWithCompletionCheck(MessageData messageData, T parameter) {
+    public CompletableFuture<ExecutionResult> executeWithCompletionCheck(MessageData messageData, T parameter) {
         var message = new OutgoingMessage(messageData);
-        return getExecutionStrategy().executeWithCheck(() -> executeWithParameters(message, parameter));
+        return getExecutionStrategy()
+                .executeWithCheck(message.getChatId(), () -> executeWithParameters(message, parameter))
+                .thenApply(result -> Boolean.TRUE.equals(result) ?
+                        ExecutionResult.success() : ExecutionResult.fail(EXCEPTION));
     }
 
     @Override
     public final void handleWithParameter(MessageData messageData, T parameter) {
-        executionStrategy.execute(() -> executeWithParameters(messageData, parameter));
-        if (triggerEvent) {
-            endExecution(messageData);
-        }
+        getExecutionStrategy().executeWithCheck(() -> executeWithParameters(messageData, parameter))
+                .thenAccept(success -> {
+                    if (isTriggerEvent()) {
+                        endExecution(messageData, success);
+                    }
+                });
     }
 
     protected void endExecution(MessageData message) {
-        log.debug("{} - завершение работы", getKey());
         endExecution(message, true);
     }
 

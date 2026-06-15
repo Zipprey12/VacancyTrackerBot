@@ -3,8 +3,8 @@ package vacancy_tracker.repository.in_memory;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import vacancy_tracker.model.api.ExtendedRegion;
-import vacancy_tracker.model.api.Town;
+import vacancy_tracker.model.domain.Region;
+import vacancy_tracker.model.domain.Town;
 import vacancy_tracker.repository.LocationsRepository;
 import vacancy_tracker.repository.RegionsRepository;
 
@@ -17,8 +17,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class InMemoryLocationRepository implements LocationsRepository {
 
-    private final Map<Integer, ExtendedRegion> byCityId = new LinkedHashMap<>();
-    private final LinkedHashMap<Integer, ExtendedRegion> byRegionCode = new LinkedHashMap<>();
+    private final Map<Integer, Region> byCityId = new LinkedHashMap<>();
+    private final LinkedHashMap<Integer, Region> byRegionCode = new LinkedHashMap<>();
     private final Map<Integer, Town> townsById = new LinkedHashMap<>();
 
     private final RegionsRepository regionsRepository;
@@ -28,7 +28,7 @@ public class InMemoryLocationRepository implements LocationsRepository {
         var regions = regionsRepository.findAll();
         regions.forEach(r -> {
             var code = r.getCode();
-            var region = new ExtendedRegion();
+            var region = new Region();
             region.setCode(code);
             region.setName(r.getName());
             byRegionCode.put(r.getCode(), region);
@@ -50,7 +50,7 @@ public class InMemoryLocationRepository implements LocationsRepository {
     }
 
     @Override
-    public void insertRegions(List<ExtendedRegion> regions) {
+    public void insertRegions(List<Region> regions) {
         regions.forEach(region -> {
             byRegionCode.put(region.getCode(), region);
             if (region.getTowns() != null) {
@@ -63,19 +63,19 @@ public class InMemoryLocationRepository implements LocationsRepository {
     }
 
     @Override
-    public Optional<ExtendedRegion> getRegionByTownId(int townId) {
+    public Optional<Region> getRegionByTownId(int townId) {
         var existed = byCityId.get(townId);
         return toOptional(copy(existed));
     }
 
     @Override
-    public Optional<ExtendedRegion> getRegionByCode(int code) {
+    public Optional<Region> getRegionByCode(int code) {
         var existed = byRegionCode.get(code);
         return toOptional(copy(existed));
     }
 
     @Override
-    public Optional<ExtendedRegion> getRegionBasicByCode(int code) {
+    public Optional<Region> getRegionBasicByCode(int code) {
         var existed = byRegionCode.get(code);
         return toOptional(copyBasic(existed));
     }
@@ -87,7 +87,7 @@ public class InMemoryLocationRepository implements LocationsRepository {
     }
 
     @Override
-    public List<ExtendedRegion> getAllRegionsBasic() {
+    public List<Region> getAllRegionsBasic() {
         return byRegionCode.sequencedValues().stream()
                 .map(this::copy)
                 .toList();
@@ -102,7 +102,7 @@ public class InMemoryLocationRepository implements LocationsRepository {
         return Optional.ofNullable(source);
     }
 
-    private ExtendedRegion copy(ExtendedRegion source) {
+    private Region copy(Region source) {
         List<Town> townsCopy = source.getTowns() == null
                 ? null
                 : source.getTowns().stream()
@@ -122,8 +122,8 @@ public class InMemoryLocationRepository implements LocationsRepository {
                 .build();
     }
 
-    private ExtendedRegion copyBasic(ExtendedRegion source) {
-        return ExtendedRegion.builder()
+    private Region copyBasic(Region source) {
+        return Region.builder()
                 .name(source.getName())
                 .code(source.getCode())
                 .build();
