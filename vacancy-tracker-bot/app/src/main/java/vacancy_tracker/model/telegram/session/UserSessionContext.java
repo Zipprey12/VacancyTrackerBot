@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vacancy_tracker.services.telegram.command.interceptors.InputInterceptor;
 
 import java.io.Serializable;
 
@@ -21,12 +20,6 @@ public class UserSessionContext implements Serializable {
 
     public UserSessionContext(long chatId) {
         this.chatId = chatId;
-    }
-
-    public void setInterceptor(InputInterceptor<?> inputInterceptor) {
-        if (inputInterceptor != null && inputInterceptor.getDataHandler() != null) {
-            inputHandlerKey = inputInterceptor.getDataHandler().getKey();
-        }
     }
 
     public void deleteInterceptor() {

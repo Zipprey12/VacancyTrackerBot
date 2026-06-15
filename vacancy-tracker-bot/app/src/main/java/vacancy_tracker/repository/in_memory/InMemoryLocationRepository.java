@@ -93,11 +93,6 @@ public class InMemoryLocationRepository implements LocationsRepository {
                 .toList();
     }
 
-    @Override
-    public boolean isInitialized() {
-        return !byRegionCode.isEmpty();
-    }
-
     private <T> Optional<T> toOptional(T source) {
         return Optional.ofNullable(source);
     }

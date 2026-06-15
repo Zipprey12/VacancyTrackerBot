@@ -21,15 +21,6 @@ public class DateUtil {
         return from.plusDays(daysUntil).with(time);
     }
 
-    public static LocalDateTime nextTime(LocalDateTime from, LocalTime time, int daysInterval) {
-        var current = from.toLocalDate().atTime(time);
-
-        if (current.isAfter(from) || current.equals(from)) {
-            return current;
-        }
-        return current.plusDays(daysInterval);
-    }
-
     public static long toUnixSeconds(LocalDateTime dateTime) {
         if (dateTime == null) return 0;
         return dateTime.atZone(ZoneId.systemDefault()).toEpochSecond();

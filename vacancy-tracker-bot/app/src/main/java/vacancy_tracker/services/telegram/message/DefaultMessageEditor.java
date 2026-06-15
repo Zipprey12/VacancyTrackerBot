@@ -23,16 +23,6 @@ public class DefaultMessageEditor implements MessageEditor {
     }
 
     @Override
-    public boolean edit(InlineKeyboardMarkup inlineKeyboardMarkup, long chatId, int messageId) {
-        var editMarkup = EditMessageReplyMarkup.builder()
-                .replyMarkup(inlineKeyboardMarkup)
-                .chatId(chatId)
-                .messageId(messageId)
-                .build();
-        return tryExecute(editMarkup, String.valueOf(chatId), messageId);
-    }
-
-    @Override
     public boolean edit(OutgoingMessage message) {
         var editMessage = EditMessageText.builder()
                 .messageId(message.getMessageId())
