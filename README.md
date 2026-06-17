@@ -1,92 +1,157 @@
-# java_dev_tools_final_project
+# Vacancy Tracker Bot
 
+Telegram-бот для агрегации и отслеживания вакансий из **SuperJob** и **TrudVsem**. Поддерживает настройку фильтров поиска и автоматические уведомления о новых вакансиях по расписанию.
 
+## Возможности
 
-## Getting started
+- Поиск вакансий из двух источников: SuperJob и TrudVsem
+- Фильтрация по ключевому слову, региону, городу, зарплате и опыту работы
+- Автоматические уведомления о новых вакансиях с настраиваемым интервалом
+- Интерактивная навигация с inline-клавиатурами и пагинацией
+- Многошаговые диалоги для изменения настроек
+## Стек
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+| Слой | Технология |
+|---|---|
+| Язык | Java 21 |
+| Фреймворк | Spring Boot 3.2 |
+| Telegram SDK | TelegramBots 10.0 |
+| БД | PostgreSQL 16 + JPA/Hibernate |
+| Миграции | Liquibase |
+| Кэш | Redis 7 |
+| HTTP-клиент | WebClient (Spring WebFlux) |
+| Сборка | Gradle (Kotlin DSL) |
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Быстрый старт
 
-## Add your files
+### Требования
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+- Docker и Docker Compose
+### Запуск
+
+1. Клонировать репозиторий:
+```bash
+   git clone <repo-url>
+   cd vacancy-tracker-bot
+```
+
+2. Создать файл с переменными окружения:
+```bash
+   cp docker/example.env docker/.env
+```
+
+3. Заполнить `docker/.env`:
+```env
+   BOT_NAME=YourBotName
+   BOT_TOKEN=your_bot_token_here
+ 
+   SUPER_JOB_APP_ID=your_app_id
+   SUPER_JOB_SECRET=v3.your_secret
+ 
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=postgres
+```
+
+4. Запустить одной командой из корня проекта.
+   **Linux / macOS:**
+```bash
+   ./start.sh up --build
+```
+
+**Windows (PowerShell):**
+```powershell
+   .\start.ps1 up --build
+```
+
+### Полезные команды
+
+```bash
+./start.sh up -d          # запуск в фоне
+./start.sh down           # остановка
+./start.sh logs -f app    # логи приложения в реальном времени
+./start.sh restart app    # перезапуск только бота
+```
+
+На Windows используйте `.\start.ps1` вместо `./start.sh` с теми же аргументами.
+
+## Команды бота
+
+| Команда | Описание |
+|---|---|
+| `/start` | Регистрация и приветствие |
+| `/help` | Список команд |
+| `/get_all` | Получить вакансии по текущим фильтрам |
+| `/search_settings` | Настройки фильтров поиска |
+| `/notification_settings` | Настройки уведомлений |
+| `/reset_filters` | Сбросить фильтры |
+
+## Настройки фильтров
+
+Доступны через `/search_settings`:
+
+- **Ключевое слово** — текстовый поиск по названию вакансии
+- **Регион** — поиск по коду или названию региона
+- **Город** — уточнение города внутри региона
+- **Минимальная зарплата**
+- **Максимальная зарплата**
+- **Опыт работы** — в годах (дробные значения допустимы)
+## Настройки уведомлений
+
+Доступны через `/notification_settings`:
+
+- **Включить/выключить** уведомления
+- **Интервал** — произвольный: несколько часов, дней или раз в неделю в определённый день
+- **Время** — время суток для отправки уведомлений
+- **Уведомлять если нет новых вакансий** — опциональное
+## Структура проекта
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.skillbox.ru/learning_materials/java_dev_tools_final_project.git
-git branch -M master
-git push -uf origin master
+vacancy-tracker-bot/
+├── Dockerfile
+├── start.sh                        # скрипт запуска
+├── docker/
+│   ├── docker-compose.yml
+│   ├── .env                        # секреты (не коммитить)
+│   └── example.env
+└── app/
+    └── src/main/java/vacancy_tracker/
+        ├── bot/                    # точка входа Telegram-бота
+        ├── config/                 # конфигурация Spring
+        ├── model/                  # доменные модели, DTO, entities
+        ├── repository/             # JPA-репозитории
+        ├── services/
+        │   ├── api/                # интеграция с внешними API
+        │   ├── telegram/
+        │   │   ├── actions/        # Action-классы (execute + handleWithParameter)
+        │   │   ├── command/        # команды бота и стратегии выполнения
+        │   │   ├── callback/       # обработчики inline-кнопок
+        │   │   ├── notification/   # планировщик уведомлений
+        │   │   ├── session/        # управление сессиями пользователей
+        │   │   ├── settings/       # сервисы настроек
+        │   │   └── view/           # форматирование сообщений, клавиатуры
+        │   └── util/               # DateUtil, StringUtil
+        └── sources/
+            ├── superjob/           # клиент SuperJob API
+            └── trudvsem/           # клиент ТрудВсем API
 ```
 
-## Integrate with your tools
+## Архитектурные решения
 
-- [ ] [Set up project integrations](https://gitlab.skillbox.ru/learning_materials/java_dev_tools_final_project/-/settings/integrations)
+**Стратегии выполнения команд.** Каждая команда принимает `ExecutionStrategy` — `SyncExecutionStrategy`, `AsyncExecutionStrategy` или `SequentialAsyncExecutionStrategy`. Последняя гарантирует строгий порядок выполнения задач одного пользователя без блокировки других пользователей, что критично для команд, изменяющих настройки.
 
-## Collaborate with your team
+**Перехватчики ввода.** `InputInterceptingCommand` позволяет реализовать многошаговые диалоги: после вызова команды бот ожидает текстовый ввод от пользователя и обрабатывает его через типизированный `InputInterceptor<T>` (FloatInterceptor, TimeInterceptor, DurationInterceptor и др.).
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+**Очередь уведомлений.** Реализована на Redis Sorted Set: каждый пользователь хранится с `score = unix timestamp` следующего уведомления. Планировщик раз в секунду выбирает просроченные записи и обрабатывает их асинхронно через `NotificationProcessor`.
 
-## Test and Deploy
+**Кэширование.** Сессии, настройки фильтров и уведомлений кэшируются в Redis с раздельными TTL. Сериализация через Jackson с поддержкой `java.time` типов.
 
-Use the built-in continuous integration in GitLab.
+## Переменные окружения
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+| Переменная | Описание                       |
+|---|--------------------------------|
+| `BOT_NAME` | Username бота (без @)          |
+| `BOT_TOKEN` | Токен от @BotFather            |
+| `SUPER_JOB_APP_ID` | ID приложения SuperJob         |
+| `SUPER_JOB_SECRET` | Секретный ключ SuperJob API (https://api.superjob.ru/info/) |
+| `POSTGRES_USER` | Пользователь PostgreSQL        |
+| `POSTGRES_PASSWORD` | Пароль PostgreSQL              |
