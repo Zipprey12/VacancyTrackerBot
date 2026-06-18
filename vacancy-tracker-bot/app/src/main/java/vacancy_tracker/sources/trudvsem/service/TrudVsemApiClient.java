@@ -23,7 +23,8 @@ public class TrudVsemApiClient {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
     private final WebClient trudVsemWebClient;
-    @Value("${trudvsem.api.baseUrl}")
+
+    @Value("${trudvsem.api.base-url}")
     private String baseUrl;
 
     public Mono<TrudVsemResponse> searchVacancies(VacancySearchFilter filter, int limit, int offset) {

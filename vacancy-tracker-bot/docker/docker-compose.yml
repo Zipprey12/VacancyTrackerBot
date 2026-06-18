@@ -6,10 +6,12 @@ services:
     env_file: .env
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/vacancy_tracker
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
     ports:
-      - "8090:8090"
+      - "8088:8088"
     depends_on:
       postgres:
         condition: service_healthy
@@ -29,7 +31,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d vacancy_tracker" ]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d vacancy_tracker"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -42,7 +44,7 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5

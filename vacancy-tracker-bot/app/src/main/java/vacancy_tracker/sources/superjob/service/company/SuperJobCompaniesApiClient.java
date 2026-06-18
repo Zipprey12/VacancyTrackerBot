@@ -13,7 +13,7 @@ import vacancy_tracker.sources.superjob.service.SuperJobApiClient;
 @Component
 public class SuperJobCompaniesApiClient extends SuperJobApiClient {
 
-    @Value("${superjob.api.companiesUrl}")
+    @Value("${superjob.api.companies-url}")
     private String companiesUrl;
 
     protected SuperJobCompaniesApiClient(WebClient superJobWebClient) {

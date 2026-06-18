@@ -26,7 +26,7 @@ public class SuperJobVacanciesApiClient extends SuperJobApiClient {
 
     private final SuperJobRegionsConnectingService connectingService;
 
-    @Value("${superjob.api.vacanciesUrl}")
+    @Value("${superjob.api.vacancies-url}")
     private String vacanciesUrl;
 
     protected SuperJobVacanciesApiClient(WebClient superJobWebClient,

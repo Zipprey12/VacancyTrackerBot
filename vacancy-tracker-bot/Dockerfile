@@ -12,7 +12,7 @@ RUN ./gradlew dependencies --no-daemon -q || true
 
 COPY app/src app/src
 
-RUN ./gradlew :app:bootJar --no-daemon -x test
+RUN ./gradlew :app:clean :app:bootJar --no-daemon -x test
 
 FROM eclipse-temurin:21-jre-alpine
 

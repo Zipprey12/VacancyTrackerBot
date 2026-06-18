@@ -19,6 +19,10 @@ import java.util.Objects;
 @Slf4j
 public abstract class InputInterceptingCommand<T> extends ExtendedMessageCommand<T> implements IdentifiableDataHandler<T>, InputErrorHandler {
 
+    public static final String DEFAULT_PARSING_ERROR_MESSAGE = """
+            Мне не удалось корректно обработать текст сообщения 😕
+            Возможно, это опечатка?
+            """;
     @Getter(AccessLevel.PROTECTED)
     private final SessionsService sessionsService;
 
@@ -108,7 +112,7 @@ public abstract class InputInterceptingCommand<T> extends ExtendedMessageCommand
     private OutgoingMessage createInvalidOutgoingMessage(MessageData messageData, String text) {
         var message = new OutgoingMessage(messageData);
         message.setSource(CallingSource.CHAT);
-        message.setText(Objects.requireNonNullElse(text, "Неверный формат данных"));
+        message.setText(Objects.requireNonNullElse(text, DEFAULT_PARSING_ERROR_MESSAGE));
         return message;
     }
 }

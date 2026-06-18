@@ -22,10 +22,10 @@ public class SuperJobLocationsApiClient extends SuperJobApiClient {
 
     public static final int RUSSIA_INDEX = 1;
 
-    @Value("${superjob.api.regionsUrl}")
+    @Value("${superjob.api.regions-url}")
     private String regionsUrl;
 
-    @Value("${superjob.api.citiesUrl}")
+    @Value("${superjob.api.cities-url}")
     private String townsUrl;
 
     protected SuperJobLocationsApiClient(WebClient superJobWebClient) {

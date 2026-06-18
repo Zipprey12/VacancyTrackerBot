@@ -5,30 +5,34 @@ logging:
 server:
   port: 8088
 
-#Задать в конфигурации
 bot:
   name: ${BOT_NAME}
   token: ${BOT_TOKEN}
 
 superjob:
-  appId: ${SUPER_JOB_APP_ID}
-  secretKey: ${SUPER_JOB_SECRET}
+  app-id: ${SUPER_JOB_APP_ID}
+  secret-key: ${SUPER_JOB_SECRET}
   api:
-    vacanciesUrl: https://api.superjob.ru/2.0/vacancies/
-    companiesUrl: https://api.superjob.ru/2.0/clients/
-    regionsUrl: https://api.superjob.ru/2.0/regions/
-    citiesUrl: https://api.superjob.ru/2.0/towns/
+    vacancies-url: https://api.superjob.ru/2.0/vacancies/
+    companies-url: https://api.superjob.ru/2.0/clients/
+    regions-url: https://api.superjob.ru/2.0/regions/
+    cities-url: https://api.superjob.ru/2.0/towns/
 
 trudvsem:
   api:
-    baseUrl: http://opendata.trudvsem.ru/api/v1
+    base-url: http://opendata.trudvsem.ru/api/v1
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/vacancy_tracker
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/vacancy_tracker}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
+
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
 
   jpa:
     hibernate:

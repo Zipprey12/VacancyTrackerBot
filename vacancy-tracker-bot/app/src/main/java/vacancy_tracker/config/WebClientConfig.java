@@ -20,10 +20,10 @@ public class WebClientConfig {
     private static final int READ_TIMEOUT_S = 20;
     private static final int CONNECTION_TIMEOUT_MS = 5_000;
 
-    @Value("${superjob.secretKey}")
+    @Value("${superjob.secret-key}")
     private String superJobApiKey;
 
-    @Value("${trudvsem.api.baseUrl}")
+    @Value("${trudvsem.api.base-url}")
     private String trudVsemBaseUrl;
 
     @Bean

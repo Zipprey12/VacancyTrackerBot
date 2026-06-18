@@ -22,16 +22,17 @@ Telegram-бот для агрегации и отслеживания вакан
 | HTTP-клиент | WebClient (Spring WebFlux) |
 | Сборка | Gradle (Kotlin DSL) |
 
-## Быстрый старт
+## Старт приложения
 
 ### Требования
 
 - Docker и Docker Compose
+- 
 ### Запуск
 
 1. Клонировать репозиторий:
 ```bash
-   git clone <repo-url>
+   git clone https://github.com/Zipprey12/VacancyTrackerBot
    cd vacancy-tracker-bot
 ```
 
@@ -40,46 +41,60 @@ Telegram-бот для агрегации и отслеживания вакан
    cp docker/example.env docker/.env
 ```
 
-3. Заполнить `docker/.env`:
-```env
-   BOT_NAME=YourBotName
-   BOT_TOKEN=your_bot_token_here
- 
-   SUPER_JOB_APP_ID=your_app_id
-   SUPER_JOB_SECRET=v3.your_secret
- 
-   POSTGRES_USER=postgres
-   POSTGRES_PASSWORD=postgres
-```
+3. Заполнить `docker/.env`
 
-4. Запустить одной командой из корня проекта.
-   **Linux / macOS:**
-```bash
-   ./start.sh up --build
-```
+### Переменные окружения
 
-**Windows (PowerShell):**
-```powershell
-   .\start.ps1 up --build
-```
+| Переменная | Описание                       |
+|---|--------------------------------|
+| `BOT_NAME` | Username бота (без @)          |
+| `BOT_TOKEN` | Токен от @BotFather            |
+| `SUPER_JOB_APP_ID` | ID приложения SuperJob         |
+| `SUPER_JOB_SECRET` | Секретный ключ SuperJob API (https://api.superjob.ru/info/) |
+| `POSTGRES_USER` | Пользователь PostgreSQL        |
+| `POSTGRES_PASSWORD` | Пароль PostgreSQL              |
 
-### Полезные команды
+### Вариант А — Docker Compose
+
+Требования: Docker и Docker Compose.
 
 ```bash
-./start.sh up -d          # запуск в фоне
-./start.sh down           # остановка
-./start.sh logs -f app    # логи приложения в реальном времени
-./start.sh restart app    # перезапуск только бота
+cd docker
+docker compose up --build
 ```
 
-На Windows используйте `.\start.ps1` вместо `./start.sh` с теми же аргументами.
+При первом запуске Docker соберёт JAR внутри контейнера — это займёт несколько минут. При последующих запусках без изменений в коде:
 
-## Команды бота
+```bash
+docker compose up
+```
+
+Остановка:
+
+```bash
+docker compose down
+```
+---
+
+### Вариант Б — IDEA + Docker (инфраструктура)
+
+Требования: JDK 21, IDEA, Docker.
+
+Поднять только PostgreSQL и Redis:
+
+```bash
+cd docker
+docker compose up postgres redis
+```
+
+В IDEA открыть **Run → Edit Configurations** для `App.java` и добавить переменные окружения (указать файл .env)
+
+Запустить `App.java` через IDEA
+
+## Основные команды бота
 
 | Команда | Описание |
 |---|---|
-| `/start` | Регистрация и приветствие |
-| `/help` | Список команд |
 | `/get_all` | Получить вакансии по текущим фильтрам |
 | `/search_settings` | Настройки фильтров поиска |
 | `/notification_settings` | Настройки уведомлений |
@@ -144,14 +159,3 @@ vacancy-tracker-bot/
 **Очередь уведомлений.** Реализована на Redis Sorted Set: каждый пользователь хранится с `score = unix timestamp` следующего уведомления. Планировщик раз в секунду выбирает просроченные записи и обрабатывает их асинхронно через `NotificationProcessor`.
 
 **Кэширование.** Сессии, настройки фильтров и уведомлений кэшируются в Redis с раздельными TTL. Сериализация через Jackson с поддержкой `java.time` типов.
-
-## Переменные окружения
-
-| Переменная | Описание                       |
-|---|--------------------------------|
-| `BOT_NAME` | Username бота (без @)          |
-| `BOT_TOKEN` | Токен от @BotFather            |
-| `SUPER_JOB_APP_ID` | ID приложения SuperJob         |
-| `SUPER_JOB_SECRET` | Секретный ключ SuperJob API (https://api.superjob.ru/info/) |
-| `POSTGRES_USER` | Пользователь PostgreSQL        |
-| `POSTGRES_PASSWORD` | Пароль PostgreSQL              |
