@@ -21,6 +21,19 @@ public class SetHoursNotificationCommand extends InputInterceptingCommand<Durati
     public static final String KEY = "/set_hours_interval";
     public static final String DESCRIPTION = "Задать интервал уведомлений в часах";
     public static final Duration MIN_INTERVAL = Duration.ofMinutes(5);
+    public static final Duration MAX_INTERVAL = Duration.ofDays(1000);
+
+    public static final String TOO_SMALL_INTERVAL_MESSAGE = """
+            Вы указали слишком короткий интервал.
+            Я, конечно, стараюсь, но не настолько.
+            *Минимальное значение — 5 минут*
+            """;
+
+    public static final String TOO_LARGE_INTERVAL_MESSAGE = """
+            Вы указали слишком большой интервал.
+            За это время я успею всё забыть
+            Введите *значение поменьше*.
+            """;
 
     private final NotificationHoursSelectionFormatter formatter;
     private final NotificationService notificationService;
@@ -39,7 +52,11 @@ public class SetHoursNotificationCommand extends InputInterceptingCommand<Durati
     @Override
     protected void executeWithParameters(MessageData messageData, Duration parameter) {
         if (parameter.isNegative() || parameter.compareTo(MIN_INTERVAL) < 0) {
-            handleInvalidValue(messageData, "Интервал не может быть меньше 5 минут");
+            handleInvalidValue(messageData, TOO_SMALL_INTERVAL_MESSAGE);
+            return;
+        }
+        if (parameter.compareTo(MAX_INTERVAL) > 0) {
+            handleInvalidValue(messageData, TOO_LARGE_INTERVAL_MESSAGE);
             return;
         }
 

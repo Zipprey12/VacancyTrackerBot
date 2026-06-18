@@ -5,6 +5,10 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class NumbersFormatUtil {
 
+    public static String formatSalary(int number){
+        return formatNumber(number) + " ₽";
+    }
+
     public static String formatNumber(int number) {
         return String.format("%,d", number)
                 .replace(',', ' ');

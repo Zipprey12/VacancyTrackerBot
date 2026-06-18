@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import vacancy_tracker.model.domain.Location;
 import vacancy_tracker.model.search.VacancySearchFilter;
 import vacancy_tracker.services.telegram.view.utils.DatesFormatUtil;
+import vacancy_tracker.services.telegram.view.utils.NumbersFormatUtil;
 
 @Component
 public class FiltersMessageFormatter {
@@ -68,7 +69,8 @@ public class FiltersMessageFormatter {
         if (minSalary == null || minSalary == 0) {
             sb.append("_не указана_");
         } else {
-            sb.append(minSalary).append(" руб.");
+            var value = NumbersFormatUtil.formatSalary(minSalary);
+            sb.append(value);
         }
     }
 
@@ -77,7 +79,8 @@ public class FiltersMessageFormatter {
         if (maxSalary == null || maxSalary == 0) {
             sb.append("_не указана_\n");
         } else {
-            sb.append(maxSalary).append(" руб.\n");
+            var value = NumbersFormatUtil.formatSalary(maxSalary);
+            sb.append(value);
         }
     }
 }

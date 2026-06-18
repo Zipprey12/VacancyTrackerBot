@@ -25,8 +25,20 @@ public class SetExperienceCommand extends InputInterceptingCommand<Float> {
 
     public static final String KEY = "/set_experience";
     public static final String DESCRIPTION = "Установить опыт работы";
-    private static final InlineKeyboardMarkup KEYBOARD = initKeyboard();
+    public static final int MAX_EXPERIENCE = 100;
 
+    public static final String TOO_MUCH_EXPERIENCE_MESSAGE = """
+            Ого, впечатляет! 🕵️
+            Я бы с радостью записал это значение, но наше начальство заподозрило неладное.
+            Давайте попробуем *цифру поменьше*?
+            """;
+
+    public static final String NEGATIVE_EXPERIENCE_MESSAGE = """
+            Занятно, но про отрицательный опыт лучше никому не знать 🤫
+            Введите *положительное число* или хотя бы ноль
+            """;
+
+    private static final InlineKeyboardMarkup KEYBOARD = initKeyboard();
     private final SearchFiltersService settingsService;
 
     public SetExperienceCommand(SendingAndUpdatingMessagePublisher publisher,
@@ -77,12 +89,16 @@ public class SetExperienceCommand extends InputInterceptingCommand<Float> {
         var chatId = messageData.getChatId();
         var filters = settingsService.get(chatId);
         if (experience < 0) {
-            handleInvalidValue(messageData);
+            handleInvalidValue(messageData, NEGATIVE_EXPERIENCE_MESSAGE);
             return;
         }
         if (experience == 0) {
             filters.setExperience(null);
         } else {
+            if (experience > MAX_EXPERIENCE) {
+                handleInvalidValue(messageData, TOO_MUCH_EXPERIENCE_MESSAGE);
+                return;
+            }
             filters.setExperience(experience);
         }
         settingsService.save(chatId, filters);

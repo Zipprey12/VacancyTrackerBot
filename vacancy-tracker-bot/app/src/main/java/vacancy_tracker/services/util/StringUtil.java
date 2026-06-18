@@ -47,8 +47,9 @@ public class StringUtil {
 
     private static <T> Optional<T> parseNumber(String text, Function<String, T> parser) {
         if (text == null) return Optional.empty();
+        var prepared = text.replace(" ", "");
         try {
-            return Optional.of(parser.apply(text));
+            return Optional.of(parser.apply(prepared));
         } catch (NumberFormatException e) {
             return Optional.empty();
         }

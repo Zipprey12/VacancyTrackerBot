@@ -8,12 +8,18 @@ import vacancy_tracker.services.telegram.command.publishers.SendingMessagePublis
 @Component
 public class InitCommand extends SimpleMessageCommand {
 
+    public static final String MESSAGE = """
+            👋 *Привет! Я бот для поиска вакансий!*
+            
+            🔍 Помогаю найти работу на SuperJob и TrudVsem
+            """;
+
     public InitCommand(SendingMessagePublisher publisher) {
         super("/init", null, publisher);
     }
 
     @Override
     protected void executeAndPopulateMessage(OutgoingMessage messageData) {
-        messageData.setText("Привет! Я бот для поиска вакансий!");
+        messageData.setText(MESSAGE);
     }
 }
