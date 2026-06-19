@@ -1,12 +1,13 @@
-package vacancy_tracker.services.telegram.command.simple;
+package vacancy_tracker.services.telegram.actions.message;
 
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.services.telegram.command.SimpleMessageCommand;
+import vacancy_tracker.services.telegram.actions.MessageAction;
 import vacancy_tracker.services.telegram.command.publishers.SendingMessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.ExecutionStrategy;
 
 @Component
-public class InitCommand extends SimpleMessageCommand {
+public class InitMessage extends MessageAction {
 
     public static final String MESSAGE = """
             👋 *Привет! Я бот для поиска вакансий!*
@@ -14,8 +15,8 @@ public class InitCommand extends SimpleMessageCommand {
             🔍 Помогаю найти работу на SuperJob и TrudVsem
             """;
 
-    public InitCommand(SendingMessagePublisher publisher) {
-        super("/init", null, publisher);
+    public InitMessage(SendingMessagePublisher publisher) {
+        super(ExecutionStrategy.sync(), publisher);
     }
 
     @Override

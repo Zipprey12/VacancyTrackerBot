@@ -3,6 +3,7 @@ package vacancy_tracker.services.telegram.command.settings.filter;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
+import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.model.telegram.dto.LocationSearch;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
@@ -40,7 +41,7 @@ public class ResetFiltersCommand extends ExtendedMessageCommand<ResetFilterField
                                SearchFiltersService settingsService,
                                SequentialAsyncExecutionStrategy strategy,
                                SetRegionCommand setRegionCommand) {
-        super(KEY, DESCRIPTION, publisher, strategy, completionHandler);
+        super(new CommandArgs(KEY, DESCRIPTION, completionHandler),  publisher, strategy);
         this.sessionsService = sessionsService;
         this.settingsService = settingsService;
         this.setRegionCommand = setRegionCommand;

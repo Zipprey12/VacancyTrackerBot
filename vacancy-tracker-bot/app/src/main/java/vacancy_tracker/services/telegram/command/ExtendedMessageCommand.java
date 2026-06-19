@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.execution.ExecutionResult;
@@ -29,18 +30,11 @@ public abstract class ExtendedMessageCommand<T> extends AbstractMessageCommand i
     @Setter(AccessLevel.PROTECTED)
     private boolean triggerEvent = true;
 
-    protected ExtendedMessageCommand(String key, String description,
+    protected ExtendedMessageCommand(CommandArgs args,
                                      MessagePublisher publisher,
-                                     ExecutionStrategy strategy) {
-        this(key, description, publisher, strategy, null);
-    }
-
-    protected ExtendedMessageCommand(String key, String description,
-                                     MessagePublisher publisher,
-                                     ExecutionStrategy executionStrategy,
-                                     CommandCompletionHandler handler) {
-        super(key, description, executionStrategy, publisher);
-        this.onComplete = handler;
+                                     ExecutionStrategy executionStrategy) {
+        super(args, executionStrategy, publisher);
+        this.onComplete = args.getCompletionHandler();
     }
 
     @Override

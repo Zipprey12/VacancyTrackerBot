@@ -3,6 +3,7 @@ package vacancy_tracker.services.telegram.command.settings.filter;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
+import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
@@ -34,7 +35,7 @@ public class SetSearchingTextCommand extends InputInterceptingCommand<String> {
                                    FiltersChangingCompletionHandler handler,
                                    SearchFiltersService settingsService,
                                    SequentialAsyncExecutionStrategy strategy) {
-        super(KEY, DESCRIPTION, publisher, handler,
+        super(new CommandArgs(KEY, DESCRIPTION, handler), publisher,
                 new TextInterceptor(), sessionsService, strategy);
         this.settingsService = settingsService;
     }

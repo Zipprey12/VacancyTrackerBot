@@ -3,6 +3,7 @@ package vacancy_tracker.services.telegram.command.settings.filter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.domain.Town;
+import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.model.telegram.dto.LocationSearch;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
@@ -37,7 +38,7 @@ public class SetTownCommand extends InputInterceptingCommand<LocationSearch> {
                           TownsSelectionMessageFormatter formatter,
                           LocationsService locationsService,
                           SequentialAsyncExecutionStrategy strategy) {
-        super(KEY, DESCRIPTION, publisher, handler,
+        super(new CommandArgs(KEY, DESCRIPTION, handler), publisher,
                 new LocationInterceptor(), sessionsService, strategy);
 
         this.settingsService = settingsService;

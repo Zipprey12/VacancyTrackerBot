@@ -2,6 +2,7 @@ package vacancy_tracker.services.telegram.command;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.services.telegram.actions.MessageAction;
 import vacancy_tracker.services.telegram.command.publishers.MessagePublisher;
 import vacancy_tracker.services.telegram.command.strategy.ExecutionStrategy;
@@ -13,11 +14,17 @@ public abstract class AbstractMessageCommand extends MessageAction implements Me
     private final String key;
     private final String description;
 
-    protected AbstractMessageCommand(String key, String description,
+    protected AbstractMessageCommand(CommandArgs args,
                                      ExecutionStrategy executionStrategy,
                                      MessagePublisher publisher) {
         super(executionStrategy == null ? ExecutionStrategy.sync() : executionStrategy, publisher);
-        this.key = key;
-        this.description = description;
+        this.key = args.getKey();
+        this.description = args.getDescription();
+    }
+
+    protected AbstractMessageCommand(CommandArgs args, MessagePublisher publisher) {
+        super(ExecutionStrategy.sync(), publisher);
+        this.key = args.getKey();
+        this.description = args.getDescription();
     }
 }

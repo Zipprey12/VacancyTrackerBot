@@ -1,6 +1,7 @@
 package vacancy_tracker.services.telegram.command.settings.notification;
 
 import org.springframework.stereotype.Component;
+import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
@@ -44,7 +45,8 @@ public class SetHoursNotificationCommand extends InputInterceptingCommand<Durati
                                           SessionsService sessionsService,
                                           NotificationService notificationService,
                                           NotificationHoursSelectionFormatter formatter) {
-        super(KEY, DESCRIPTION, publisher, handler, new DurationInterceptor(), sessionsService, executionStrategy);
+        super(new CommandArgs(KEY, DESCRIPTION, handler),
+                publisher, new DurationInterceptor(), sessionsService, executionStrategy);
         this.formatter = formatter;
         this.notificationService = notificationService;
     }

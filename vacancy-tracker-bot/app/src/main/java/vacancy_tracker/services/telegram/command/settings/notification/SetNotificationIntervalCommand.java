@@ -1,6 +1,7 @@
 package vacancy_tracker.services.telegram.command.settings.notification;
 
 import org.springframework.stereotype.Component;
+import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.notification.IntervalType;
@@ -31,7 +32,7 @@ public class SetNotificationIntervalCommand extends ExtendedMessageCommand<Inter
                                              SetWeeklyNotificationCommand setWeeklyNotificationCommand,
                                              SetDailyNotificationAction setDailyNotificationAction,
                                              SequentialAsyncExecutionStrategy strategy) {
-        super(KEY, DESCRIPTION, publisher, strategy);
+        super(new CommandArgs(KEY, DESCRIPTION, null), publisher, strategy);
         this.notificationService = notificationService;
         this.messageFormatter = messageFormatter;
         this.setHoursIntervalCommand = setHoursIntervalCommand;

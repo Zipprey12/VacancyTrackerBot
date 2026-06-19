@@ -3,10 +3,10 @@ package vacancy_tracker.services.telegram.command;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.session.CallingSource;
-import vacancy_tracker.services.telegram.command.handlers.CommandCompletionHandler;
 import vacancy_tracker.services.telegram.command.interceptors.InputInterceptor;
 import vacancy_tracker.services.telegram.command.publishers.MessagePublisher;
 import vacancy_tracker.services.telegram.command.strategy.ExecutionStrategy;
@@ -29,24 +29,20 @@ public abstract class InputInterceptingCommand<T> extends ExtendedMessageCommand
     @Getter(AccessLevel.PROTECTED)
     private final InputInterceptor<T> inputInterceptor;
 
-    protected InputInterceptingCommand(String key,
-                                       String description,
+    protected InputInterceptingCommand(CommandArgs args,
                                        MessagePublisher publisher,
-                                       CommandCompletionHandler handler,
                                        InputInterceptor<T> inputInterceptor,
                                        SessionsService sessionsService) {
 
-        this(key, description, publisher, handler, inputInterceptor, sessionsService, ExecutionStrategy.sync());
+        this(args, publisher, inputInterceptor, sessionsService, ExecutionStrategy.sync());
     }
 
-    protected InputInterceptingCommand(String key,
-                                       String description,
+    protected InputInterceptingCommand(CommandArgs args,
                                        MessagePublisher publisher,
-                                       CommandCompletionHandler handler,
                                        InputInterceptor<T> inputInterceptor,
                                        SessionsService sessionsService,
                                        ExecutionStrategy executionStrategy) {
-        super(key, description, publisher, executionStrategy, handler);
+        super(args, publisher, executionStrategy);
 
         inputInterceptor.setDataHandler(this);
         inputInterceptor.setErrorHandler(this);

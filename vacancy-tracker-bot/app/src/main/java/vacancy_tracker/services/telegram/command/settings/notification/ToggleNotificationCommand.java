@@ -1,6 +1,7 @@
 package vacancy_tracker.services.telegram.command.settings.notification;
 
 import org.springframework.stereotype.Component;
+import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.command.ExtendedMessageCommand;
@@ -24,7 +25,7 @@ public class ToggleNotificationCommand extends ExtendedMessageCommand<Boolean> {
                                         NotificationSettingsMessageFormatter messageFormatter,
                                         NotificationService notificationService,
                                         SequentialAsyncExecutionStrategy strategy) {
-        super(KEY, DESCRIPTION, publisher, strategy);
+        super(new CommandArgs(KEY, DESCRIPTION, null), publisher, strategy);
 
         this.service = notificationService;
         this.messageFormatter = messageFormatter;

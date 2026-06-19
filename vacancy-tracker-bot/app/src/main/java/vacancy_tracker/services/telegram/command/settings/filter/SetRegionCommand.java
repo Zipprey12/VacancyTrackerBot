@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.domain.Location;
 import vacancy_tracker.model.domain.Region;
+import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.model.telegram.dto.LocationSearch;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
@@ -41,7 +42,7 @@ public class SetRegionCommand extends InputInterceptingCommand<LocationSearch> {
                             SearchFiltersService settingsService,
                             SequentialAsyncExecutionStrategy strategy) {
 
-        super(KEY, DESCRIPTION, publisher, handler, new LocationInterceptor(), sessionsService, strategy);
+        super(new CommandArgs(KEY, DESCRIPTION, handler), publisher, new LocationInterceptor(), sessionsService, strategy);
         this.formatter = messageFormatter;
         this.regionSelectionUpdateMessage = regionSelectionUpdateMessage;
         this.locationsService = locationsService;

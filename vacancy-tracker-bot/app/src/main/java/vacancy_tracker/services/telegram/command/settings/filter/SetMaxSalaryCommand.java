@@ -2,24 +2,27 @@ package vacancy_tracker.services.telegram.command.settings.filter;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
+import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
 import vacancy_tracker.services.telegram.command.handlers.FiltersChangingCompletionHandler;
 import vacancy_tracker.services.telegram.command.interceptors.IntegerInterceptor;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.command.strategy.SequentialAsyncExecutionStrategy;
 import vacancy_tracker.services.telegram.session.SessionsService;
 import vacancy_tracker.services.telegram.settings.SearchFiltersService;
+import vacancy_tracker.services.telegram.view.formatters.filter.SalaryFormatter;
 import vacancy_tracker.services.telegram.view.utils.NumbersFormatUtil;
 
 import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.SET_MAX_SALARY;
+import static vacancy_tracker.services.telegram.view.formatters.filter.SalaryFormatter.NEGATIVE_VALUE_MESSAGE;
 
 @Component
-public class SetMaxSalaryCommand extends SetSalaryCommand {
+public class SetMaxSalaryCommand extends InputInterceptingCommand<Integer> {
 
     public static final String KEY = "/set_max_salary";
     public static final String DESCRIPTION = "Установить максимальное значение зарплаты";
-
 
     private final InlineKeyboardMarkup keyboardMarkup = initKeyboard();
 
@@ -30,15 +33,10 @@ public class SetMaxSalaryCommand extends SetSalaryCommand {
                                   SearchFiltersService settingsService,
                                   FiltersChangingCompletionHandler completionHandler,
                                   SequentialAsyncExecutionStrategy strategy) {
-        super(KEY, DESCRIPTION, publisher, completionHandler,
+        super(new CommandArgs(KEY, DESCRIPTION, completionHandler), publisher,
                 new IntegerInterceptor(), sessionsService, strategy);
 
         this.settingsService = settingsService;
-    }
-
-    @Override
-    protected String getCallbackKey() {
-        return SET_MAX_SALARY.getKey();
     }
 
     @Override
@@ -86,6 +84,6 @@ public class SetMaxSalaryCommand extends SetSalaryCommand {
     }
 
     private InlineKeyboardMarkup initKeyboard() {
-        return initKeyboard(60_000, 90_000, 125_000, 200_000);
+        return SalaryFormatter.createKeyboard(SET_MAX_SALARY.getKey(), 60_000, 90_000, 125_000, 200_000);
     }
 }

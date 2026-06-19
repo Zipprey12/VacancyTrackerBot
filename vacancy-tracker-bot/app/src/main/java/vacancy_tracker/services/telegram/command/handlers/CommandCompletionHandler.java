@@ -7,5 +7,4 @@ import vacancy_tracker.model.telegram.view.Identifiable;
 public interface CommandCompletionHandler {
 
     void onComplete(Identifiable command, MessageData messageData);
-
 }

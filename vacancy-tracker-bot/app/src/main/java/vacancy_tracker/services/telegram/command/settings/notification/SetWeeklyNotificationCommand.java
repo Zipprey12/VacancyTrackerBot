@@ -1,6 +1,7 @@
 package vacancy_tracker.services.telegram.command.settings.notification;
 
 import org.springframework.stereotype.Component;
+import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.notification.NotificationSettings;
@@ -33,7 +34,8 @@ public class SetWeeklyNotificationCommand extends InputInterceptingCommand<Integ
                                            WeeklyNotificationMessageFormatter messageFormatter,
                                            AfterDayOfWeekSelectedMessage afterDayOfWeekSelectedMessage,
                                            SequentialAsyncExecutionStrategy strategy) {
-        super(KEY, null, publisher, null, new IntegerInterceptor(), sessionsService, strategy);
+        super(new CommandArgs(KEY, null, null), publisher,
+                new IntegerInterceptor(), sessionsService, strategy);
         this.service = service;
         this.messageFormatter = messageFormatter;
         this.afterDayOfWeekSelectedMessage = afterDayOfWeekSelectedMessage;

@@ -1,15 +1,16 @@
-package vacancy_tracker.services.telegram.command.simple;
+package vacancy_tracker.services.telegram.actions.message;
 
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.view.Describable;
-import vacancy_tracker.services.telegram.command.SimpleMessageCommand;
+import vacancy_tracker.services.telegram.actions.MessageAction;
 import vacancy_tracker.services.telegram.command.publishers.SendingMessagePublisher;
+import vacancy_tracker.services.telegram.command.strategy.ExecutionStrategy;
 
 import java.util.List;
 
 @Component
-public class HelpCommand extends SimpleMessageCommand {
+public class HelpMessage extends MessageAction {
 
     private static final String MESSAGE_HEADER = """
             *Список доступных команд*:
@@ -18,9 +19,9 @@ public class HelpCommand extends SimpleMessageCommand {
 
     private String message;
 
-    public HelpCommand(SendingMessagePublisher publisher,
+    public HelpMessage(SendingMessagePublisher publisher,
                        List<? extends Describable> commands) {
-        super("/help", "Вывод справочной информации", publisher);
+        super(ExecutionStrategy.sync(), publisher);
         initMessage(commands);
     }
 

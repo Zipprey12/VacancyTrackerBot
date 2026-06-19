@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import vacancy_tracker.model.telegram.dto.MessageData;
+import vacancy_tracker.services.telegram.actions.MessageAction;
 import vacancy_tracker.services.telegram.command.CommandsService;
-import vacancy_tracker.services.telegram.command.SimpleMessageCommand;
 import vacancy_tracker.services.telegram.command.callers.MessageCommandCaller;
 import vacancy_tracker.services.telegram.session.SessionsService;
 
@@ -15,8 +15,8 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class DefaultBotNavigator implements BotNavigator {
 
-    private final SimpleMessageCommand initCommand;
-    private final SimpleMessageCommand helpCommand;
+    private final MessageAction initMessage;
+    private final MessageAction helpMessage;
 
     private final SessionsService sessionsService;
     private final MessageCommandCaller executor;
@@ -54,21 +54,21 @@ public class DefaultBotNavigator implements BotNavigator {
     @Override
     public void showInitMessage(MessageData message) {
         CompletableFuture.runAsync(() -> {
-            initCommand.execute(message);
-            helpCommand.execute(message);
+            initMessage.execute(message);
+            helpMessage.execute(message);
         });
     }
 
     @Override
     public void showHelpMessage(MessageData message) {
-        CompletableFuture.runAsync(() -> helpCommand.execute(message));
+        CompletableFuture.runAsync(() -> helpMessage.execute(message));
     }
 
     private void executeOrHelp(MessageData messageData) {
         executor.execute(messageData)
                 .thenAccept(executed -> {
                     if (Boolean.FALSE.equals(executed)) {
-                        helpCommand.execute(messageData);
+                        helpMessage.execute(messageData);
                     }
                 });
     }
