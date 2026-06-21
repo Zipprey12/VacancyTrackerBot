@@ -19,15 +19,19 @@ import static vacancy_tracker.model.telegram.callback.VacanciesCallbackKeys.GET_
 @RequiredArgsConstructor
 public class VacancySourcesFormatter {
 
-    public void fill(OutgoingMessage message, List<VacanciesSource> sources, long totalCount, LocalDateTime dateFrom) {
+    public void fill(OutgoingMessage message, List<VacanciesSource> sources, Long totalCount, LocalDateTime dateFrom) {
         addText(message, totalCount);
         addKeyboard(message, sources, dateFrom);
     }
 
-    private void addText(OutgoingMessage message, long totalCount) {
-        String sb = "Найдено вакансий: *" + totalCount +
-                "*\n\nВыберите источник:";
-        message.setText(sb);
+    private void addText(OutgoingMessage message, Long totalCount) {
+        String text = "";
+        if (totalCount != null) {
+            text += "Найдено вакансий: *" + totalCount +
+                    "*\n\n";
+        }
+        text += "Выберите источник:";
+        message.setText(text);
     }
 
     private void addKeyboard(OutgoingMessage message, List<VacanciesSource> sources, LocalDateTime dateTime) {

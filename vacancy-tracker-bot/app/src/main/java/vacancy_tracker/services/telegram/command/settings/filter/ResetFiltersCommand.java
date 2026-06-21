@@ -41,7 +41,7 @@ public class ResetFiltersCommand extends ExtendedMessageCommand<ResetFilterField
                                SearchFiltersService settingsService,
                                SequentialAsyncExecutionStrategy strategy,
                                SetRegionCommand setRegionCommand) {
-        super(new CommandArgs(KEY, DESCRIPTION, completionHandler),  publisher, strategy);
+        super(new CommandArgs(KEY, DESCRIPTION, completionHandler), publisher, strategy);
         this.sessionsService = sessionsService;
         this.settingsService = settingsService;
         this.setRegionCommand = setRegionCommand;

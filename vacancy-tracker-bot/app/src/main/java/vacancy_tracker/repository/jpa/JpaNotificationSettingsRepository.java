@@ -28,10 +28,11 @@ public class JpaNotificationSettingsRepository implements NotificationSettingsRe
     }
 
     @Override
-    public void save(long chatId, NotificationSettings settings) {
+    public NotificationSettings save(long chatId, NotificationSettings settings) {
         var entity = new NotificationSettingsEntity(chatId);
         mapper.updateEntity(settings, entity);
-        notificationSettingsDao.save(entity);
+        var result = notificationSettingsDao.save(entity);
+        return mapper.toDto(result);
     }
 
     @Override

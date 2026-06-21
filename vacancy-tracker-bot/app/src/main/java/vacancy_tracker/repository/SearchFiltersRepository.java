@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface SearchFiltersRepository {
 
-    void save(long sessionId, VacancySearchFilter filter);
+    VacancySearchFilter save(long sessionId, VacancySearchFilter filter);
 
     Optional<VacancySearchFilter> get(long sessionId);
 

@@ -38,8 +38,7 @@ public class NotificationServiceImpl implements NotificationService {
             settings.setLastNotificationAt(next);
         }
         queueService.schedule(sessionId, settings);
-        repository.save(sessionId, settings);
-        return settings;
+        return repository.save(sessionId, settings);
     }
 
     @Override

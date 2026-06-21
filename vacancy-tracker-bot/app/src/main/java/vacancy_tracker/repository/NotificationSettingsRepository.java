@@ -10,7 +10,7 @@ public interface NotificationSettingsRepository {
 
     Optional<NotificationSettings> get(long sessionId);
 
-    void save(long sessionId, NotificationSettings settings);
+    NotificationSettings save(long sessionId, NotificationSettings settings);
 
     void remove(long sessionId);
 

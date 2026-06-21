@@ -9,7 +9,7 @@ import vacancy_tracker.model.telegram.callback.CallbackData;
 import vacancy_tracker.model.telegram.callback.VacanciesCallbackKeys;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.SearchActionParams;
-import vacancy_tracker.model.telegram.session.CallingSource;
+import vacancy_tracker.model.telegram.session.PublishType;
 import vacancy_tracker.model.telegram.settings.VacanciesShownParams;
 import vacancy_tracker.services.telegram.actions.vacancies.SendVacanciesAction;
 import vacancy_tracker.services.telegram.callback.handlers.NavigationCallbackHandler;
@@ -73,7 +73,7 @@ public class ShowVacanciesCallbackHandler extends NavigationCallbackHandler<Sear
             return;
         }
         params.getSearchParams().setPage(data.targetPage());
-        message.setSource(CallingSource.CALLBACK);
+        message.setSource(PublishType.UPDATE);
         getHandler().handleWithParameter(message, params);
     }
 

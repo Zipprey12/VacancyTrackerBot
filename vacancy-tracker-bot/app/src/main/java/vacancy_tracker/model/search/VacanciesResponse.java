@@ -33,6 +33,10 @@ public class VacanciesResponse {
         return vacancies.isEmpty();
     }
 
+    public boolean canBeFilled() {
+        return !isEmpty() || more || total > 0;
+    }
+
     public boolean isNotEmpty() {
         return !isEmpty();
     }

@@ -7,7 +7,7 @@ import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.model.telegram.dto.LocationSearch;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.model.telegram.session.CallingSource;
+import vacancy_tracker.model.telegram.session.PublishType;
 import vacancy_tracker.services.api.location.LocationsService;
 import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
 import vacancy_tracker.services.telegram.command.handlers.FiltersChangingCompletionHandler;
@@ -67,7 +67,7 @@ public class SetTownCommand extends InputInterceptingCommand<LocationSearch> {
         var filters = settingsService.get(chatId);
         var location = filters.getLocation();
         var outgoingMessage = new OutgoingMessage(MessageData.builder()
-                .source(CallingSource.CHAT)
+                .source(PublishType.SEND)
                 .chatId(chatId)
                 .build());
 

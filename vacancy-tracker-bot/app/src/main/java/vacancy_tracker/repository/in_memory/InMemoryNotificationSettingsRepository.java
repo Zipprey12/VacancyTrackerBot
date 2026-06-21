@@ -23,9 +23,10 @@ public class InMemoryNotificationSettingsRepository implements NotificationSetti
     }
 
     @Override
-    public void save(long sessionId, NotificationSettings settings) {
+    public NotificationSettings save(long sessionId, NotificationSettings settings) {
         storage.put(sessionId, settings);
         log.debug("Сохранены настройки уведомлений для сессии {}", sessionId);
+        return settings;
     }
 
     @Override

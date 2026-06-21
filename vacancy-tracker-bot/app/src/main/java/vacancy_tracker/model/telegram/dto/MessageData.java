@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.telegram.telegrambots.meta.api.objects.message.MaybeInaccessibleMessage;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
-import vacancy_tracker.model.telegram.session.CallingSource;
+import vacancy_tracker.model.telegram.session.PublishType;
+
+import java.time.Instant;
 
 @Builder
 @Data
@@ -17,20 +19,23 @@ public class MessageData {
     private Long chatId;
     private Integer messageId;
     private String text;
-    private CallingSource source;
+    private PublishType source;
+    private Instant sendTime;
 
     public MessageData(MessageData source) {
         chatId = source.chatId;
         messageId = source.messageId;
         text = source.text;
         this.source = source.getSource();
+        sendTime = source.sendTime;
     }
 
     public static MessageData create(MaybeInaccessibleMessage message) {
         return MessageData.builder()
                 .messageId(message.getMessageId())
                 .chatId(message.getChatId())
-                .source(CallingSource.CALLBACK)
+                .source(PublishType.UPDATE)
+                .sendTime(Instant.ofEpochSecond(message.getDate()))
                 .build();
     }
 
@@ -39,7 +44,8 @@ public class MessageData {
                 .messageId(message.getMessageId())
                 .chatId(message.getChatId())
                 .text(message.getText())
-                .source(CallingSource.CHAT)
+                .source(PublishType.SEND)
+                .sendTime(Instant.ofEpochSecond(message.getDate()))
                 .build();
     }
 }

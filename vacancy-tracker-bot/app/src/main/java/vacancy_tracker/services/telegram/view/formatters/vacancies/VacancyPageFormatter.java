@@ -15,11 +15,11 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class VacancyPageFormatter extends VacanciesMessageFormatter {
 
-    private static final String EMPTY_RESULT = "🔍 Новых вакансий не найдено";
+    private static final String EMPTY_RESULT = "🔍 Не удалось найти вакансии, подходящие под запрос";
 
     public void fillMessage(OutgoingMessage message, SearchResult result) {
         var responses = result.getVacanciesResponses();
-        if (responses == null || responses.isEmpty()) {
+        if (responses == null || responses.isEmpty() || result.getNotEmptySources().isEmpty()) {
             fillEmptyResult(message, result.getModifiedFrom());
             return;
         }
@@ -53,7 +53,7 @@ public class VacancyPageFormatter extends VacanciesMessageFormatter {
             message.setText(EMPTY_RESULT);
             return;
         }
-        var text = "Вакансий новее " + DatesFormatUtil.formatDateTime(from) + " не найдено";
+        var text = "Не найдено вакансий, подходящих под запрос и созданных после " + DatesFormatUtil.formatDateTime(from);
         message.setText(text);
     }
 

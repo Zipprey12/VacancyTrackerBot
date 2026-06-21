@@ -8,6 +8,7 @@ import vacancy_tracker.sources.superjob.model.dto.SuperJobVacancyDto;
 import java.util.List;
 
 @Getter
+@Setter
 public class SuperJobVacanciesResponse {
 
     @JsonProperty("objects")
@@ -15,11 +16,7 @@ public class SuperJobVacanciesResponse {
 
     private Integer total;
     private Boolean more;
-
-    @Setter
     private Integer offset;
-
-    @Setter
     private Integer page;
 
     public List<SuperJobVacancyDto> getVacanciesSafe() {

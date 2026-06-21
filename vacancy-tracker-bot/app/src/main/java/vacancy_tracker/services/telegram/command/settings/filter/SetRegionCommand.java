@@ -8,7 +8,7 @@ import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.model.telegram.dto.LocationSearch;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.model.telegram.session.CallingSource;
+import vacancy_tracker.model.telegram.session.PublishType;
 import vacancy_tracker.services.api.location.LocationsService;
 import vacancy_tracker.services.telegram.actions.message.AfterRegionSelectedMessage;
 import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
@@ -75,7 +75,7 @@ public class SetRegionCommand extends InputInterceptingCommand<LocationSearch> {
 
     private void showFiltered(long chatId, String filter) {
         var outgoingMessage = new OutgoingMessage(MessageData.builder()
-                .source(CallingSource.CHAT)
+                .source(PublishType.SEND)
                 .chatId(chatId)
                 .build());
         formatter.fillMessage(outgoingMessage, filter);

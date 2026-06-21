@@ -19,9 +19,8 @@ public class SearchFiltersServiceImpl implements SearchFiltersService {
     @Override
     @CachePut(value = "filters", key = "#sessionId")
     public VacancySearchFilter save(long sessionId, VacancySearchFilter filter) {
-        repository.save(sessionId, filter);
         log.info("Сохранены изменения сессии");
-        return filter;
+        return repository.save(sessionId, filter);
     }
 
     @Override

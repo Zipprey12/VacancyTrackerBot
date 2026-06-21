@@ -39,6 +39,24 @@ public class SetMinSalaryCommand extends InputInterceptingCommand<Integer> {
         this.settingsService = settingsService;
     }
 
+    private static String createText(Integer minSalary) {
+        String secondPart = "Чтобы *изменить:* выберите вариант из списка или отправьте число. " +
+                "Например:  `50 000`";
+
+        return createHeader(minSalary) + secondPart;
+    }
+
+    private static String createHeader(Integer minSalary) {
+        String value;
+        if (minSalary == null || minSalary <= 0) {
+            value = "не указано";
+        } else {
+            value = NumbersFormatUtil.formatSalary(minSalary);
+        }
+
+        return "Текущее значение минимальной зарплаты: *" + value + "*\n";
+    }
+
     @Override
     protected void executeWithParameters(MessageData messageData, Integer parameter) {
         var chatId = messageData.getChatId();
@@ -65,25 +83,7 @@ public class SetMinSalaryCommand extends InputInterceptingCommand<Integer> {
         messageData.setKeyboardMarkup(keyboardMarkup);
     }
 
-    private static String createText(Integer minSalary) {
-        String secondPart = "Чтобы *изменить:* выберите вариант из списка или отправьте число. " +
-                "Например:  `50 000`";
-
-        return createHeader(minSalary) + secondPart;
-    }
-
-    private static String createHeader(Integer minSalary) {
-        String value;
-        if (minSalary == null || minSalary <= 0) {
-            value = "не указано";
-        } else {
-            value = NumbersFormatUtil.formatSalary(minSalary);
-        }
-
-        return "Текущее значение минимальной зарплаты: *" + value + "*\n";
-    }
-
     private InlineKeyboardMarkup initKeyboard() {
-        return SalaryFormatter.createKeyboard(SET_MIN_SALARY.getKey(),40_000, 75_000, 100_000, 150_000);
+        return SalaryFormatter.createKeyboard(SET_MIN_SALARY.getKey(), 40_000, 75_000, 100_000, 150_000);
     }
 }

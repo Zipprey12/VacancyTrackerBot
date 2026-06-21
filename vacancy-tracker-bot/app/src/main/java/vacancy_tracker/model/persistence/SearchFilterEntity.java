@@ -7,6 +7,9 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.Instant;
 
 @Entity
 @Table(name = "search_filters")
@@ -39,6 +42,10 @@ public class SearchFilterEntity {
 
     @Column(name = "town_id")
     private Integer townId;
+
+    @Column(name = "updated_at")
+    @UpdateTimestamp
+    private Instant updatedAt;
 
     public SearchFilterEntity(long chatId) {
         this.chatId = chatId;

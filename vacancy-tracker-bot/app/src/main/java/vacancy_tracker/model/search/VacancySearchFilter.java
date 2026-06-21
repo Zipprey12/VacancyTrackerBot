@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import vacancy_tracker.model.domain.Location;
 import vacancy_tracker.model.domain.RequestType;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Builder
@@ -20,6 +21,8 @@ public class VacancySearchFilter {
     private Integer maxSalary;
     private Location location;
     private Float experience;
+
+    private Instant updatedAt;
 
     private LocalDateTime modifiedFrom;
     private RequestType requestType;

@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface VacanciesSearcher {
 
-    CompletableFuture<SearchResult> search(VacancySearchFilter filter, int limit, int offset);
+    CompletableFuture<SearchResult> search(VacancySearchFilter filter, int limit, int page);
 
-    CompletableFuture<SearchResult> search(VacancySearchFilter filter, int limit, int offset, VacanciesSource source);
+    CompletableFuture<SearchResult> search(VacancySearchFilter filter, int limit, int page, VacanciesSource source);
 }

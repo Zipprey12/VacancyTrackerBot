@@ -53,7 +53,7 @@ public class SearchResult {
 
     public List<VacanciesSource> getNotEmptySources() {
         return vacanciesResponses.stream()
-                .filter(VacanciesResponse::isNotEmpty)
+                .filter(VacanciesResponse::canBeFilled)
                 .map(VacanciesResponse::getSource)
                 .toList();
     }

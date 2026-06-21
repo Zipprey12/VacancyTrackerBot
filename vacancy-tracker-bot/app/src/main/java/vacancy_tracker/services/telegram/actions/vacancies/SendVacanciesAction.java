@@ -9,6 +9,7 @@ import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.dto.SearchActionParams;
 import vacancy_tracker.model.telegram.execution.ExecutionResult;
+import vacancy_tracker.model.telegram.session.PublishType;
 import vacancy_tracker.model.telegram.settings.VacanciesShownParams;
 import vacancy_tracker.services.api.VacanciesSearcher;
 import vacancy_tracker.services.telegram.actions.AsyncAction;
@@ -66,6 +67,13 @@ public class SendVacanciesAction extends AsyncAction<SearchActionParams> {
         var searchParams = parameters.getSearchParams();
         var shownParams = parameters.getShownParams();
         var filter = settingsService.get(messageData.getChatId());
+
+        log.debug("SendTime: {} \n UpdateTime: {}", messageData.getSendTime(), filter.getUpdatedAt());
+        if (messageData.getSendTime().isBefore(filter.getUpdatedAt())) {
+            searchParams.setPage(0);
+            messageData.setSource(PublishType.SEND);
+        }
+
         filter.setRequestType(searchParams.getRequestType());
         if (searchParams.getStartDate() != null) {
             filter.setModifiedFrom(searchParams.getStartDate());

@@ -9,7 +9,7 @@ import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.message.MessageEditor;
 import vacancy_tracker.services.telegram.message.MessageSender;
 
-import static vacancy_tracker.model.telegram.session.CallingSource.CALLBACK;
+import static vacancy_tracker.model.telegram.session.PublishType.UPDATE;
 
 @Slf4j
 @Getter
@@ -22,7 +22,7 @@ public class SendingAndUpdatingMessagePublisher implements MessagePublisher {
 
     @Override
     public final void publish(OutgoingMessage message) {
-        if (message.getSource().equals(CALLBACK)) {
+        if (message.getSource().equals(UPDATE)) {
             edit(message);
         } else {
             send(message);

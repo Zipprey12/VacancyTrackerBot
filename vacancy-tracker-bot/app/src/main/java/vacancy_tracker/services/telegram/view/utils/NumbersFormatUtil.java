@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class NumbersFormatUtil {
 
-    public static String formatSalary(int number){
+    public static String formatSalary(int number) {
         return formatNumber(number) + " ₽";
     }
 

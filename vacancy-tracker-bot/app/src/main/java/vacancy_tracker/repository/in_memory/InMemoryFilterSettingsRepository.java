@@ -13,8 +13,9 @@ public class InMemoryFilterSettingsRepository implements SearchFiltersRepository
     private final HashMap<Long, VacancySearchFilter> filters = new HashMap<>();
 
     @Override
-    public void save(long sessionId, VacancySearchFilter filter) {
+    public VacancySearchFilter save(long sessionId, VacancySearchFilter filter) {
         this.filters.put(sessionId, filter);
+        return filter;
     }
 
     @Override

@@ -39,6 +39,23 @@ public class SetMaxSalaryCommand extends InputInterceptingCommand<Integer> {
         this.settingsService = settingsService;
     }
 
+    private static String createText(Integer maxSalary) {
+        String secondPart = "Чтобы *изменить:* выберите вариант из списка или отправьте число. " +
+                "Например:  `150 000`";
+
+        return createHeader(maxSalary) + secondPart;
+    }
+
+    private static String createHeader(Integer maxSalary) {
+        String value;
+        if (maxSalary == null || maxSalary <= 0) {
+            value = "не указано";
+        } else {
+            value = NumbersFormatUtil.formatSalary(maxSalary);
+        }
+        return "Текущее значение максимальной зарплаты: *" + value + "*\n";
+    }
+
     @Override
     protected void executeWithParameters(MessageData messageData, Integer value) {
         var chatId = messageData.getChatId();
@@ -64,23 +81,6 @@ public class SetMaxSalaryCommand extends InputInterceptingCommand<Integer> {
 
         messageData.setText(createText(currentMaxSalary));
         messageData.setKeyboardMarkup(keyboardMarkup);
-    }
-
-    private static String createText(Integer maxSalary) {
-        String secondPart = "Чтобы *изменить:* выберите вариант из списка или отправьте число. " +
-                "Например:  `150 000`";
-
-        return createHeader(maxSalary) + secondPart;
-    }
-
-    private static String createHeader(Integer maxSalary) {
-        String value;
-        if (maxSalary == null || maxSalary <= 0) {
-            value = "не указано";
-        } else {
-            value = NumbersFormatUtil.formatSalary(maxSalary);
-        }
-        return "Текущее значение максимальной зарплаты: *" + value + "*\n";
     }
 
     private InlineKeyboardMarkup initKeyboard() {

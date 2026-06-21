@@ -27,6 +27,7 @@ public class TrudVsemApiClient {
     @Value("${trudvsem.api.base-url}")
     private String baseUrl;
 
+    //todo фильтрация по зп
     public Mono<TrudVsemResponse> searchVacancies(VacancySearchFilter filter, int limit, int offset) {
         var url = buildUrl(filter, limit, offset);
         log.info("Requesting vacancies from: {}", url);

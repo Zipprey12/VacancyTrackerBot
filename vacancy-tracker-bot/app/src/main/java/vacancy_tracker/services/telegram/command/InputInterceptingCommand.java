@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import vacancy_tracker.model.telegram.command.CommandArgs;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
-import vacancy_tracker.model.telegram.session.CallingSource;
+import vacancy_tracker.model.telegram.session.PublishType;
 import vacancy_tracker.services.telegram.command.interceptors.InputInterceptor;
 import vacancy_tracker.services.telegram.command.publishers.MessagePublisher;
 import vacancy_tracker.services.telegram.command.strategy.ExecutionStrategy;
@@ -107,7 +107,7 @@ public abstract class InputInterceptingCommand<T> extends ExtendedMessageCommand
 
     private OutgoingMessage createInvalidOutgoingMessage(MessageData messageData, String text) {
         var message = new OutgoingMessage(messageData);
-        message.setSource(CallingSource.CHAT);
+        message.setSource(PublishType.SEND);
         message.setText(Objects.requireNonNullElse(text, DEFAULT_PARSING_ERROR_MESSAGE));
         return message;
     }

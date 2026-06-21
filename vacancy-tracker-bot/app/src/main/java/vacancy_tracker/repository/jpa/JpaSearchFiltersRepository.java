@@ -26,12 +26,13 @@ public class JpaSearchFiltersRepository implements SearchFiltersRepository {
     }
 
     @Override
-    public void save(long chatId, VacancySearchFilter filter) {
+    public VacancySearchFilter save(long chatId, VacancySearchFilter filter) {
         var entity = new SearchFilterEntity();
         entity.setChatId(chatId);
 
         mapper.updateEntity(filter, entity);
-        searchFilterDao.save(entity);
+        var result = searchFilterDao.save(entity);
+        return mapper.toDto(result);
     }
 
     @Override

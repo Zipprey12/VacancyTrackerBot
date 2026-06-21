@@ -10,7 +10,7 @@ import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.SearchActionParams;
 import vacancy_tracker.model.telegram.execution.ExecutionResult;
 import vacancy_tracker.model.telegram.notification.NotificationSettings;
-import vacancy_tracker.model.telegram.session.CallingSource;
+import vacancy_tracker.model.telegram.session.PublishType;
 import vacancy_tracker.model.telegram.settings.VacanciesShownParams;
 import vacancy_tracker.services.telegram.actions.vacancies.SendVacanciesAction;
 import vacancy_tracker.services.telegram.settings.NotificationService;
@@ -36,7 +36,7 @@ public class NotificationProcessor {
 
         var data = MessageData.builder()
                 .chatId(chatId)
-                .source(CallingSource.CHAT)
+                .source(PublishType.SEND)
                 .build();
         var params = VacanciesSearchParams.builder()
                 .page(0)
