@@ -69,7 +69,7 @@ public class SuperJobVacanciesApiClient extends SuperJobApiClient {
                 .doOnSuccess(r -> {
                             log.debug("SuperJob: получено {} вакансий из {}",
                                     r.getVacanciesSafe().size(), r.getTotal());
-                            r.setOffset(page * limit);
+                            r.setPage(page);
                         }
                 )
                 .doOnError(WebClientResponseException.class,

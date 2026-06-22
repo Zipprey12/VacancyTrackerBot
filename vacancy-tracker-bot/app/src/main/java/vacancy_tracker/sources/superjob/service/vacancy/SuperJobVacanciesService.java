@@ -10,7 +10,7 @@ import vacancy_tracker.model.domain.Town;
 import vacancy_tracker.model.domain.VacanciesSource;
 import vacancy_tracker.model.domain.Vacancy;
 import vacancy_tracker.model.search.VacanciesResponse;
-import vacancy_tracker.model.search.VacancySearchFilter;
+import vacancy_tracker.model.search.VacanciesSearchData;
 import vacancy_tracker.services.api.AsyncVacanciesProvider;
 import vacancy_tracker.services.api.location.LocationsServiceImpl;
 import vacancy_tracker.sources.superjob.model.response.SuperJobVacanciesResponse;
@@ -37,13 +37,18 @@ public class SuperJobVacanciesService implements AsyncVacanciesProvider {
     }
 
     @Override
-    public CompletableFuture<VacanciesResponse> find(VacancySearchFilter filter, int limit, int page) {
+    public CompletableFuture<VacanciesResponse> find(VacanciesSearchData data) {
+        var filter = data.getFilter();
+        var limit = data.getLimit();
+        var page = data.getPage();
+
         log.info("SuperJob поиск вакансий: {}", filter);
         return apiClient.searchVacancies(filter, limit, page)
                 .flatMap(this::createResponse)
                 .switchIfEmpty(Mono.fromCallable(this::createEmptyResponse))
                 .doOnSuccess(r -> {
                     r.setModifiedFrom(filter.getModifiedFrom());
+                    r.setOffset((long) limit * page);
                     log.debug("SuperJob: возвращено {} вакансий", r.getVacancies().size());
                 })
                 .toFuture();
@@ -79,9 +84,10 @@ public class SuperJobVacanciesService implements AsyncVacanciesProvider {
         return VacanciesResponse.builder()
                 .vacancies(vacancies)
                 .more(response.getMore())
+                .canHasOther(response.getPage() != 0 || response.getMore())
                 .source(SOURCE)
                 .total(response.getTotal())
-                .offset(response.getOffset())
+                .page(response.getPage())
                 .build();
     }
 

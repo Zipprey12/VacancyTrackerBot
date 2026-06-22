@@ -11,11 +11,12 @@ public class UpdatingMessagePublisher implements MessagePublisher {
 
     private final MessageEditor editor;
 
-    public final void publish(OutgoingMessage message) {
-        update(message);
+    public final Integer publish(OutgoingMessage message) {
+        return update(message);
     }
 
-    protected void update(OutgoingMessage messageData) {
+    protected Integer update(OutgoingMessage messageData) {
         editor.edit(messageData);
+        return messageData.getMessageId();
     }
 }

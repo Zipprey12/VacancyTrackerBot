@@ -38,9 +38,7 @@ public class PageableVacanciesFormatter extends VacanciesMessageFormatter {
     }
 
     private InlineKeyboardMarkup createNavigationKeyboard(VacanciesResponse response, VacanciesShownParams shownParams) {
-        var currentPage = (int) (response.getOffset() / MAX_VACANCIES);
-        var totalPages = (int) ((response.getTotal() + MAX_VACANCIES - 1) / MAX_VACANCIES);
-
+        var currentPage = (int) response.getPage();
         List<Object> args = new LinkedList<>();
         var key = VacanciesCallbackKeys.GET_VACANCIES.getKey();
 
@@ -57,11 +55,16 @@ public class PageableVacanciesFormatter extends VacanciesMessageFormatter {
         var hasAnother = new CallbackArg(HAS_ANOTHER.getKey(), shownParams.isHasAnother());
         args.add(hasAnother);
 
+        List<CallbackItem> footerItems = null;
         if (shownParams.isHasAnother()) {
             var footerItem = createFooterItem(key, castedDate);
-            return keyboardBuilder.createNavigationKeyboard(currentPage, totalPages, args, List.of(footerItem));
+            footerItems = List.of(footerItem);
         }
-        return keyboardBuilder.createNavigationKeyboard(currentPage, totalPages, args);
+        var totalPages = (int) ((response.getTotal() + MAX_VACANCIES - 1) / MAX_VACANCIES);
+        if (totalPages > 0) {
+            return keyboardBuilder.createNavigationKeyboard(currentPage, totalPages, args, footerItems);
+        }
+        return keyboardBuilder.createNavigationKeyboard(currentPage, response.isMore(), args, footerItems);
     }
 
     private CallbackItem createFooterItem(String key, Long casterDate) {

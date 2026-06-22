@@ -17,39 +17,17 @@ public class MessageSenderImpl implements MessageSender {
     private final TelegramClient client;
 
     @Override
-    public void sendText(long chatId, String text) {
-        SendMessage sendMessage = SendMessage.builder()
-                .chatId(chatId)
-                .text(text)
-                .build();
-        send(sendMessage);
-    }
-
-    @Override
-    public void sendText(long chatId, String text, String parseMode) {
-        SendMessage sendMessage = SendMessage.builder()
-                .chatId(chatId)
-                .text(text)
-                .parseMode(parseMode)
-                .build();
-        send(sendMessage);
-    }
-
-    @Override
-    public void send(SendMessage sendMessage) {
+    public Integer send(SendMessage sendMessage) {
         try {
-            client.execute(sendMessage);
+            var result = client.execute(sendMessage);
+            return result.getMessageId();
         } catch (TelegramApiException e) {
             var text = sendMessage.getText();
             var chatId = sendMessage.getChatId();
 
             log.warn("Ошибка отправки сообщения: {} в чат {}", text, chatId, e);
+            return null;
         }
-    }
-
-    @Override
-    public void sendInvalidValueError(long chatId) {
-        sendText(chatId, "Введено некорректное значение");
     }
 
     @Override
@@ -66,13 +44,13 @@ public class MessageSenderImpl implements MessageSender {
     }
 
     @Override
-    public void send(OutgoingMessage commandMessageData) {
+    public Integer send(OutgoingMessage commandMessageData) {
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(commandMessageData.getChatId())
                 .text(commandMessageData.getText())
                 .parseMode(commandMessageData.getParseMode())
                 .replyMarkup(commandMessageData.getKeyboardMarkup())
                 .build();
-        send(sendMessage);
+        return send(sendMessage);
     }
 }

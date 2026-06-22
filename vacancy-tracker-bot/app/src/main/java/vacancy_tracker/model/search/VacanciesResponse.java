@@ -21,20 +21,28 @@ public class VacanciesResponse {
     private VacanciesSource source;
     private List<Vacancy> vacancies;
 
+    private long page;
     private long offset;
+
     private boolean more;
     private long total;
     private boolean isSuccess;
 
+    private boolean canHasOther;
+
     private RequestType requestType;
     private LocalDateTime modifiedFrom;
 
-    public boolean isEmpty() {
-        return vacancies.isEmpty();
+    public boolean isCanHasOther() {
+        return canHasOther || isNotEmpty();
     }
 
     public boolean canBeFilled() {
-        return !isEmpty() || more || total > 0;
+        return isNotEmpty() || more || total > 0 || canHasOther;
+    }
+
+    public boolean isEmpty() {
+        return vacancies.isEmpty();
     }
 
     public boolean isNotEmpty() {

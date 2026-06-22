@@ -31,6 +31,12 @@ public class PaginatedKeyboardBuilder extends AdvancedKeyboardBuilder {
         return new InlineKeyboardRow(buttons);
     }
 
+    public static InlineKeyboardButton createPageIndicator(int currentPage) {
+        InlineKeyboardButton indicator = new InlineKeyboardButton(String.valueOf(currentPage + 1));
+        indicator.setCallbackData(CommonCallbacks.IGNORE.getKey());
+        return indicator;
+    }
+
     public static InlineKeyboardButton createPageIndicator(int currentPage, int totalPages) {
         InlineKeyboardButton indicator = new InlineKeyboardButton(
                 (currentPage + 1) + " / " + totalPages
@@ -44,6 +50,27 @@ public class PaginatedKeyboardBuilder extends AdvancedKeyboardBuilder {
         return (int) Math.ceil((double) totalItems / itemsPerPage);
     }
 
+    public InlineKeyboardMarkup createNavigationKeyboard(int currentPage, boolean hasNext, List<Object> args) {
+        var row = List.of(createNavigationRow(currentPage, hasNext, args));
+        return new InlineKeyboardMarkup(row);
+    }
+
+    public InlineKeyboardMarkup createNavigationKeyboard(int currentPage, boolean hasNext,
+                                                         List<Object> args, List<CallbackItem> footerItems) {
+        if (footerItems == null) {
+            return createNavigationKeyboard(currentPage, hasNext, args);
+        }
+        List<InlineKeyboardRow> rows;
+        if (currentPage == 0 && !hasNext) {
+            rows = List.of(createFooterItemsRow(footerItems));
+        } else {
+            rows = List.of(
+                    createNavigationRow(currentPage, hasNext, args),
+                    createFooterItemsRow(footerItems));
+        }
+        return new InlineKeyboardMarkup(rows);
+    }
+
     public InlineKeyboardMarkup createNavigationKeyboard(int currentPage, int totalPages, List<Object> args) {
         var row = List.of(createNavigationRow(currentPage, totalPages, args));
         return new InlineKeyboardMarkup(row);
@@ -51,8 +78,11 @@ public class PaginatedKeyboardBuilder extends AdvancedKeyboardBuilder {
 
     public InlineKeyboardMarkup createNavigationKeyboard(int currentPage, int totalPages,
                                                          List<Object> args, List<CallbackItem> footerItems) {
+        if (footerItems == null) {
+            return createNavigationKeyboard(currentPage, totalPages, args);
+        }
         List<InlineKeyboardRow> rows;
-        if (totalPages <= 1) {
+        if (totalPages <= 1 && totalPages >= 0) {
             rows = List.of(createFooterItemsRow(footerItems));
         } else {
             rows = List.of(
@@ -68,8 +98,23 @@ public class PaginatedKeyboardBuilder extends AdvancedKeyboardBuilder {
             row.add(createNavigationButton(PREV_TEXT, currentPage - 1, args));
         }
 
-        row.add(createPageIndicator(currentPage, totalPages));
+        if (totalPages > 0) {
+            row.add(createPageIndicator(currentPage, totalPages));
+        }
+
         if (currentPage < totalPages - 1) {
+            row.add(createNavigationButton(NEXT_TEXT, currentPage + 1, args));
+        }
+        return row;
+    }
+
+    public InlineKeyboardRow createNavigationRow(int currentPage, boolean hasNext, List<Object> args) {
+        InlineKeyboardRow row = new InlineKeyboardRow();
+        if (currentPage > 0) {
+            row.add(createNavigationButton(PREV_TEXT, currentPage - 1, args));
+        }
+        row.add(createPageIndicator(currentPage));
+        if (hasNext) {
             row.add(createNavigationButton(NEXT_TEXT, currentPage + 1, args));
         }
         return row;

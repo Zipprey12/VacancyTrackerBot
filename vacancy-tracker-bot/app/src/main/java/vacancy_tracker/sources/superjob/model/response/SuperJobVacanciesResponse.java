@@ -16,7 +16,6 @@ public class SuperJobVacanciesResponse {
 
     private Integer total;
     private Boolean more;
-    private Integer offset;
     private Integer page;
 
     public List<SuperJobVacancyDto> getVacanciesSafe() {

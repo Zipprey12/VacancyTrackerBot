@@ -49,6 +49,7 @@ public class WebClientConfig {
                 .defaultHeader("Accept",
                         "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
                 .clientConnector(new ReactorClientHttpConnector(buildHttpClient(null)))
+                .codecs(c -> c.defaultCodecs().maxInMemorySize(2 * 1024 * 1024))
                 .build();
     }
 

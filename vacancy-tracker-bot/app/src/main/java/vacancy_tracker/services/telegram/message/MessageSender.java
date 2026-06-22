@@ -5,15 +5,9 @@ import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 
 public interface MessageSender {
 
-    void sendText(long chatId, String text);
-
-    void sendText(long chatId, String text, String parseMode);
-
-    void send(SendMessage sendMessage);
-
-    void sendInvalidValueError(long chatId);
+    Integer send(SendMessage sendMessage);
 
     void answerCallback(String callbackId);
 
-    void send(OutgoingMessage commandMessageData);
+    Integer send(OutgoingMessage commandMessageData);
 }

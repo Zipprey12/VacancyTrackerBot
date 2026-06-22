@@ -29,15 +29,19 @@ public class VacanciesMessageFormatter {
     }
 
     private static void addManualHeader(StringBuilder stringBuilder, long totalCount) {
-        stringBuilder.append("Всего вакансий: *").append(totalCount).append("*\n\n");
+        if (totalCount >= 0) {
+            stringBuilder.append("Всего вакансий: *").append(totalCount).append("*\n\n");
+        } else {
+            stringBuilder.append("*Полученные вакансии:*\n\n");
+        }
     }
 
-    private static void addScheduledHeader(StringBuilder stringBuilder, long count, LocalDateTime from) {
-        stringBuilder.append("Вакансии за период с *")
-                .append(DatesFormatUtil.formatDateTime(from))
-                .append("*\nВсего: ")
-                .append(count)
-                .append("\n\n");
+    private static void addScheduledHeader(StringBuilder sb, long count, LocalDateTime from) {
+        sb.append("Вакансии за период с *").append(DatesFormatUtil.formatDateTime(from));
+        if (count >= 0) {
+            sb.append("*\nВсего: ").append(count);
+        }
+        sb.append("\n\n");
     }
 
     protected void addVacancies(StringBuilder sb, List<Vacancy> vacancies, int maxCount) {

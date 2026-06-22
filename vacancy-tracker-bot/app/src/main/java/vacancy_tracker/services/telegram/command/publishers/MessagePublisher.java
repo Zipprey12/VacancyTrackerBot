@@ -4,6 +4,6 @@ import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 
 public interface MessagePublisher {
 
-    void publish(OutgoingMessage message);
+    Integer publish(OutgoingMessage message);
 
 }

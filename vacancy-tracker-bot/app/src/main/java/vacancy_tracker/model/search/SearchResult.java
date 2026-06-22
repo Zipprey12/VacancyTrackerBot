@@ -17,10 +17,11 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequiredArgsConstructor
 public class SearchResult {
 
-    private final AtomicInteger resultsCount = new AtomicInteger(0);
+    private final AtomicInteger vacanciesResultCount = new AtomicInteger(0);
     private final AtomicLong totalCount = new AtomicLong(0);
     private final AtomicBoolean hasMore = new AtomicBoolean(false);
     private final AtomicInteger notEmptyCount = new AtomicInteger(0);
+    private final AtomicBoolean canHasAnother = new AtomicBoolean(false);
 
     @Getter
     private final List<VacanciesResponse> vacanciesResponses = Collections.synchronizedList(new LinkedList<>());
@@ -35,8 +36,8 @@ public class SearchResult {
     @Setter
     private LocalDateTime modifiedFrom;
 
-    public int getResultsCount() {
-        return resultsCount.get();
+    public int getVacanciesResultCount() {
+        return vacanciesResultCount.get();
     }
 
     public boolean hasMore() {
@@ -49,6 +50,10 @@ public class SearchResult {
 
     public int getNotEmptyResponseCount() {
         return notEmptyCount.get();
+    }
+
+    public boolean getCanHasAnother() {
+        return canHasAnother.get();
     }
 
     public List<VacanciesSource> getNotEmptySources() {
@@ -69,7 +74,7 @@ public class SearchResult {
 
         vacanciesResponses.add(response);
         sources.add(response.getSource());
-        resultsCount.getAndAdd(response.getVacancies().size());
+        vacanciesResultCount.getAndAdd(response.getVacancies().size());
 
         if (response.isMore()) {
             hasMore.set(true);
@@ -77,6 +82,11 @@ public class SearchResult {
         if (response.isNotEmpty()) {
             notEmptyCount.incrementAndGet();
         }
-        totalCount.getAndAdd(response.getTotal());
+        if (response.getTotal() > 0) {
+            totalCount.getAndAdd(response.getTotal());
+        }
+        if (response.isCanHasOther()) {
+            canHasAnother.set(true);
+        }
     }
 }

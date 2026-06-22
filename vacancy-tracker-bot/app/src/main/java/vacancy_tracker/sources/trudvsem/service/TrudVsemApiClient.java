@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class TrudVsemApiClient {
 
-    public static final int COUNT_LIMIT = 10;
+    public static final int COUNT_LIMIT = 100;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
     private final WebClient trudVsemWebClient;
@@ -27,9 +27,8 @@ public class TrudVsemApiClient {
     @Value("${trudvsem.api.base-url}")
     private String baseUrl;
 
-    //todo фильтрация по зп
-    public Mono<TrudVsemResponse> searchVacancies(VacancySearchFilter filter, int limit, int offset) {
-        var url = buildUrl(filter, limit, offset);
+    public Mono<TrudVsemResponse> searchVacancies(VacancySearchFilter filter, int limit, int page) {
+        var url = buildUrl(filter, limit, page);
         log.info("Requesting vacancies from: {}", url);
 
         return trudVsemWebClient.get()
@@ -43,21 +42,21 @@ public class TrudVsemApiClient {
                             r.getMeta().getTotal());
                 })
                 .doOnError(WebClientResponseException.class, e ->
-                        log.warn("TrudVsem: получен код {}", e.getStatusCode())
+                        log.warn("TrudVsem: получен код {}", e.getStatusCode(), e)
                 )
                 .doOnError(e -> !(e instanceof WebClientResponseException),
                         e -> log.error("TrudVsem: ошибка при получении вакансий", e))
                 .onErrorComplete();
     }
 
-    private String buildUrl(VacancySearchFilter filter, int limit, int offset) {
+    private String buildUrl(VacancySearchFilter filter, int limit, int page) {
         StringBuilder url = new StringBuilder(baseUrl + "/vacancies");
         if (filter.getLocation() != null && filter.getLocation().getRegion() != null) {
             url.append("/region/")
                     .append(buildRegionString(filter.getLocation().getRegion().getCode()));
         }
 
-        url.append("?offset=").append(offset)
+        url.append("?offset=").append(page)
                 .append("&limit=").append(Math.clamp(limit, 0, COUNT_LIMIT));
         if (filter.getModifiedFrom() != null) {
             url.append("&modifiedFrom=")
@@ -68,9 +67,6 @@ public class TrudVsemApiClient {
         }
         if (filter.getExperience() != null) {
             url.append("&experienceTo=").append(filter.getExperience().intValue());
-        }
-        if (filter.getMinSalary() != null) {
-            url.append("&salaryMin=").append(filter.getMinSalary());
         }
         return url.toString();
     }

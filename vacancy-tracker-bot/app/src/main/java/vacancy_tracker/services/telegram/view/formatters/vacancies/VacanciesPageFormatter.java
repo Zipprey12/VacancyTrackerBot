@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class VacancyPageFormatter extends VacanciesMessageFormatter {
+public class VacanciesPageFormatter extends VacanciesMessageFormatter {
 
     private static final String EMPTY_RESULT = "🔍 Не удалось найти вакансии, подходящие под запрос";
 

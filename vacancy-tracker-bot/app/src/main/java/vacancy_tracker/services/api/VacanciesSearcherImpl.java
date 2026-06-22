@@ -1,10 +1,12 @@
 package vacancy_tracker.services.api;
 
 import org.springframework.stereotype.Service;
+import vacancy_tracker.model.domain.RequestType;
 import vacancy_tracker.model.domain.VacanciesSource;
+import vacancy_tracker.model.search.SearchOutcome;
 import vacancy_tracker.model.search.SearchResult;
 import vacancy_tracker.model.search.VacanciesResponse;
-import vacancy_tracker.model.search.VacancySearchFilter;
+import vacancy_tracker.model.search.VacanciesSearchData;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -24,11 +26,12 @@ public class VacanciesSearcherImpl implements VacanciesSearcher {
     }
 
     @Override
-    public CompletableFuture<SearchResult> search(VacancySearchFilter filter, int limit, int page) {
+    public CompletableFuture<SearchResult> search(VacanciesSearchData data) {
         List<CompletableFuture<VacanciesResponse>> futures = providers.stream()
-                .map(p -> p.find(filter, limit, page))
+                .map(p -> p.find(data))
                 .toList();
 
+        var filter = data.getFilter();
         var modifiedFrom = filter.getModifiedFrom();
         return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
                 .thenApply(v -> {
@@ -45,20 +48,54 @@ public class VacanciesSearcherImpl implements VacanciesSearcher {
     }
 
     @Override
-    public CompletableFuture<SearchResult> search(VacancySearchFilter filter, int limit, int page, VacanciesSource source) {
+    public CompletableFuture<SearchResult> search(VacanciesSearchData data, VacanciesSource source) {
         if (source == null) {
-            return search(filter, limit, page);
+            return search(data);
         }
+        var provider = findProvider(source);
+        return provider.find(data)
+                .thenApply(response ->
+                        createResult(response, data.getFilter().getRequestType()));
+    }
+
+    //todo
+    @Override
+    public CompletableFuture<SearchOutcome> searchWithOutcome(VacanciesSearchData data, VacanciesSource source) {
+        if (source == null) {
+            return search(data).thenApply(result -> {
+                var responses = result.getNotEmptyResponses();
+                if (responses.isEmpty()) {
+                    return SearchOutcome.withoutCallback(result);
+                }
+                var first = responses.getFirst();
+                var provider = findProvider(first.getSource());
+
+                var onPublished = provider.onPublished(data.getChatId(), first);
+                return new SearchOutcome(result, onPublished);
+            });
+        }
+
+        var provider = findProvider(source);
+        return provider.find(data)
+                .thenApply(response -> {
+                    var result = createResult(response, data.getFilter().getRequestType());
+                    var onPublished = provider.onPublished(data.getChatId(), response);
+                    return new SearchOutcome(result, onPublished);
+                });
+    }
+
+    private AsyncVacanciesProvider findProvider(VacanciesSource source) {
         var provider = providerBySource.get(source);
         if (provider == null) {
             throw new IllegalArgumentException("Не найден источник данных: " + source.getName());
         }
-        return provider.find(filter, limit, page)
-                .thenApply(response -> {
-                    SearchResult result = new SearchResult(filter.getRequestType());
-                    result.addResponse(response);
-                    response.setModifiedFrom(response.getModifiedFrom());
-                    return result;
-                });
+        return provider;
+    }
+
+    private SearchResult createResult(VacanciesResponse response, RequestType type) {
+        var result = new SearchResult(type);
+        result.addResponse(response);
+        response.setModifiedFrom(response.getModifiedFrom());
+        return result;
     }
 }

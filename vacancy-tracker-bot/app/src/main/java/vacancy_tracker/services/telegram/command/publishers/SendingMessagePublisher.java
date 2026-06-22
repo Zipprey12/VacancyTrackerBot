@@ -11,11 +11,11 @@ public class SendingMessagePublisher implements MessagePublisher {
 
     private final MessageSender sender;
 
-    public final void publish(OutgoingMessage message) {
-        send(message);
+    public final Integer publish(OutgoingMessage message) {
+        return send(message);
     }
 
-    protected void send(OutgoingMessage messageData) {
-        sender.send(messageData);
+    protected Integer send(OutgoingMessage messageData) {
+        return sender.send(messageData);
     }
 }

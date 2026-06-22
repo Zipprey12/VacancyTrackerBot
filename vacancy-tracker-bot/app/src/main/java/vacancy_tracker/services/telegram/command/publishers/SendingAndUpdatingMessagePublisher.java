@@ -21,21 +21,22 @@ public class SendingAndUpdatingMessagePublisher implements MessagePublisher {
     private final MessageSender sender;
 
     @Override
-    public final void publish(OutgoingMessage message) {
+    public final Integer publish(OutgoingMessage message) {
         if (message.getSource().equals(UPDATE)) {
-            edit(message);
+            return edit(message);
         } else {
-            send(message);
+            return send(message);
         }
     }
 
-    protected void edit(OutgoingMessage messageData) {
+    protected Integer edit(OutgoingMessage messageData) {
         log.debug("Called edit message {} in chat {}", messageData.getMessageId(), messageData.getChatId());
         editor.edit(messageData);
+        return messageData.getMessageId();
     }
 
-    protected void send(OutgoingMessage messageData) {
+    protected Integer send(OutgoingMessage messageData) {
         log.debug("Called send message {} to chat {}", messageData.getMessageId(), messageData.getChatId());
-        sender.send(messageData);
+        return sender.send(messageData);
     }
 }

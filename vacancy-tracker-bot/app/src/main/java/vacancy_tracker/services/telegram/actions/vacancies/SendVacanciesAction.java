@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.domain.RequestType;
 import vacancy_tracker.model.search.SearchResult;
+import vacancy_tracker.model.search.VacanciesSearchData;
+import vacancy_tracker.model.search.VacanciesSearchParams;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.dto.SearchActionParams;
@@ -27,6 +29,7 @@ import static vacancy_tracker.model.telegram.execution.ExecutionFailReason.EXCEP
 @RequiredArgsConstructor
 public class SendVacanciesAction extends AsyncAction<SearchActionParams> {
 
+    public static final int VACANCIES_COUNT_LIMIT = 10;
     private final VacanciesSearcher vacanciesSearcher;
     private final SearchFiltersService settingsService;
     private final VacanciesResultMessage resultMessage;
@@ -34,16 +37,10 @@ public class SendVacanciesAction extends AsyncAction<SearchActionParams> {
 
     @Override
     public CompletableFuture<Void> executeAsync(MessageData messageData) {
-        long id = messageData.getChatId();
-        var filter = settingsService.get(id);
-        filter.setRequestType(RequestType.MANUAL);
-        return vacanciesSearcher.search(filter, 10, 0).thenAccept(
-                result -> {
-                    var message = new OutgoingMessage(messageData);
-                    resultMessage.fillMessage(result, message);
-                    publisher.publish(message);
-                }
-        );
+        return handleWithParameterAsync(messageData, new SearchActionParams(
+                new VacanciesSearchParams(0, null, null, RequestType.MANUAL),
+                new VacanciesShownParams(true, true)
+        ));
     }
 
     @Override
@@ -68,7 +65,6 @@ public class SendVacanciesAction extends AsyncAction<SearchActionParams> {
         var shownParams = parameters.getShownParams();
         var filter = settingsService.get(messageData.getChatId());
 
-        log.debug("SendTime: {} \n UpdateTime: {}", messageData.getSendTime(), filter.getUpdatedAt());
         if (messageData.getSendTime().isBefore(filter.getUpdatedAt())) {
             searchParams.setPage(0);
             messageData.setSource(PublishType.SEND);
@@ -79,22 +75,40 @@ public class SendVacanciesAction extends AsyncAction<SearchActionParams> {
             filter.setModifiedFrom(searchParams.getStartDate());
         }
 
+        var messageId = messageData.getSource() == PublishType.UPDATE ?
+                messageData.getMessageId() : null;
+
         var source = searchParams.getSource();
-        return vacanciesSearcher.search(filter, 10, searchParams.getPage(), source)
-                .thenApply(result -> {
+        var page = searchParams.getPage();
+        var params = VacanciesSearchData.builder()
+                .filter(filter)
+                .limit(VACANCIES_COUNT_LIMIT)
+                .chatId(messageData.getChatId())
+                .page(page)
+                .messageId(messageId)
+                .build();
+
+        return vacanciesSearcher.searchWithOutcome(params, source)
+                .thenApply(outcome -> {
+                    var result = outcome.result();
                     if (result.getNotEmptyResponseCount() == 0 && !shownParams.isShowIfEmpty()) {
                         return false;
                     }
-                    handleResult(parameters, result, messageData);
+                    var message = new OutgoingMessage(messageData);
+                    handleResult(parameters, result, message);
+
+                    var realMessageId = publisher.publish(message);
+                    outcome.onPublished().accept(realMessageId, page + 1);
+
                     return true;
                 });
     }
 
-    private void handleResult(SearchActionParams parameters, SearchResult result, MessageData messageData) {
-        var message = new OutgoingMessage(messageData);
+    private void handleResult(SearchActionParams parameters, SearchResult result, OutgoingMessage message) {
         var source = parameters.getSearchParams().getSource();
         var shownParams = parameters.getShownParams();
 
+        log.debug("non empty: {}", result.getNotEmptySources());
         if (result.getNotEmptyResponseCount() == 1) {
             var response = result.getNotEmptyResponses().getFirst();
             if (source == null) {
@@ -106,6 +120,5 @@ public class SendVacanciesAction extends AsyncAction<SearchActionParams> {
         } else {
             resultMessage.fillMessage(result, message);
         }
-        publisher.publish(message);
     }
 }
