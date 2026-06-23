@@ -22,8 +22,7 @@ public class CancelNotificationChangeCallbackHandler extends CallbackHandler {
 
     @Override
     public void handle(CallbackQuery callbackQuery) {
-        var message = callbackQuery.getMessage();
-        var messageData = MessageData.create(message);
+        var messageData = MessageData.create(callbackQuery);
         eventPublisher.publishEvent(new NotificationSettingEvent(this, messageData));
     }
 }

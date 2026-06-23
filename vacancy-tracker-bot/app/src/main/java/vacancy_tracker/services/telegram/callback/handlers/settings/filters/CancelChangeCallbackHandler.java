@@ -23,8 +23,7 @@ public class CancelChangeCallbackHandler extends CallbackHandler {
 
     @Override
     public void handle(CallbackQuery callbackQuery) {
-        var message = callbackQuery.getMessage();
-        var messageData = MessageData.create(message);
+        var messageData = MessageData.create(callbackQuery);
         service.disableInterceptor(messageData.getChatId());
         eventPublisher.publishEvent(new FilterSettingsEvent(this, messageData, true, null));
     }

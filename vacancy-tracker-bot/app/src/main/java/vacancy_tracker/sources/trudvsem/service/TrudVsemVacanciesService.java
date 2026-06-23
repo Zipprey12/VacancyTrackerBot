@@ -46,9 +46,9 @@ public class TrudVsemVacanciesService implements AsyncVacanciesProvider {
         log.info("TrudVsem: получение вакансий: {}", filter);
 
         if (hasSalaryFilter(filter)) {
-            var startOffset = paginationOffsetService.resolveStartOffset(data.getChatId(), data.getMessageId(), page);
-            return findWithSalaryFilter(filter, limit, startOffset)
-                    .doOnSuccess(response -> response.setPage(page))
+            var offsetArgs = paginationOffsetService.resolveStartOffset(data.getChatId(), data.getMessageId(), page);
+            return findWithSalaryFilter(filter, limit, offsetArgs.getOffset())
+                    .doOnSuccess(response -> response.setPage(offsetArgs.getPage()))
                     .toFuture();
         }
 
@@ -192,7 +192,7 @@ public class TrudVsemVacanciesService implements AsyncVacanciesProvider {
         if (matched.isEmpty()) {
             var empty = createEmptyResponse();
             empty.setModifiedFrom(filter.getModifiedFrom());
-            empty.setPage(collected.getNextOffset());
+            empty.setPage(collected.getNextPage());
             empty.setMore(!collected.isSourceExhausted());
             empty.setTotal(collected.getTotal());
             return empty;

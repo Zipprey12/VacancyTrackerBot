@@ -17,29 +17,37 @@ public class VacanciesMessageFormatter {
     public static final String RUB = " руб.";
 
     protected static void addHeader(StringBuilder sb, SearchResult result) {
-        addHeader(sb, result.getModifiedFrom(), result.getTotalCount());
+        addHeader(sb, result.getModifiedFrom(), result.getTotalCount(), result.isCountExact());
     }
 
-    protected static void addHeader(StringBuilder sb, LocalDateTime modifiedFrom, long totalCount) {
+    public static void addHeader(StringBuilder sb, LocalDateTime modifiedFrom, long totalCount, boolean isExact) {
         if (modifiedFrom != null) {
-            addScheduledHeader(sb, totalCount, modifiedFrom);
+            addScheduledHeader(sb, totalCount, modifiedFrom, isExact);
         } else {
-            addManualHeader(sb, totalCount);
+            addManualHeader(sb, totalCount, isExact);
         }
     }
 
-    private static void addManualHeader(StringBuilder stringBuilder, long totalCount) {
+    public static void addManualHeader(StringBuilder stringBuilder, long totalCount, boolean isExact) {
         if (totalCount >= 0) {
-            stringBuilder.append("Всего вакансий: *").append(totalCount).append("*\n\n");
+            stringBuilder.append("Найдено вакансий: *").append(totalCount);
+            if(!isExact){
+                stringBuilder.append("+");
+            }
+            stringBuilder.append("*\n\n");
         } else {
             stringBuilder.append("*Полученные вакансии:*\n\n");
         }
     }
 
-    private static void addScheduledHeader(StringBuilder sb, long count, LocalDateTime from) {
+    public static void addScheduledHeader(StringBuilder sb, long count, LocalDateTime from, boolean isExact) {
         sb.append("Вакансии за период с *").append(DatesFormatUtil.formatDateTime(from));
         if (count >= 0) {
-            sb.append("*\nВсего: ").append(count);
+            sb.append("*\nВсего: ");
+            sb.append(count);
+            if (!isExact){
+                sb.append("+");
+            }
         }
         sb.append("\n\n");
     }

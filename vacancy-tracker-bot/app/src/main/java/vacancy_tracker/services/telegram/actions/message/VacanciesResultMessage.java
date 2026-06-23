@@ -37,7 +37,7 @@ public class VacanciesResultMessage {
             var params = new VacanciesShownParams(true, false);
             pageableVacanciesFormatter.fill(message, result.getNotEmptyResponses().getFirst(), params);
         } else {
-            vacancySourcesFormatter.fill(message, result.getNotEmptySources(), result.getTotalCount(), result.getModifiedFrom());
+            vacancySourcesFormatter.fill(message, result);
         }
     }
 }

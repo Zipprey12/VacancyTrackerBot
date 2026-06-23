@@ -30,15 +30,18 @@ public class PageableVacanciesFormatter extends VacanciesMessageFormatter {
         var sb = new StringBuilder();
 
         addSource(sb, result.getSource());
-        addHeader(sb, result.getModifiedFrom(), result.getTotal());
+        addHeader(sb, result.getModifiedFrom(), result.getTotal(), result.isCountExact());
         addVacancies(sb, result.getVacancies(), MAX_VACANCIES);
-        var keyboard = createNavigationKeyboard(result, shownParams);
-        message.setKeyboardMarkup(keyboard);
         message.setText(sb.toString());
+
+        if(result.isCanHasOther()){
+            var keyboard = createNavigationKeyboard(result, shownParams);
+            message.setKeyboardMarkup(keyboard);
+        }
     }
 
     private InlineKeyboardMarkup createNavigationKeyboard(VacanciesResponse response, VacanciesShownParams shownParams) {
-        var currentPage = (int) response.getPage();
+        var currentPage = response.getPage();
         List<Object> args = new LinkedList<>();
         var key = VacanciesCallbackKeys.GET_VACANCIES.getKey();
 

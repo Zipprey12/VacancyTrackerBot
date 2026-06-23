@@ -10,6 +10,8 @@ import reactor.core.publisher.Mono;
 import vacancy_tracker.model.search.VacancySearchFilter;
 import vacancy_tracker.sources.trudvsem.model.TrudVsemResponse;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -63,7 +65,7 @@ public class TrudVsemApiClient {
                     .append(getDateTimeString(filter.getModifiedFrom()));
         }
         if (filter.getText() != null && !filter.getText().isBlank()) {
-            url.append("&text=").append(filter.getText());
+            url.append("&text=").append(getTextString(filter.getText()));
         }
         if (filter.getExperience() != null) {
             url.append("&experienceTo=").append(filter.getExperience().intValue());
@@ -77,5 +79,9 @@ public class TrudVsemApiClient {
 
     private String buildRegionString(int regionCode) {
         return String.format("%02d", regionCode) + "00000000000";
+    }
+
+    private String getTextString(String text){
+        return text.replace(" ", "%20");
     }
 }

@@ -8,25 +8,21 @@ import vacancy_tracker.model.telegram.callback.CommonCallbacks;
 import vacancy_tracker.services.telegram.callback.handlers.CallbackHandler;
 import vacancy_tracker.services.telegram.message.MessageSender;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 public class CallbackServiceImpl implements CallbackService {
 
-    private final Map<String, CallbackHandler> callbackHandlers;
-    private final MessageSender sender;
+    private final Map<String, CallbackHandler> callbackHandlers = new HashMap<>();
 
-    public CallbackServiceImpl(List<CallbackHandler> callbackHandlers,
-                               MessageSender sender) {
-        this.callbackHandlers = callbackHandlers.stream()
-                .collect(Collectors.toMap(
-                        CallbackHandler::getKey,
-                        handler -> handler
-                ));
-        this.sender = sender;
+    public CallbackServiceImpl(List<CallbackHandler> callbackHandlers, MessageSender sender) {
+        callbackHandlers.forEach(handler -> {
+            handler.setAnswerCallback(sender::answerCallback);
+            this.callbackHandlers.put(handler.getKey(), handler);
+        });
     }
 
     @Override
@@ -41,13 +37,12 @@ public class CallbackServiceImpl implements CallbackService {
         if (!key.equals(CommonCallbacks.IGNORE.getKey())) {
             callHandler(callback, key);
         }
-        sender.answerCallback(callback.getId());
     }
 
     private void callHandler(CallbackQuery callback, String key) {
         var handler = callbackHandlers.get(key);
         if (handler != null) {
-            handler.handle(callback);
+            handler.execute(callback);
         } else {
             log.warn("Был вызван Callback {}, для которого нет обработчика", callback.getData());
         }

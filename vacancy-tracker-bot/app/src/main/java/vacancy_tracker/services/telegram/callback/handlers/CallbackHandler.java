@@ -7,13 +7,34 @@ import lombok.Setter;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import vacancy_tracker.model.telegram.view.Identifiable;
 
+import java.util.function.Consumer;
+
 @Getter(AccessLevel.PROTECTED)
 @Setter(AccessLevel.PROTECTED)
 @RequiredArgsConstructor
 public abstract class CallbackHandler implements Identifiable {
 
+    @Setter
+    private Consumer<String> answerCallback;
+
     @Getter
     private final String key;
 
-    public abstract void handle(CallbackQuery callbackQuery);
+    @Setter
+    private boolean callFinish = true;
+
+    protected abstract void handle(CallbackQuery callbackQuery);
+
+    public void execute(CallbackQuery query) {
+        handle(query);
+        if (callFinish) {
+            finish(query.getId());
+        }
+    }
+
+    protected void finish(String callbackId) {
+        if (answerCallback != null && callbackId != null) {
+            answerCallback.accept(callbackId);
+        }
+    }
 }

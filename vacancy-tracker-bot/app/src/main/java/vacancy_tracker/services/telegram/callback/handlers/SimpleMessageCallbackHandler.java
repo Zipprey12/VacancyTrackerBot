@@ -18,7 +18,6 @@ public class SimpleMessageCallbackHandler extends CallbackHandler {
 
     @Override
     public void handle(CallbackQuery callbackQuery) {
-        var message = callbackQuery.getMessage();
-        handler.execute(MessageData.create(message));
+        handler.execute(MessageData.create(callbackQuery));
     }
 }

@@ -24,8 +24,12 @@ import static vacancy_tracker.model.telegram.callback.VacancySearchArg.*;
 @Component
 public class ShowVacanciesCallbackHandler extends NavigationCallbackHandler<SearchActionParams> {
 
+    private final SendVacanciesAction action;
+
     protected ShowVacanciesCallbackHandler(SendVacanciesAction handler) {
         super(VacanciesCallbackKeys.GET_VACANCIES.getKey(), handler);
+        action = handler;
+        setCallFinish(false);
     }
 
     @Override
@@ -46,7 +50,7 @@ public class ShowVacanciesCallbackHandler extends NavigationCallbackHandler<Sear
     }
 
     @Override
-    protected void executeWithEmptyKey(MessageData messageData, CallbackData data) {
+    protected void executeWithEmptyKey(MessageData message, CallbackData data) {
         var args = data.args();
         if (args != null && !args.isEmpty()) {
             var time = args.getByKey(FROM.getKey()).getValue();
@@ -57,11 +61,13 @@ public class ShowVacanciesCallbackHandler extends NavigationCallbackHandler<Sear
                 params.setStartDate(DateUtil.fromUnixSeconds(casted.get()));
 
                 var p = new SearchActionParams(params, null);
-                getHandler().handleWithParameter(messageData, p);
+                action.handleWithParameterAsync(message, p).
+                        thenAccept(v -> finish(message.getCallbackId()));
                 return;
             }
         }
-        super.executeWithEmptyKey(messageData, data);
+        action.executeAsync(message)
+                .thenAccept(v -> finish(message.getCallbackId()));
     }
 
     @Override
@@ -74,7 +80,14 @@ public class ShowVacanciesCallbackHandler extends NavigationCallbackHandler<Sear
         }
         params.getSearchParams().setPage(data.targetPage());
         message.setSource(PublishType.UPDATE);
-        getHandler().handleWithParameter(message, params);
+        action.handleWithParameterAsync(message, params)
+                .thenAccept(v -> finish(message.getCallbackId()));
+    }
+
+    @Override
+    public void handleCastedData(SearchActionParams data, MessageData messageData) {
+        action.handleWithParameterAsync(messageData, data)
+                .thenAccept(v -> finish(messageData.getCallbackId()));
     }
 
     private SearchActionParams extractParams(CallbackArgs args) {

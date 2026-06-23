@@ -43,7 +43,7 @@ public class VacanciesPageFormatter extends VacanciesMessageFormatter {
             return;
         }
         var sb = new StringBuilder();
-        addHeader(sb, response.getModifiedFrom(), response.getTotal());
+        addHeader(sb, response.getModifiedFrom(), response.getTotal(), response.isCountExact());
         add(sb, response, response.getVacancies().size());
         message.setText(sb.toString());
     }

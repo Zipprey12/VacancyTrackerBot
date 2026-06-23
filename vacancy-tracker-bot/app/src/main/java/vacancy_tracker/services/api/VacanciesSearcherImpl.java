@@ -58,7 +58,6 @@ public class VacanciesSearcherImpl implements VacanciesSearcher {
                         createResult(response, data.getFilter().getRequestType()));
     }
 
-    //todo
     @Override
     public CompletableFuture<SearchOutcome> searchWithOutcome(VacanciesSearchData data, VacanciesSource source) {
         if (source == null) {

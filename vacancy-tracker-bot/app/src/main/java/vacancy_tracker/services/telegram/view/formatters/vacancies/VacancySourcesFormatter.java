@@ -3,13 +3,13 @@ package vacancy_tracker.services.telegram.view.formatters.vacancies;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.domain.VacanciesSource;
+import vacancy_tracker.model.search.SearchResult;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.callback.CompositeCallbackItem;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.view.keyboard.KeyboardBuilder;
 import vacancy_tracker.services.util.DateUtil;
 
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,27 +19,27 @@ import static vacancy_tracker.model.telegram.callback.VacanciesCallbackKeys.GET_
 @RequiredArgsConstructor
 public class VacancySourcesFormatter {
 
-    public void fill(OutgoingMessage message, List<VacanciesSource> sources, Long totalCount, LocalDateTime dateFrom) {
-        addText(message, totalCount);
-        addKeyboard(message, sources, dateFrom);
+    public void fill(OutgoingMessage message, SearchResult result) {
+        addText(message, result);
+        addKeyboard(message, result);
     }
 
-    private void addText(OutgoingMessage message, Long totalCount) {
-        String text = "";
-        if (totalCount != null) {
-            text += "Найдено вакансий: *" + totalCount +
-                    "*\n\n";
-        }
-        text += "Выберите источник:";
-        message.setText(text);
+    private void addText(OutgoingMessage message, SearchResult result) {
+        var sb = new StringBuilder();
+        VacanciesMessageFormatter.addHeader(sb, result);
+
+        sb.append("Выберите источник:");
+        message.setText(sb.toString());
     }
 
-    private void addKeyboard(OutgoingMessage message, List<VacanciesSource> sources, LocalDateTime dateTime) {
+    private void addKeyboard(OutgoingMessage message, SearchResult result) {
         List<CallbackItem> items;
-        if (dateTime == null) {
+        var modifiedFrom = result.getModifiedFrom();
+        var sources = result.getNotEmptySources();
+        if (modifiedFrom == null) {
             items = createItems(sources);
         } else {
-            long unixSeconds = DateUtil.toUnixSeconds(dateTime);
+            long unixSeconds = DateUtil.toUnixSeconds(modifiedFrom);
             items = createItems(sources, unixSeconds);
         }
         var keyboard = KeyboardBuilder.buildInlineKeyboard(items, 1);

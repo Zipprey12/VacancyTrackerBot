@@ -11,8 +11,8 @@ public class CollectedBatch {
 
     private final List<Vacancy> matched = new ArrayList<>();
 
-    private long nextPage;
+    private int nextPage;
     private long total;
-    private long nextOffset;
+    private int nextOffset;
     private boolean isSourceExhausted;
 }

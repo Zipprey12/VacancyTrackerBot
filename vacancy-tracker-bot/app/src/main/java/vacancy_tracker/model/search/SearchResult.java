@@ -22,6 +22,7 @@ public class SearchResult {
     private final AtomicBoolean hasMore = new AtomicBoolean(false);
     private final AtomicInteger notEmptyCount = new AtomicInteger(0);
     private final AtomicBoolean canHasAnother = new AtomicBoolean(false);
+    private final AtomicBoolean isCountExact = new AtomicBoolean(true);
 
     @Getter
     private final List<VacanciesResponse> vacanciesResponses = Collections.synchronizedList(new LinkedList<>());
@@ -35,6 +36,10 @@ public class SearchResult {
     @Getter
     @Setter
     private LocalDateTime modifiedFrom;
+
+    public boolean isCountExact(){
+        return isCountExact.get();
+    }
 
     public int getVacanciesResultCount() {
         return vacanciesResultCount.get();
@@ -82,8 +87,11 @@ public class SearchResult {
         if (response.isNotEmpty()) {
             notEmptyCount.incrementAndGet();
         }
-        if (response.getTotal() > 0) {
+        if (response.getTotal() >= 0) {
             totalCount.getAndAdd(response.getTotal());
+        }
+        else {
+            isCountExact.set(false);
         }
         if (response.isCanHasOther()) {
             canHasAnother.set(true);

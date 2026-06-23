@@ -21,7 +21,7 @@ public class VacanciesResponse {
     private VacanciesSource source;
     private List<Vacancy> vacancies;
 
-    private long page;
+    private int page;
     private long offset;
 
     private boolean more;
@@ -33,8 +33,8 @@ public class VacanciesResponse {
     private RequestType requestType;
     private LocalDateTime modifiedFrom;
 
-    public boolean isCanHasOther() {
-        return canHasOther || isNotEmpty();
+    public boolean isCountExact() {
+        return total >= 0;
     }
 
     public boolean canBeFilled() {

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import vacancy_tracker.model.search.PaginationArgs;
 
 import java.time.Duration;
 import java.util.*;
@@ -22,20 +23,20 @@ public class VacanciesPaginationOffsetService {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public int resolveStartOffset(long chatId, Integer messageId, int page) {
+    public PaginationArgs resolveStartOffset(long chatId, Integer messageId, int page) {
         if (page == 0 || messageId == null) {
-            return 0;
+            return new PaginationArgs(0, 0);
         }
 
         var map = readMap(chatId, messageId);
         if (map.isEmpty()) {
             log.debug("Карта пагинации не найдена для chatId={}, messageId={}", chatId, messageId);
-            return 0;
+            return new PaginationArgs(0, 0);
         }
 
         var offset = map.get(page);
         if (offset != null) {
-            return offset;
+            return new PaginationArgs(page, offset);
         }
 
         var closestPrevious = map.entrySet().stream()
@@ -43,11 +44,13 @@ public class VacanciesPaginationOffsetService {
                 .max(Comparator.comparingInt(Map.Entry::getKey));
 
         if (closestPrevious.isPresent()) {
+            var foundPage = closestPrevious.get().getKey();
+            var foundOffset = closestPrevious.get().getKey();
             log.debug("Offset для страницы {} не найден. Используется offset страницы {}",
-                    page, closestPrevious.get().getKey());
-            return closestPrevious.get().getValue();
+                    page, foundPage);
+            return new PaginationArgs(foundPage, foundOffset);
         }
-        return 0;
+        return new PaginationArgs(0, 0);
     }
 
     public void saveNextPageOffset(long chatId, int messageId, int nextPage, long nextOffset) {

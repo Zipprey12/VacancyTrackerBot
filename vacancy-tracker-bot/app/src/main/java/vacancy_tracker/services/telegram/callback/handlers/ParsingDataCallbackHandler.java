@@ -37,7 +37,7 @@ public abstract class ParsingDataCallbackHandler<T> extends CallbackHandler {
         var text = callbackQuery.getData();
         var callbackData = callbackParser.parse(text);
 
-        var messageData = MessageData.create(callbackQuery.getMessage());
+        var messageData = MessageData.create(callbackQuery);
         if (callbackData.hasEmptyKey()) {
             executeWithEmptyKey(messageData, callbackData);
         } else {
