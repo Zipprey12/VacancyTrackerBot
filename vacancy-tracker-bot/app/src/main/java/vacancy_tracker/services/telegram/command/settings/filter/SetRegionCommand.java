@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import vacancy_tracker.model.domain.Location;
 import vacancy_tracker.model.domain.Region;
 import vacancy_tracker.model.telegram.command.CommandArgs;
+import vacancy_tracker.model.telegram.command.CommandCategory;
 import vacancy_tracker.model.telegram.dto.LocationSearch;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
@@ -24,8 +25,8 @@ import vacancy_tracker.services.telegram.view.formatters.filter.RegionsSelection
 @Slf4j
 public class SetRegionCommand extends InputInterceptingCommand<LocationSearch> {
 
-    public static final String KEY = "/set_region";
-    public static final String DESCRIPTION = "Установка региона поиска";
+    public static final String KEY = "/region";
+    public static final String DESCRIPTION = "Регион";
 
     private final RegionsSelectionMessageFormatter formatter;
     private final AfterRegionSelectedMessage regionSelectionUpdateMessage;
@@ -42,7 +43,7 @@ public class SetRegionCommand extends InputInterceptingCommand<LocationSearch> {
                             SearchFiltersService settingsService,
                             SequentialAsyncExecutionStrategy strategy) {
 
-        super(new CommandArgs(KEY, DESCRIPTION, handler), publisher, new LocationInterceptor(), sessionsService, strategy);
+        super(new CommandArgs(KEY, DESCRIPTION, handler, CommandCategory.FILTER), publisher, new LocationInterceptor(), sessionsService, strategy);
         this.formatter = messageFormatter;
         this.regionSelectionUpdateMessage = regionSelectionUpdateMessage;
         this.locationsService = locationsService;

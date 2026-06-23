@@ -15,8 +15,8 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class DefaultBotNavigator implements BotNavigator {
 
-    private final MessageAction initMessage;
-    private final MessageAction helpMessage;
+    private final MessageAction initAction;
+    private final MessageAction helpAction;
 
     private final SessionsService sessionsService;
     private final MessageCommandCaller executor;
@@ -54,21 +54,21 @@ public class DefaultBotNavigator implements BotNavigator {
     @Override
     public void showInitMessage(MessageData message) {
         CompletableFuture.runAsync(() -> {
-            initMessage.execute(message);
-            helpMessage.execute(message);
+            initAction.execute(message);
+            helpAction.execute(message);
         });
     }
 
     @Override
     public void showHelpMessage(MessageData message) {
-        CompletableFuture.runAsync(() -> helpMessage.execute(message));
+        CompletableFuture.runAsync(() -> helpAction.execute(message));
     }
 
     private void executeOrHelp(MessageData messageData) {
         executor.execute(messageData)
                 .thenAccept(executed -> {
                     if (Boolean.FALSE.equals(executed)) {
-                        helpMessage.execute(messageData);
+                        helpAction.execute(messageData);
                     }
                 });
     }

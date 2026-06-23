@@ -14,7 +14,7 @@ import vacancy_tracker.repository.SessionsRepository;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CachingSessionsServiceImpl implements SessionsService {
+public class CachingSessionsService implements SessionsService {
 
     private final SessionsRepository repository;
     private final ApplicationContext context;

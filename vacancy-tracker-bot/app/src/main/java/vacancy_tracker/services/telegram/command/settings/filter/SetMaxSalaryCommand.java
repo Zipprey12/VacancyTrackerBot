@@ -3,6 +3,7 @@ package vacancy_tracker.services.telegram.command.settings.filter;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.command.CommandArgs;
+import vacancy_tracker.model.telegram.command.CommandCategory;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
@@ -21,8 +22,8 @@ import static vacancy_tracker.services.telegram.view.formatters.filter.SalaryFor
 @Component
 public class SetMaxSalaryCommand extends InputInterceptingCommand<Integer> {
 
-    public static final String KEY = "/set_max_salary";
-    public static final String DESCRIPTION = "Установить максимальное значение зарплаты";
+    public static final String KEY = "/max_salary";
+    public static final String DESCRIPTION = "Максимальная зарплата";
 
     private final InlineKeyboardMarkup keyboardMarkup = initKeyboard();
 
@@ -33,7 +34,7 @@ public class SetMaxSalaryCommand extends InputInterceptingCommand<Integer> {
                                   SearchFiltersService settingsService,
                                   FiltersChangingCompletionHandler completionHandler,
                                   SequentialAsyncExecutionStrategy strategy) {
-        super(new CommandArgs(KEY, DESCRIPTION, completionHandler), publisher,
+        super(new CommandArgs(KEY, DESCRIPTION, completionHandler, CommandCategory.FILTER), publisher,
                 new IntegerInterceptor(), sessionsService, strategy);
 
         this.settingsService = settingsService;

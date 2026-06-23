@@ -2,7 +2,7 @@ package vacancy_tracker.services.telegram.notification;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -17,7 +17,7 @@ public class RedisNotificationQueue implements NotificationQueue {
 
     private static final String QUEUE_KEY = "notification:queue";
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     public void add(long chatId, LocalDateTime executionTime) {

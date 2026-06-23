@@ -37,7 +37,7 @@ public class SearchResult {
     @Setter
     private LocalDateTime modifiedFrom;
 
-    public boolean isCountExact(){
+    public boolean isCountExact() {
         return isCountExact.get();
     }
 
@@ -89,8 +89,7 @@ public class SearchResult {
         }
         if (response.getTotal() >= 0) {
             totalCount.getAndAdd(response.getTotal());
-        }
-        else {
+        } else {
             isCountExact.set(false);
         }
         if (response.isCanHasOther()) {

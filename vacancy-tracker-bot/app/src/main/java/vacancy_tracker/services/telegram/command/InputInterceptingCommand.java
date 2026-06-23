@@ -63,7 +63,9 @@ public abstract class InputInterceptingCommand<T> extends ExtendedMessageCommand
         }
 
         enableInterceptor(message.getChatId());
-        super.execute(message);
+        var outgoingMessage = new OutgoingMessage(message);
+        outgoingMessage.setSendIfNotLast(true);
+        super.executeWithSend(outgoingMessage);
     }
 
     @Override

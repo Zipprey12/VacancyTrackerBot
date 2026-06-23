@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.command.CommandArgs;
+import vacancy_tracker.model.telegram.command.CommandCategory;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
@@ -24,8 +25,8 @@ import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys
 @Component
 public class SetExperienceCommand extends InputInterceptingCommand<Float> {
 
-    public static final String KEY = "/set_experience";
-    public static final String DESCRIPTION = "Установить опыт работы";
+    public static final String KEY = "/experience";
+    public static final String DESCRIPTION = "Опыт работы";
     public static final int MAX_EXPERIENCE = 100;
 
     public static final String TOO_MUCH_EXPERIENCE_MESSAGE = """
@@ -48,7 +49,7 @@ public class SetExperienceCommand extends InputInterceptingCommand<Float> {
                                 FiltersChangingCompletionHandler completionHandler,
                                 SequentialAsyncExecutionStrategy strategy) {
 
-        super(new CommandArgs(KEY, DESCRIPTION, completionHandler),
+        super(new CommandArgs(KEY, DESCRIPTION, completionHandler, CommandCategory.FILTER),
                 publisher,
                 new FloatInterceptor(),
                 sessionsService,

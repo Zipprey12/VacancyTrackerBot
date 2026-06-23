@@ -11,4 +11,5 @@ public class CommandArgs {
     private final String key;
     private final String description;
     private final CommandCompletionHandler completionHandler;
+    private final CommandCategory category;
 }

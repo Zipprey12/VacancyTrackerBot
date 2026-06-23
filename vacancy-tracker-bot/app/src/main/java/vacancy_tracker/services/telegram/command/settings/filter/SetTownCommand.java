@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.domain.Town;
 import vacancy_tracker.model.telegram.command.CommandArgs;
+import vacancy_tracker.model.telegram.command.CommandCategory;
 import vacancy_tracker.model.telegram.dto.LocationSearch;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
@@ -24,8 +25,8 @@ import java.util.Optional;
 @Slf4j
 public class SetTownCommand extends InputInterceptingCommand<LocationSearch> {
 
-    public static final String KEY = "/set_town";
-    public static final String DESCRIPTION = "Установка города поиска";
+    public static final String KEY = "/town";
+    public static final String DESCRIPTION = "Город (населенный пункт) поиска";
 
     private final SearchFiltersService settingsService;
     private final TownsSelectionMessageFormatter formatter;
@@ -38,7 +39,7 @@ public class SetTownCommand extends InputInterceptingCommand<LocationSearch> {
                           TownsSelectionMessageFormatter formatter,
                           LocationsService locationsService,
                           SequentialAsyncExecutionStrategy strategy) {
-        super(new CommandArgs(KEY, DESCRIPTION, handler), publisher,
+        super(new CommandArgs(KEY, DESCRIPTION, handler, CommandCategory.FILTER), publisher,
                 new LocationInterceptor(), sessionsService, strategy);
 
         this.settingsService = settingsService;
@@ -52,6 +53,9 @@ public class SetTownCommand extends InputInterceptingCommand<LocationSearch> {
         var settings = settingsService.get(messageData.getChatId());
         var location = settings.getLocation();
         formatter.fillMessage(messageData, location);
+        if (location == null || location.getRegion() == null) {
+            disableInterceptor(messageData.getChatId());
+        }
     }
 
     @Override
@@ -66,6 +70,10 @@ public class SetTownCommand extends InputInterceptingCommand<LocationSearch> {
     private void showFiltered(long chatId, String filter) {
         var filters = settingsService.get(chatId);
         var location = filters.getLocation();
+        if (location == null || location.getRegion() == null) {
+            disableInterceptor(chatId);
+        }
+
         var outgoingMessage = new OutgoingMessage(MessageData.builder()
                 .source(PublishType.SEND)
                 .chatId(chatId)

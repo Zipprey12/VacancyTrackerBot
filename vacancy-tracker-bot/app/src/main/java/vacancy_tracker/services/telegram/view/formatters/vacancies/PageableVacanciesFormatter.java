@@ -34,7 +34,7 @@ public class PageableVacanciesFormatter extends VacanciesMessageFormatter {
         addVacancies(sb, result.getVacancies(), MAX_VACANCIES);
         message.setText(sb.toString());
 
-        if(result.isCanHasOther()){
+        if (result.isCanHasOther()) {
             var keyboard = createNavigationKeyboard(result, shownParams);
             message.setKeyboardMarkup(keyboard);
         }

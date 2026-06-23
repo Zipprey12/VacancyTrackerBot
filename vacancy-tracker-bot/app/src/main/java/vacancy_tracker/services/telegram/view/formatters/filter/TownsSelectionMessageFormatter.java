@@ -25,7 +25,9 @@ public class TownsSelectionMessageFormatter {
             Либо *введите его название* (можно часть слова) в сообщении.
             """;
 
-    public static final String HEADER_WITH_FILTER = "🗺️ *Выберите город* из списка.";
+    public static final String HEADER_WITH_FILTER = """
+            🗺️ *Выберите город* из списка.
+            Или *введите название* для повторной фильтрации""";
 
     public static final String REGION_NOT_SELECTED_MESSAGE =
             "Для выбора города *необходимо установить регион* поиска";

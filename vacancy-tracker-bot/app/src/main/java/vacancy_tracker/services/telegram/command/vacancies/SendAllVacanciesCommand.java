@@ -3,6 +3,7 @@ package vacancy_tracker.services.telegram.command.vacancies;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.telegram.command.CommandArgs;
+import vacancy_tracker.model.telegram.command.CommandCategory;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.actions.vacancies.SendVacanciesAction;
 import vacancy_tracker.services.telegram.command.AbstractMessageCommand;
@@ -13,13 +14,13 @@ import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMe
 public class SendAllVacanciesCommand extends AbstractMessageCommand {
 
     public static final String KEY = "/search";
-    public static final String DESCRIPTION = "Поиск всех подходящих вакансий";
+    public static final String DESCRIPTION = "Найти вакансии";
     private final SendVacanciesAction sendVacanciesAction;
 
     protected SendAllVacanciesCommand(SendingAndUpdatingMessagePublisher publisher,
                                       SendVacanciesAction sendVacanciesAction) {
 
-        super(new CommandArgs(KEY, DESCRIPTION, null), publisher);
+        super(new CommandArgs(KEY, DESCRIPTION, null, CommandCategory.MAIN), publisher);
         this.sendVacanciesAction = sendVacanciesAction;
     }
 

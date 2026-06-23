@@ -14,12 +14,10 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public abstract class CallbackHandler implements Identifiable {
 
-    @Setter
-    private Consumer<String> answerCallback;
-
     @Getter
     private final String key;
-
+    @Setter
+    private Consumer<String> answerCallback;
     @Setter
     private boolean callFinish = true;
 

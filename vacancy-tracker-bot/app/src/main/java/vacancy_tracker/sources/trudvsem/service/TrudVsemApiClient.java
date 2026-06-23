@@ -10,8 +10,6 @@ import reactor.core.publisher.Mono;
 import vacancy_tracker.model.search.VacancySearchFilter;
 import vacancy_tracker.sources.trudvsem.model.TrudVsemResponse;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -81,7 +79,7 @@ public class TrudVsemApiClient {
         return String.format("%02d", regionCode) + "00000000000";
     }
 
-    private String getTextString(String text){
+    private String getTextString(String text) {
         return text.replace(" ", "%20");
     }
 }

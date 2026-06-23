@@ -13,8 +13,17 @@ public class OutgoingMessage extends MessageData {
 
     private InlineKeyboardMarkup keyboardMarkup;
     private String parseMode = ParseMode.MARKDOWN;
+    private boolean sendIfNotLast = false;
 
     public OutgoingMessage(MessageData source) {
         super(source);
+    }
+
+    public OutgoingMessage copy(OutgoingMessage message) {
+        var out = new OutgoingMessage(message);
+        out.setKeyboardMarkup(message.getKeyboardMarkup());
+        out.setParseMode(message.getParseMode());
+        out.setSendIfNotLast(message.isSendIfNotLast());
+        return out;
     }
 }

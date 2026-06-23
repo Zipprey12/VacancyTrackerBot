@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.command.CommandArgs;
+import vacancy_tracker.model.telegram.command.CommandCategory;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.command.InputInterceptingCommand;
@@ -24,8 +25,8 @@ import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys
 @Component
 public class SetSearchingTextCommand extends InputInterceptingCommand<String> {
 
-    public static final String KEY = "/set_search_text";
-    public static final String DESCRIPTION = "Установить текст для поиска";
+    public static final String KEY = "/text";
+    public static final String DESCRIPTION = "Текст вакансии";
     private static final InlineKeyboardMarkup KEYBOARD = initKeyboard();
 
     private final SearchFiltersService settingsService;
@@ -35,7 +36,7 @@ public class SetSearchingTextCommand extends InputInterceptingCommand<String> {
                                    FiltersChangingCompletionHandler handler,
                                    SearchFiltersService settingsService,
                                    SequentialAsyncExecutionStrategy strategy) {
-        super(new CommandArgs(KEY, DESCRIPTION, handler), publisher,
+        super(new CommandArgs(KEY, DESCRIPTION, handler, CommandCategory.FILTER), publisher,
                 new TextInterceptor(), sessionsService, strategy);
         this.settingsService = settingsService;
     }

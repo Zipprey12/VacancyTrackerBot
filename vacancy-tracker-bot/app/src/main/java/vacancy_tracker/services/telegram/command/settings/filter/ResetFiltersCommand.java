@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.callback.CallbackItem;
 import vacancy_tracker.model.telegram.command.CommandArgs;
+import vacancy_tracker.model.telegram.command.CommandCategory;
 import vacancy_tracker.model.telegram.dto.LocationSearch;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
@@ -27,7 +28,7 @@ import static vacancy_tracker.model.telegram.settings.ResetFilterFieldType.LOCAT
 public class ResetFiltersCommand extends ExtendedMessageCommand<ResetFilterFieldType> {
 
     public static final String KEY = "/reset_filters";
-    public static final String DESCRIPTION = "Сбросить фильтры для поиска вакансий";
+    public static final String DESCRIPTION = "Сбросить фильтры";
 
     private static final InlineKeyboardMarkup KEYBOARD = initKeyboard();
 
@@ -41,7 +42,7 @@ public class ResetFiltersCommand extends ExtendedMessageCommand<ResetFilterField
                                SearchFiltersService settingsService,
                                SequentialAsyncExecutionStrategy strategy,
                                SetRegionCommand setRegionCommand) {
-        super(new CommandArgs(KEY, DESCRIPTION, completionHandler), publisher, strategy);
+        super(new CommandArgs(KEY, DESCRIPTION, completionHandler, CommandCategory.FILTER), publisher, strategy);
         this.sessionsService = sessionsService;
         this.settingsService = settingsService;
         this.setRegionCommand = setRegionCommand;

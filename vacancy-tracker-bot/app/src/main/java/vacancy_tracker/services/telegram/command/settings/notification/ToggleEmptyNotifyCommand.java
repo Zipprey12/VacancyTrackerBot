@@ -2,6 +2,7 @@ package vacancy_tracker.services.telegram.command.settings.notification;
 
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.telegram.command.CommandArgs;
+import vacancy_tracker.model.telegram.command.CommandCategory;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.services.telegram.command.ExtendedMessageCommand;
@@ -15,8 +16,8 @@ import vacancy_tracker.services.telegram.view.formatters.notification.ToggleEmpt
 @Component
 public class ToggleEmptyNotifyCommand extends ExtendedMessageCommand<Boolean> {
 
-    public static final String KEY = "/set_empty_notify";
-    public static final String DESCRIPTION = "Включить / отключить уведомления при отсутствии новых вакансий";
+    public static final String KEY = "/empty_notify";
+    public static final String DESCRIPTION = "Уведомления при отсутствии вакансий";
 
     private final NotificationService service;
     private final ToggleEmptyNotifyMessageFormatter messageFormatter;
@@ -26,7 +27,7 @@ public class ToggleEmptyNotifyCommand extends ExtendedMessageCommand<Boolean> {
                                        NotificationService service,
                                        ToggleEmptyNotifyMessageFormatter messageFormatter,
                                        SequentialAsyncExecutionStrategy strategy) {
-        super(new CommandArgs(KEY, DESCRIPTION, null), publisher, strategy);
+        super(new CommandArgs(KEY, DESCRIPTION, null, CommandCategory.NOTIFICATION), publisher, strategy);
         this.service = service;
         this.messageFormatter = messageFormatter;
         setOnComplete(handler);

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import vacancy_tracker.model.telegram.callback.CallBackDataProvider;
 import vacancy_tracker.model.telegram.command.CommandArgs;
+import vacancy_tracker.model.telegram.command.CommandCategory;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.settings.FilterOptions;
 import vacancy_tracker.services.telegram.command.AbstractMessageCommand;
@@ -18,8 +19,8 @@ import java.util.List;
 @Component
 public class SetSearchSettingsCommand extends AbstractMessageCommand {
 
-    public static final String KEY = "/set_filters";
-    public static final String DESCRIPTION = "Настройки поиска вакансий";
+    public static final String KEY = "/filters";
+    public static final String DESCRIPTION = "Настроить фильтры";
 
     private final SearchFiltersService settingsService;
     private final FiltersMessageFormatter messageFormatter;
@@ -28,7 +29,7 @@ public class SetSearchSettingsCommand extends AbstractMessageCommand {
     public SetSearchSettingsCommand(SendingAndUpdatingMessagePublisher publisher,
                                     SearchFiltersService settingsService,
                                     FiltersMessageFormatter messageFormatter) {
-        super(new CommandArgs(KEY, DESCRIPTION, null), publisher);
+        super(new CommandArgs(KEY, DESCRIPTION, null, CommandCategory.MAIN), publisher);
         this.settingsService = settingsService;
         this.messageFormatter = messageFormatter;
         keyboardMarkup = initKeyboard();

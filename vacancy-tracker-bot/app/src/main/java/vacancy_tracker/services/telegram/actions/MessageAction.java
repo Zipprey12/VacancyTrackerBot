@@ -21,12 +21,16 @@ public abstract class MessageAction implements ExecutableMessageHandler {
     @Override
     public void execute(MessageData message) {
         var outgoingMessage = new OutgoingMessage(message);
+        executeWithSend(outgoingMessage);
+    }
+
+    protected final void executeWithSend(OutgoingMessage message) {
         executionStrategy.execute(
                 message.getChatId(),
-                () -> executeAndPopulateMessage(outgoingMessage),
+                () -> executeAndPopulateMessage(message),
                 () -> {
-                    if (outgoingMessage.getText() != null) {
-                        publisher.publish(outgoingMessage);
+                    if (message.getText() != null) {
+                        publisher.publish(message);
                     }
                 }
         );

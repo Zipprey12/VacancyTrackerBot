@@ -22,7 +22,7 @@ import java.time.LocalTime;
 @Component
 public class SetNotificationTimeCommand extends InputInterceptingCommand<LocalTime> {
 
-    private static final String KEY = "set_notification_time";
+    private static final String KEY = "notification_time";
 
     private final NotificationService notificationService;
     private final TimeSelectionMessageFormatter messageFormatter;
@@ -33,7 +33,7 @@ public class SetNotificationTimeCommand extends InputInterceptingCommand<LocalTi
                                          NotificationChangingCompletionHandler handler,
                                          TimeSelectionMessageFormatter messageFormatter,
                                          SequentialAsyncExecutionStrategy strategy) {
-        super(new CommandArgs(KEY, null, handler), publisher,
+        super(new CommandArgs(KEY, null, handler, null), publisher,
                 new TimeInterceptor(), sessionsService, strategy);
 
         this.notificationService = notificationService;

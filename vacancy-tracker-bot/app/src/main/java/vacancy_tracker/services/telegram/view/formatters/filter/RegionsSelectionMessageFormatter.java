@@ -29,7 +29,10 @@ public class RegionsSelectionMessageFormatter {
             Вы также можете *отправить его название* (можно часть слова) для фильтрации.
             """;
 
-    public static final String HEADER_WITH_FILTER = "🗺️ *Выберите регион* из списка.";
+    public static final String HEADER_WITH_FILTER = """
+            🗺️ *Выберите регион* из списка.
+            Или *введите название* для повторной фильтрации
+            """;
 
     public static final String REGIONS_NOT_FOUND = """
             Не удалось загрузить список регионов.

@@ -66,7 +66,7 @@ public class SendVacanciesAction extends AsyncAction<SearchActionParams> {
         var filter = settingsService.get(messageData.getChatId());
         var sendTime = messageData.getSendTime();
 
-        if (sendTime == null ||  sendTime.isBefore(filter.getUpdatedAt())) {
+        if (sendTime == null || sendTime.isBefore(filter.getUpdatedAt())) {
             searchParams.setPage(0);
             messageData.setSource(PublishType.SEND);
         }

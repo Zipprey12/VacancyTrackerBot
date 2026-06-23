@@ -90,6 +90,7 @@ public class TrudVsemVacanciesService implements AsyncVacanciesProvider {
                     response.setCanHasOther(offset != 0 && more || !batch.getMatched().isEmpty());
                     response.setMore(more);
                     response.setOffset(batch.getNextOffset());
+                    response.setCanHasOther(!batch.isSourceExhausted());
                     return response;
                 });
     }

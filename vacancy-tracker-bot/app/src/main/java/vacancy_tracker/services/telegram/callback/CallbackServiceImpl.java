@@ -18,11 +18,14 @@ public class CallbackServiceImpl implements CallbackService {
 
     private final Map<String, CallbackHandler> callbackHandlers = new HashMap<>();
 
+    private final MessageSender sender;
+
     public CallbackServiceImpl(List<CallbackHandler> callbackHandlers, MessageSender sender) {
         callbackHandlers.forEach(handler -> {
             handler.setAnswerCallback(sender::answerCallback);
             this.callbackHandlers.put(handler.getKey(), handler);
         });
+        this.sender = sender;
     }
 
     @Override
@@ -36,6 +39,8 @@ public class CallbackServiceImpl implements CallbackService {
         var key = getKey(callback);
         if (!key.equals(CommonCallbacks.IGNORE.getKey())) {
             callHandler(callback, key);
+        } else {
+            sender.answerCallback(callback.getId());
         }
     }
 

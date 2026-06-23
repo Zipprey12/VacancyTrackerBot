@@ -22,7 +22,7 @@ import java.time.LocalTime;
 @Component
 public class SetWeeklyNotificationCommand extends InputInterceptingCommand<Integer> {
 
-    public static final String KEY = "set_weekly_notification";
+    public static final String KEY = "weekly_notification";
 
     private final NotificationService service;
     private final WeeklyNotificationMessageFormatter messageFormatter;
@@ -34,7 +34,7 @@ public class SetWeeklyNotificationCommand extends InputInterceptingCommand<Integ
                                            WeeklyNotificationMessageFormatter messageFormatter,
                                            AfterDayOfWeekSelectedMessage afterDayOfWeekSelectedMessage,
                                            SequentialAsyncExecutionStrategy strategy) {
-        super(new CommandArgs(KEY, null, null), publisher,
+        super(new CommandArgs(KEY, null, null, null), publisher,
                 new IntegerInterceptor(), sessionsService, strategy);
         this.service = service;
         this.messageFormatter = messageFormatter;

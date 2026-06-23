@@ -31,7 +31,7 @@ public class VacanciesMessageFormatter {
     public static void addManualHeader(StringBuilder stringBuilder, long totalCount, boolean isExact) {
         if (totalCount >= 0) {
             stringBuilder.append("Найдено вакансий: *").append(totalCount);
-            if(!isExact){
+            if (!isExact) {
                 stringBuilder.append("+");
             }
             stringBuilder.append("*\n\n");
@@ -45,7 +45,7 @@ public class VacanciesMessageFormatter {
         if (count >= 0) {
             sb.append("*\nВсего: ");
             sb.append(count);
-            if (!isExact){
+            if (!isExact) {
                 sb.append("+");
             }
         }
