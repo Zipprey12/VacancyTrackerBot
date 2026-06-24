@@ -25,7 +25,6 @@ import static vacancy_tracker.model.telegram.execution.ExecutionFailReason.EXCEP
 public class NotificationProcessor {
 
     private final NotificationService notificationService;
-    private final NotificationQueueService queueService;
     private final SendVacanciesAction showVacanciesAction;
 
     @Async

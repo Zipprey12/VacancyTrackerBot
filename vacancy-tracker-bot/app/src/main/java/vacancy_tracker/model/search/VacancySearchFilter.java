@@ -26,4 +26,20 @@ public class VacancySearchFilter {
 
     private LocalDateTime modifiedFrom;
     private RequestType requestType;
+
+    public void setMaxSalary(Integer maxSalary) {
+        if (maxSalary == null || maxSalary == 0) {
+            this.maxSalary = null;
+            return;
+        }
+        this.maxSalary = maxSalary;
+    }
+
+    public void setMinSalary(Integer minSalary) {
+        if (minSalary == null || minSalary == 0) {
+            this.minSalary = null;
+            return;
+        }
+        this.minSalary = minSalary;
+    }
 }

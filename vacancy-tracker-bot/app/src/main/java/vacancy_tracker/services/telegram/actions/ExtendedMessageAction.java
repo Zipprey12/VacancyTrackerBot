@@ -22,7 +22,7 @@ public abstract class ExtendedMessageAction<T> extends MessageAction implements 
     @Override
     public final void handleWithParameter(MessageData messageData, T parameters) {
         var message = new OutgoingMessage(messageData);
-        getExecutionStrategy().execute(() -> executeWithParameters(message, parameters));
+        getExecutionStrategy().execute(message.getChatId(), () -> executeWithParameters(message, parameters));
     }
 
     @Override

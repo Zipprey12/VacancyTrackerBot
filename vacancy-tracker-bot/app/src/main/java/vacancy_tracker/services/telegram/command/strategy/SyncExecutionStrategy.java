@@ -8,18 +8,18 @@ import java.util.concurrent.CompletableFuture;
 public class SyncExecutionStrategy implements ExecutionStrategy {
 
     @Override
-    public void execute(Runnable populateMessage, Runnable publish) {
+    public void execute(long chatId, Runnable populateMessage, Runnable publish) {
         populateMessage.run();
         publish.run();
     }
 
     @Override
-    public void execute(Runnable execute) {
+    public void execute(long chatId, Runnable execute) {
         execute.run();
     }
 
     @Override
-    public CompletableFuture<Boolean> executeWithCheck(Runnable execute) {
+    public CompletableFuture<Boolean> executeWithCheck(long chatId, Runnable execute) {
         try {
             execute.run();
             return CompletableFuture.completedFuture(true);

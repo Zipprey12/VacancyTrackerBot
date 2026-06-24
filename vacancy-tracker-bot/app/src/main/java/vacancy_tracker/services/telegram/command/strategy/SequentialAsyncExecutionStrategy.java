@@ -20,27 +20,6 @@ public class SequentialAsyncExecutionStrategy implements ExecutionStrategy {
     private final ConcurrentHashMap<Long, CompletableFuture<Void>> executionChains = new ConcurrentHashMap<>();
 
     @Override
-    public void execute(Runnable populate, Runnable publish) {
-        CompletableFuture
-                .runAsync(populate, taskExecutor)
-                .thenRun(publish)
-                .exceptionally(e -> {
-                    log.error(COMMAND_EXECUTION_ERROR, e);
-                    return null;
-                });
-    }
-
-    @Override
-    public void execute(Runnable runnable) {
-        CompletableFuture
-                .runAsync(runnable, taskExecutor)
-                .exceptionally(e -> {
-                    log.error(OPERATION_EXECUTION_ERROR, e);
-                    return null;
-                });
-    }
-
-    @Override
     public void execute(long chatId, Runnable runnable) {
         executionChains.compute(chatId, (id, current) -> {
             var next = (current == null ? CompletableFuture.completedFuture((Void) null) : current)
@@ -67,17 +46,6 @@ public class SequentialAsyncExecutionStrategy implements ExecutionStrategy {
             next.thenRun(() -> executionChains.remove(chatId, next));
             return next;
         });
-    }
-
-    @Override
-    public CompletableFuture<Boolean> executeWithCheck(Runnable execute) {
-        return CompletableFuture
-                .runAsync(execute, taskExecutor)
-                .thenApply(v -> true)
-                .exceptionally(e -> {
-                    log.error(OPERATION_EXECUTION_ERROR, e);
-                    return false;
-                });
     }
 
     @Override

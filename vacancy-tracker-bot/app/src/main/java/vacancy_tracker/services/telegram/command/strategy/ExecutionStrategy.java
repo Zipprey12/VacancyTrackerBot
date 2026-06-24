@@ -8,21 +8,10 @@ public interface ExecutionStrategy {
         return new SyncExecutionStrategy();
     }
 
-    void execute(Runnable populate, Runnable publish);
+    void execute(long chatId, Runnable runnable);
 
-    void execute(Runnable runnable);
 
-    CompletableFuture<Boolean> executeWithCheck(Runnable execute);
+    void execute(long chatId, Runnable populate, Runnable publish);
 
-    default void execute(long chatId, Runnable runnable) {
-        execute(runnable);
-    }
-
-    default void execute(long chatId, Runnable populate, Runnable publish) {
-        execute(populate, publish);
-    }
-
-    default CompletableFuture<Boolean> executeWithCheck(long chatId, Runnable execute) {
-        return executeWithCheck(execute);
-    }
+    CompletableFuture<Boolean> executeWithCheck(long chatId, Runnable execute);
 }

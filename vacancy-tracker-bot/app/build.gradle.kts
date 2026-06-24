@@ -19,6 +19,8 @@ val lombokVersion = "1.18.44"
 val mapstructVersion = "1.6.3"
 val telegramVersion = "10.0.0"
 val lombokMapstruct = "0.2.0"
+val mockitoVersion = "5.14.2"
+val assertjVersion ="3.26.3"
 
 dependencies {
 
@@ -45,7 +47,17 @@ dependencies {
     implementation(libs.guava)
 
     runtimeOnly("org.postgresql:postgresql")
+
     testImplementation(libs.junit)
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+    }
+    testImplementation("org.mockito:mockito-core:$mockitoVersion")
+    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
+    testImplementation("org.assertj:assertj-core:$assertjVersion")
+
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 }
 
 java {
@@ -56,4 +68,12 @@ java {
 
 application {
     mainClass = "vacancy_tracker.App"
+}
+
+tasks.test {
+    useJUnitPlatform()
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
+    testLogging {
+        events("passed", "failed", "skipped")
+    }
 }

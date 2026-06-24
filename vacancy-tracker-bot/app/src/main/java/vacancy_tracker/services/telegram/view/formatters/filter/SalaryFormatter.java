@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.CANCEL_CHANGE;
-import static vacancy_tracker.model.telegram.callback.FilterSettingsCallbackKeys.SET_MIN_SALARY;
 
 @UtilityClass
 public class SalaryFormatter {
@@ -23,7 +22,7 @@ public class SalaryFormatter {
     public static InlineKeyboardMarkup createKeyboard(String callback, Integer... args) {
         var list = new LinkedList<CallbackItem>();
         if (args != null) {
-            Arrays.stream(args).forEach(a -> list.add(createItem(a)));
+            Arrays.stream(args).forEach(a -> list.add(createItem(callback, a)));
         }
 
         list.add(new CallbackItem(callback, "Не указывать", 0));
@@ -32,7 +31,7 @@ public class SalaryFormatter {
         return KeyboardBuilder.buildInlineKeyboard(list, 2);
     }
 
-    public static CallbackItem createItem(int salary) {
-        return new CallbackItem(SET_MIN_SALARY.getKey(), NumbersFormatUtil.formatSalary(salary), salary);
+    public static CallbackItem createItem(String callback, int salary) {
+        return new CallbackItem(callback, NumbersFormatUtil.formatSalary(salary), salary);
     }
 }

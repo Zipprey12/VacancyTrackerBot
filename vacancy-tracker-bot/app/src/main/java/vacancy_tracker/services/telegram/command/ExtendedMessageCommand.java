@@ -48,7 +48,8 @@ public abstract class ExtendedMessageCommand<T> extends AbstractMessageCommand i
 
     @Override
     public final void handleWithParameter(MessageData messageData, T parameter) {
-        getExecutionStrategy().executeWithCheck(() -> executeWithParameters(messageData, parameter))
+        var chatId = messageData.getChatId();
+        getExecutionStrategy().executeWithCheck(chatId, () -> executeWithParameters(messageData, parameter))
                 .thenAccept(success -> {
                     if (isTriggerEvent()) {
                         endExecution(messageData, success);

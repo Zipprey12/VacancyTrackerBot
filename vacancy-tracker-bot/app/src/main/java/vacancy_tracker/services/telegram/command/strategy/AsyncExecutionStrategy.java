@@ -18,7 +18,7 @@ public class AsyncExecutionStrategy implements ExecutionStrategy {
     private final Executor taskExecutor;
 
     @Override
-    public void execute(Runnable populateMessage, Runnable publish) {
+    public void execute(long chatId, Runnable populateMessage, Runnable publish) {
         CompletableFuture
                 .runAsync(populateMessage, taskExecutor)
                 .thenRun(publish)
@@ -29,7 +29,7 @@ public class AsyncExecutionStrategy implements ExecutionStrategy {
     }
 
     @Override
-    public void execute(Runnable execute) {
+    public void execute(long chatId, Runnable execute) {
         CompletableFuture
                 .runAsync(execute, taskExecutor)
                 .exceptionally(e -> {
@@ -39,7 +39,7 @@ public class AsyncExecutionStrategy implements ExecutionStrategy {
     }
 
     @Override
-    public CompletableFuture<Boolean> executeWithCheck(Runnable execute) {
+    public CompletableFuture<Boolean> executeWithCheck(long chatId, Runnable execute) {
         return CompletableFuture
                 .runAsync(execute, taskExecutor)
                 .thenApply(v -> true)

@@ -62,15 +62,17 @@ public class SetMinSalaryCommand extends InputInterceptingCommand<Integer> {
     protected void executeWithParameters(MessageData messageData, Integer parameter) {
         var chatId = messageData.getChatId();
         var filters = settingsService.get(chatId);
-        var maxSalary = filters.getMaxSalary();
 
-        if (parameter < 0) {
-            handleInvalidValue(messageData, NEGATIVE_VALUE_MESSAGE);
-            return;
-        }
-        if (maxSalary != null && parameter > maxSalary) {
-            handleInvalidValue(messageData, "Минимальная зарплата не может превышать максимальную");
-            return;
+        if (parameter != null && parameter != 0) {
+            if (parameter < 0) {
+                handleInvalidValue(messageData, NEGATIVE_VALUE_MESSAGE);
+                return;
+            }
+
+            var maxSalary = filters.getMaxSalary();
+            if (maxSalary != null && parameter > maxSalary) {
+                filters.setMaxSalary(0);
+            }
         }
 
         filters.setMinSalary(parameter);
