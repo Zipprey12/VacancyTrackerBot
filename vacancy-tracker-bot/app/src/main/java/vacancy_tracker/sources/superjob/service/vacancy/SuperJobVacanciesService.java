@@ -10,7 +10,7 @@ import vacancy_tracker.model.domain.Town;
 import vacancy_tracker.model.domain.VacanciesSource;
 import vacancy_tracker.model.domain.Vacancy;
 import vacancy_tracker.model.search.VacanciesResponse;
-import vacancy_tracker.model.search.VacanciesSearchData;
+import vacancy_tracker.model.search.VacanciesSearchParams;
 import vacancy_tracker.services.api.AsyncVacanciesProvider;
 import vacancy_tracker.services.api.location.LocationsServiceImpl;
 import vacancy_tracker.sources.superjob.model.response.SuperJobVacanciesResponse;
@@ -37,10 +37,10 @@ public class SuperJobVacanciesService implements AsyncVacanciesProvider {
     }
 
     @Override
-    public CompletableFuture<VacanciesResponse> find(VacanciesSearchData data) {
-        var filter = data.getFilter();
-        var limit = data.getLimit();
-        var page = data.getPage();
+    public CompletableFuture<VacanciesResponse> find(VacanciesSearchParams params) {
+        var filter = params.getFilter();
+        var limit = params.getLimit();
+        var page = params.getPage();
 
         log.info("SuperJob поиск вакансий: {}", filter);
         return apiClient.searchVacancies(filter, limit, page)
@@ -52,6 +52,11 @@ public class SuperJobVacanciesService implements AsyncVacanciesProvider {
                     log.debug("SuperJob: возвращено {} вакансий", r.getVacancies().size());
                 })
                 .toFuture();
+    }
+
+    @Override
+    public CompletableFuture<VacanciesResponse> makeTrialResponse(VacanciesSearchParams params) {
+        return find(params);
     }
 
     private VacanciesResponse createEmptyResponse() {

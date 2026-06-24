@@ -6,7 +6,7 @@ import vacancy_tracker.model.domain.VacanciesSource;
 import vacancy_tracker.model.search.SearchOutcome;
 import vacancy_tracker.model.search.SearchResult;
 import vacancy_tracker.model.search.VacanciesResponse;
-import vacancy_tracker.model.search.VacanciesSearchData;
+import vacancy_tracker.model.search.VacanciesSearchParams;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -26,29 +26,16 @@ public class VacanciesSearcherImpl implements VacanciesSearcher {
     }
 
     @Override
-    public CompletableFuture<SearchResult> search(VacanciesSearchData data) {
-        List<CompletableFuture<VacanciesResponse>> futures = providers.stream()
-                .map(p -> p.find(data))
+    public CompletableFuture<SearchResult> search(VacanciesSearchParams params) {
+        var futures = providers.stream()
+                .map(p -> p.find(params))
                 .toList();
 
-        var filter = data.getFilter();
-        var modifiedFrom = filter.getModifiedFrom();
-        return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
-                .thenApply(v -> {
-                    var res = new SearchResult(filter.getRequestType());
-                    futures.stream()
-                            .map(CompletableFuture::join)
-                            .forEach(r -> {
-                                r.setModifiedFrom(modifiedFrom);
-                                res.addResponse(r);
-                            });
-                    res.setModifiedFrom(modifiedFrom);
-                    return res;
-                });
+        return collectResult(params, futures);
     }
 
     @Override
-    public CompletableFuture<SearchResult> search(VacanciesSearchData data, VacanciesSource source) {
+    public CompletableFuture<SearchResult> search(VacanciesSearchParams data, VacanciesSource source) {
         if (source == null) {
             return search(data);
         }
@@ -59,7 +46,7 @@ public class VacanciesSearcherImpl implements VacanciesSearcher {
     }
 
     @Override
-    public CompletableFuture<SearchOutcome> searchWithOutcome(VacanciesSearchData data, VacanciesSource source) {
+    public CompletableFuture<SearchOutcome> searchWithOutcome(VacanciesSearchParams data, VacanciesSource source) {
         if (source == null) {
             return search(data).thenApply(result -> {
                 var responses = result.getNotEmptyResponses();
@@ -80,6 +67,34 @@ public class VacanciesSearcherImpl implements VacanciesSearcher {
                     var result = createResult(response, data.getFilter().getRequestType());
                     var onPublished = provider.onPublished(data.getChatId(), response);
                     return new SearchOutcome(result, onPublished);
+                });
+    }
+
+    @Override
+    public CompletableFuture<SearchResult> makeTrialRequest(VacanciesSearchParams params) {
+        params.setLimit(1);
+        params.setPage(0);
+
+        List<CompletableFuture<VacanciesResponse>> futures = providers.stream()
+                .map(p -> p.makeTrialResponse(params))
+                .toList();
+        return collectResult(params, futures);
+    }
+
+    private CompletableFuture<SearchResult> collectResult(VacanciesSearchParams params, List<CompletableFuture<VacanciesResponse>> futures) {
+        var filter = params.getFilter();
+        var modifiedFrom = filter.getModifiedFrom();
+        return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
+                .thenApply(v -> {
+                    var res = new SearchResult(filter.getRequestType());
+                    futures.stream()
+                            .map(CompletableFuture::join)
+                            .forEach(r -> {
+                                r.setModifiedFrom(modifiedFrom);
+                                res.addResponse(r);
+                            });
+                    res.setModifiedFrom(modifiedFrom);
+                    return res;
                 });
     }
 

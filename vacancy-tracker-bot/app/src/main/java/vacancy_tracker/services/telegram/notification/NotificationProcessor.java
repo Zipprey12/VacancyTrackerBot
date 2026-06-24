@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import vacancy_tracker.model.domain.RequestType;
-import vacancy_tracker.model.search.VacanciesSearchParams;
+import vacancy_tracker.model.search.VacanciesSearchRequest;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.SearchActionParams;
 import vacancy_tracker.model.telegram.execution.ExecutionResult;
@@ -37,7 +37,7 @@ public class NotificationProcessor {
                 .chatId(chatId)
                 .source(PublishType.SEND)
                 .build();
-        var params = VacanciesSearchParams.builder()
+        var params = VacanciesSearchRequest.builder()
                 .page(0)
                 .startDate(settings.getLastNotificationAt())
                 .requestType(RequestType.SCHEDULED)

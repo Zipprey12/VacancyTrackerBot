@@ -10,7 +10,7 @@ import vacancy_tracker.services.telegram.view.utils.NumbersFormatUtil;
 public class FiltersMessageFormatter {
 
     private static final String HEADER = """
-            ⚙️ Настройка поиска вакансий.
+            ⚙️ Текущие настройка поиска вакансий.
             
             """;
 

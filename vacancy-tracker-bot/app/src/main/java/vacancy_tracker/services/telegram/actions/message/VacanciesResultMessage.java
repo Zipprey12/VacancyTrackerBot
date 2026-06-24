@@ -40,4 +40,8 @@ public class VacanciesResultMessage {
             vacancySourcesFormatter.fill(message, result);
         }
     }
+
+    public void fillSourceMessage(SearchResult result, OutgoingMessage message){
+        vacancySourcesFormatter.fill(message, result);
+    }
 }

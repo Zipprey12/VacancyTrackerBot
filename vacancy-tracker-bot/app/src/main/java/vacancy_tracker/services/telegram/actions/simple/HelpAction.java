@@ -22,6 +22,11 @@ public class HelpAction extends MessageAction {
             
             """;
 
+    private static final String FOOTER = """
+            💡 Вы можете вызвать команду сразу с параметром:
+            `/min_salary 50000` — установить зарплату от 50 000
+            """;
+
     private String message;
 
     public HelpAction(SendingMessagePublisher publisher,
@@ -45,6 +50,8 @@ public class HelpAction extends MessageAction {
         for (var category : CommandCategory.values()) {
             addCategory(builder, category, set);
         }
+        builder.append("\n");
+        builder.append(FOOTER);
         this.message = builder.toString();
     }
 

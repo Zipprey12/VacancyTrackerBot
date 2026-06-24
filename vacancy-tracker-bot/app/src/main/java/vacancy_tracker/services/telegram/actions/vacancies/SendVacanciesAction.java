@@ -5,19 +5,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.domain.RequestType;
 import vacancy_tracker.model.search.SearchResult;
-import vacancy_tracker.model.search.VacanciesSearchData;
 import vacancy_tracker.model.search.VacanciesSearchParams;
+import vacancy_tracker.model.search.VacanciesSearchRequest;
+import vacancy_tracker.model.search.VacancySearchFilter;
 import vacancy_tracker.model.telegram.dto.MessageData;
 import vacancy_tracker.model.telegram.dto.OutgoingMessage;
 import vacancy_tracker.model.telegram.dto.SearchActionParams;
 import vacancy_tracker.model.telegram.execution.ExecutionResult;
 import vacancy_tracker.model.telegram.session.PublishType;
 import vacancy_tracker.model.telegram.settings.VacanciesShownParams;
-import vacancy_tracker.services.api.VacanciesSearcher;
+import vacancy_tracker.services.api.SearchVacanciesService;
 import vacancy_tracker.services.telegram.actions.AsyncAction;
 import vacancy_tracker.services.telegram.actions.message.VacanciesResultMessage;
 import vacancy_tracker.services.telegram.command.publishers.SendingAndUpdatingMessagePublisher;
 import vacancy_tracker.services.telegram.settings.SearchFiltersService;
+import vacancy_tracker.services.telegram.view.formatters.vacancies.VacanciesSearchMessageFormatter;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -30,22 +32,23 @@ import static vacancy_tracker.model.telegram.execution.ExecutionFailReason.EXCEP
 public class SendVacanciesAction extends AsyncAction<SearchActionParams> {
 
     public static final int VACANCIES_COUNT_LIMIT = 10;
-    private final VacanciesSearcher vacanciesSearcher;
     private final SearchFiltersService settingsService;
     private final VacanciesResultMessage resultMessage;
     private final SendingAndUpdatingMessagePublisher publisher;
+    private final SearchVacanciesService searchService;
 
     @Override
     public CompletableFuture<Void> executeAsync(MessageData messageData) {
         return handleWithParameterAsync(messageData, new SearchActionParams(
-                new VacanciesSearchParams(0, null, null, RequestType.MANUAL),
+                new VacanciesSearchRequest(0, null, null, RequestType.MANUAL),
                 new VacanciesShownParams(true, true)
         ));
     }
 
     @Override
     public CompletableFuture<ExecutionResult> executeWithCompletionCheck(MessageData messageData, SearchActionParams parameter) {
-        return tryShow(messageData, parameter)
+        var message = showSearchMessage(messageData);
+        return tryShow(message, parameter)
                 .thenApply(value ->
                         Boolean.TRUE.equals(value) ? ExecutionResult.success() : ExecutionResult.fail(EMPTY_RESULT))
                 .exceptionally(e -> {
@@ -56,53 +59,73 @@ public class SendVacanciesAction extends AsyncAction<SearchActionParams> {
 
     @Override
     public CompletableFuture<Void> handleWithParameterAsync(MessageData messageData, SearchActionParams parameters) {
-        return tryShow(messageData, parameters)
+        var message = showSearchMessage(messageData);
+        return tryShow(message, parameters)
                 .thenApply(result -> null);
     }
 
-    public CompletableFuture<Boolean> tryShow(MessageData messageData, SearchActionParams parameters) {
-        var searchParams = parameters.getSearchParams();
-        var shownParams = parameters.getShownParams();
-        var filter = settingsService.get(messageData.getChatId());
-        var sendTime = messageData.getSendTime();
+    public CompletableFuture<Boolean> tryShow(OutgoingMessage message, SearchActionParams parameters) {
+        var searchRequest = parameters.getSearchParams();
+        var filter = settingsService.get(message.getChatId());
+        var sendTime = message.getSendTime();
 
         if (sendTime == null || sendTime.isBefore(filter.getUpdatedAt())) {
-            searchParams.setPage(0);
-            messageData.setSource(PublishType.SEND);
+            searchRequest.setPage(0);
+            message.setSource(PublishType.SEND);
         }
 
-        filter.setRequestType(searchParams.getRequestType());
-        if (searchParams.getStartDate() != null) {
-            filter.setModifiedFrom(searchParams.getStartDate());
+        filter.setRequestType(searchRequest.getRequestType());
+        filter.setModifiedFrom(searchRequest.getStartDate());
+
+        var source = searchRequest.getSource();
+        if (searchRequest.getPage() == 0 && source == null) {
+            return searchService.makeTrialRequest(filter, message.getChatId(), searchRequest)
+                    .thenCompose(result -> handleTrialResult(message, result, parameters));
         }
+        return findAndShow(message, parameters);
+    }
 
-        var messageId = messageData.getSource() == PublishType.UPDATE ?
-                messageData.getMessageId() : null;
+    private CompletableFuture<Boolean> findAndShow(OutgoingMessage message, SearchActionParams parameters) {
+        var searchRequest = parameters.getSearchParams();
+        var filter = settingsService.get(message.getChatId());
+        var page = searchRequest.getPage();
+        var params = buildParams(filter, message, page);
 
-        var source = searchParams.getSource();
-        var page = searchParams.getPage();
-        var params = VacanciesSearchData.builder()
-                .filter(filter)
-                .limit(VACANCIES_COUNT_LIMIT)
-                .chatId(messageData.getChatId())
-                .page(page)
-                .messageId(messageId)
-                .build();
-
-        return vacanciesSearcher.searchWithOutcome(params, source)
+        return searchService.searchWithOutcome(params, searchRequest.getSource())
                 .thenApply(outcome -> {
                     var result = outcome.result();
+                    var shownParams = parameters.getShownParams();
                     if (result.getNotEmptyResponseCount() == 0 && !shownParams.isShowIfEmpty()) {
                         return false;
                     }
-                    var message = new OutgoingMessage(messageData);
                     handleResult(parameters, result, message);
 
                     var realMessageId = publisher.publish(message);
                     outcome.onPublished().accept(realMessageId, page + 1);
-
                     return true;
                 });
+    }
+
+    private OutgoingMessage showSearchMessage(MessageData messageData) {
+        var outgoing = new OutgoingMessage(messageData);
+        VacanciesSearchMessageFormatter.fill(outgoing);
+        var id = publisher.publish(outgoing);
+        outgoing.setMessageId(id);
+        return outgoing;
+    }
+
+    private CompletableFuture<Boolean> handleTrialResult(OutgoingMessage message, SearchResult result,
+                                                         SearchActionParams parameters) {
+        var shownParams = parameters.getShownParams();
+        if (result.getNotEmptyResponseCount() == 0 && !shownParams.isShowIfEmpty()) {
+            return CompletableFuture.completedFuture(false);
+        }
+        if (result.getTotalCount() > VACANCIES_COUNT_LIMIT) {
+            resultMessage.fillSourceMessage(result, message);
+            publisher.publish(message);
+            return CompletableFuture.completedFuture(true);
+        }
+        return findAndShow(message, parameters);
     }
 
     private void handleResult(SearchActionParams parameters, SearchResult result, OutgoingMessage message) {
@@ -121,5 +144,18 @@ public class SendVacanciesAction extends AsyncAction<SearchActionParams> {
         } else {
             resultMessage.fillMessage(result, message);
         }
+    }
+
+    private VacanciesSearchParams buildParams(VacancySearchFilter filter, OutgoingMessage message, int page) {
+        var messageId = message.getSource() == PublishType.UPDATE ?
+                message.getMessageId() : null;
+
+        return VacanciesSearchParams.builder()
+                .filter(filter)
+                .limit(VACANCIES_COUNT_LIMIT)
+                .chatId(message.getChatId())
+                .page(page)
+                .messageId(messageId)
+                .build();
     }
 }

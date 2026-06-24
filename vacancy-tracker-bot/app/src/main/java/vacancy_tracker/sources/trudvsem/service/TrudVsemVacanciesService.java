@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 import vacancy_tracker.model.domain.VacanciesSource;
 import vacancy_tracker.model.search.CollectedBatch;
 import vacancy_tracker.model.search.VacanciesResponse;
-import vacancy_tracker.model.search.VacanciesSearchData;
+import vacancy_tracker.model.search.VacanciesSearchParams;
 import vacancy_tracker.model.search.VacancySearchFilter;
 import vacancy_tracker.services.api.AsyncVacanciesProvider;
 import vacancy_tracker.services.telegram.pagination.VacanciesPaginationOffsetService;
@@ -38,28 +38,25 @@ public class TrudVsemVacanciesService implements AsyncVacanciesProvider {
     }
 
     @Override
-    public CompletableFuture<VacanciesResponse> find(VacanciesSearchData data) {
-        var filter = data.getFilter();
-        var limit = data.getLimit();
-        var page = data.getPage();
+    public CompletableFuture<VacanciesResponse> find(VacanciesSearchParams params) {
+        var filter = params.getFilter();
+        var limit = params.getLimit();
+        var page = params.getPage();
 
         log.info("TrudVsem: получение вакансий: {}", filter);
 
         if (hasSalaryFilter(filter)) {
-            var offsetArgs = paginationOffsetService.resolveStartOffset(data.getChatId(), data.getMessageId(), page);
+            var offsetArgs = paginationOffsetService.resolveStartOffset(params.getChatId(), params.getMessageId(), page);
             return findWithSalaryFilter(filter, limit, offsetArgs.getOffset())
                     .doOnSuccess(response -> response.setPage(offsetArgs.getPage()))
                     .toFuture();
         }
+        return searchWithoutSalaryFilter(params);
+    }
 
-        return apiClient.searchVacancies(filter, limit, page)
-                .map(tr -> {
-                    var response = createResponse(tr, limit, page);
-                    response.setModifiedFrom(filter.getModifiedFrom());
-                    return response;
-                })
-                .switchIfEmpty(Mono.fromCallable(this::createEmptyResponse))
-                .toFuture();
+    @Override
+    public CompletableFuture<VacanciesResponse> makeTrialResponse(VacanciesSearchParams data) {
+        return searchWithoutSalaryFilter(data);
     }
 
     @Override
@@ -74,6 +71,21 @@ public class TrudVsemVacanciesService implements AsyncVacanciesProvider {
             }
             paginationOffsetService.saveNextPageOffset(chatId, sendMessageId, nextPage, response.getOffset());
         };
+    }
+
+    private CompletableFuture<VacanciesResponse> searchWithoutSalaryFilter(VacanciesSearchParams params){
+        var filter = params.getFilter();
+        var limit = params.getLimit();
+        var page = params.getPage();
+
+        return apiClient.searchVacancies(filter, limit, page)
+                .map(tr -> {
+                    var response = createResponse(tr, limit, page);
+                    response.setModifiedFrom(filter.getModifiedFrom());
+                    return response;
+                })
+                .switchIfEmpty(Mono.fromCallable(this::createEmptyResponse))
+                .toFuture();
     }
 
     private boolean hasSalaryFilter(VacancySearchFilter filter) {

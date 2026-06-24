@@ -31,7 +31,6 @@ public abstract class NavigationCallbackHandler<T> extends ParsingDataCallbackHa
     public void handle(CallbackQuery callbackQuery) {
         var text = callbackQuery.getData();
         var data = getCallbackParser().parse(text);
-
         var messageData = MessageData.create(callbackQuery);
 
         if (data.isIgnored()) {

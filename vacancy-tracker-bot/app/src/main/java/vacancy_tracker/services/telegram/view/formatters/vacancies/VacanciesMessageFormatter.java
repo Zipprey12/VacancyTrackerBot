@@ -17,7 +17,7 @@ public class VacanciesMessageFormatter {
     public static final String RUB = " руб.";
 
     protected static void addHeader(StringBuilder sb, SearchResult result) {
-        addHeader(sb, result.getModifiedFrom(), result.getTotalCount(), result.isCountExact());
+        addHeader(sb, result.getModifiedFrom(), result.getExactTotalCount(), result.isCountExact());
     }
 
     public static void addHeader(StringBuilder sb, LocalDateTime modifiedFrom, long totalCount, boolean isExact) {

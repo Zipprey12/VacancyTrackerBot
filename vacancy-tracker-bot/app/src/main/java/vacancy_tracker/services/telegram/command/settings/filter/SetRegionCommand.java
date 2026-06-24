@@ -90,12 +90,12 @@ public class SetRegionCommand extends InputInterceptingCommand<LocationSearch> {
             return;
         }
         var region = foundRegion.get();
+        selectRegion(region, messageData.getChatId());
         if (region.getTowns() == null || region.getTowns().isEmpty()) {
             endExecution(messageData);
         } else {
             endExecution(messageData, region);
         }
-        selectRegion(region, messageData);
     }
 
     private void handleEmpty(long chatId) {
@@ -104,16 +104,15 @@ public class SetRegionCommand extends InputInterceptingCommand<LocationSearch> {
         settingsService.save(chatId, null);
     }
 
-    private void selectRegion(Region region, MessageData messageData) {
-        var filters = settingsService.get(messageData.getChatId());
+    private void selectRegion(Region region, long chatId) {
+        var filters = settingsService.get(chatId);
         var location = createLocation(region);
         filters.setLocation(location);
-        settingsService.save(messageData.getChatId(), filters);
+        settingsService.save(chatId, filters);
     }
 
     private Location createLocation(Region region) {
         var location = new Location();
-        region.setTowns(null);
         location.setRegion(region);
         return location;
     }

@@ -3,7 +3,7 @@ package vacancy_tracker.services.telegram.callback.handlers.vacancies;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import vacancy_tracker.model.domain.VacanciesSource;
-import vacancy_tracker.model.search.VacanciesSearchParams;
+import vacancy_tracker.model.search.VacanciesSearchRequest;
 import vacancy_tracker.model.telegram.callback.CallbackArgs;
 import vacancy_tracker.model.telegram.callback.CallbackData;
 import vacancy_tracker.model.telegram.callback.VacanciesCallbackKeys;
@@ -29,14 +29,13 @@ public class ShowVacanciesCallbackHandler extends NavigationCallbackHandler<Sear
     protected ShowVacanciesCallbackHandler(SendVacanciesAction handler) {
         super(VacanciesCallbackKeys.GET_VACANCIES.getKey(), handler);
         action = handler;
-        setCallFinish(false);
     }
 
     @Override
     protected Optional<SearchActionParams> tryCastSelectedValue(String value) {
         try {
             var source = VacanciesSource.valueOf(value);
-            var searchParams = VacanciesSearchParams.builder()
+            var searchParams = VacanciesSearchRequest.builder()
                     .page(0)
                     .source(source)
                     .build();
@@ -57,12 +56,11 @@ public class ShowVacanciesCallbackHandler extends NavigationCallbackHandler<Sear
             log.info(time);
             var casted = StringUtil.parseLong(time);
             if (casted.isPresent()) {
-                var params = new VacanciesSearchParams();
+                var params = new VacanciesSearchRequest();
                 params.setStartDate(DateUtil.fromUnixSeconds(casted.get()));
 
                 var p = new SearchActionParams(params, null);
-                action.handleWithParameterAsync(message, p).
-                        thenAccept(v -> finish(message.getCallbackId()));
+                action.handleWithParameterAsync(message, p);
                 return;
             }
         }
@@ -80,19 +78,17 @@ public class ShowVacanciesCallbackHandler extends NavigationCallbackHandler<Sear
         }
         params.getSearchParams().setPage(data.targetPage());
         message.setSource(PublishType.UPDATE);
-        action.handleWithParameterAsync(message, params)
-                .thenAccept(v -> finish(message.getCallbackId()));
+        action.handleWithParameterAsync(message, params);
     }
 
     @Override
     public void handleCastedData(SearchActionParams data, MessageData messageData) {
-        action.handleWithParameterAsync(messageData, data)
-                .thenAccept(v -> finish(messageData.getCallbackId()));
+        action.handleWithParameterAsync(messageData, data);
     }
 
     private SearchActionParams extractParams(CallbackArgs args) {
         try {
-            var searchParams = new VacanciesSearchParams();
+            var searchParams = new VacanciesSearchRequest();
             var shownParams = new VacanciesShownParams();
             var result = new SearchActionParams(searchParams, shownParams);
 
