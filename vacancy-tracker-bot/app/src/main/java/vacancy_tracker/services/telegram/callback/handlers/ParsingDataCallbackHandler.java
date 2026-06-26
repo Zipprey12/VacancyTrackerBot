@@ -10,7 +10,6 @@ import vacancy_tracker.services.telegram.callback.parsers.CallbackParser;
 import vacancy_tracker.services.telegram.handlers.ParametrizedDataHandler;
 
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 public abstract class ParsingDataCallbackHandler<T> extends CallbackHandler {

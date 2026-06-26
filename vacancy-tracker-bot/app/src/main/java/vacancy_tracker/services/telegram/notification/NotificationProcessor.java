@@ -13,9 +13,11 @@ import vacancy_tracker.model.telegram.notification.NotificationSettings;
 import vacancy_tracker.model.telegram.session.PublishType;
 import vacancy_tracker.model.telegram.settings.VacanciesShownParams;
 import vacancy_tracker.services.telegram.actions.vacancies.SendVacanciesAction;
+import vacancy_tracker.services.telegram.command.strategy.SequentialAsyncExecutionStrategy;
 import vacancy_tracker.services.telegram.settings.NotificationService;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 import static vacancy_tracker.model.telegram.execution.ExecutionFailReason.EXCEPTION;
 
@@ -26,13 +28,14 @@ public class NotificationProcessor {
 
     private final NotificationService notificationService;
     private final SendVacanciesAction showVacanciesAction;
+    private final SequentialAsyncExecutionStrategy executionStrategy;
 
     @Async
     public void processAsync(long chatId) {
-        var start = Instant.now();
         var settings = notificationService.get(chatId);
         if (settings == null || !settings.isEnabled()) return;
 
+        var nextNotification = settings.getNextNotificationAt();
         var data = MessageData.builder()
                 .chatId(chatId)
                 .source(PublishType.SEND)
@@ -45,24 +48,34 @@ public class NotificationProcessor {
 
         showVacanciesAction.executeWithCompletionCheck(data, new SearchActionParams(params,
                         new VacanciesShownParams(settings.isNotifyWhenVacanciesNotFound(), true)))
-                .thenAccept(result -> handleCommandExecution(result, chatId, start));
+                .thenAccept(result -> handleCommandExecution(result, chatId, nextNotification));
     }
 
-    private void handleCommandExecution(ExecutionResult result, long chatId, Instant start) {
-        if (!result.isSuccess() && result.getFailReason().equals(EXCEPTION)) {
+    private void handleCommandExecution(ExecutionResult result, long chatId, LocalDateTime nextNotification) {
+        if (!result.isSuccess() && EXCEPTION.equals(result.getFailReason())) {
             log.error("Ошибка при отправке уведомления chatId={}", chatId);
             return;
         }
 
-        var settings = notificationService.get(chatId);
-        var lastUpdate = settings.getUpdatedAt();
-        if (lastUpdate == null || start.isAfter(lastUpdate)) {
+        executionStrategy.execute(chatId, () -> {
+            var settings = notificationService.get(chatId);
+            var currentNextNotification = settings.getNextNotificationAt();
+
+            if (!Objects.equals(nextNotification, currentNextNotification)) {
+                log.debug("Настройки уведомлений изменились во время выполнения, " +
+                        "планирование следующего уведомления пропущено chatId={}", chatId);
+                return;
+            }
+            log.info("Success: {}", result.isSuccess());
+
             if (result.isSuccess()) {
                 scheduleNext(settings, chatId);
+                log.info("schedule next");
             } else {
                 rescheduleNext(settings, chatId);
+                log.info("rescheduleNext next");
             }
-        }
+        });
     }
 
     private void scheduleNext(NotificationSettings settings, long chatId) {

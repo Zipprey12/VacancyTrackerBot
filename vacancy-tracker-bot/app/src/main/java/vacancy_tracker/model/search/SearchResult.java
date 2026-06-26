@@ -50,7 +50,7 @@ public class SearchResult {
         return hasMore.get();
     }
 
-    public long getExactTotalCount(){
+    public long getExactTotalCount() {
         return exactCount.get();
     }
 

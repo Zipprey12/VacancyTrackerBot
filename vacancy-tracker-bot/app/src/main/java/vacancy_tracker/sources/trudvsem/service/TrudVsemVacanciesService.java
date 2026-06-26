@@ -73,7 +73,7 @@ public class TrudVsemVacanciesService implements AsyncVacanciesProvider {
         };
     }
 
-    private CompletableFuture<VacanciesResponse> searchWithoutSalaryFilter(VacanciesSearchParams params){
+    private CompletableFuture<VacanciesResponse> searchWithoutSalaryFilter(VacanciesSearchParams params) {
         var filter = params.getFilter();
         var limit = params.getLimit();
         var page = params.getPage();

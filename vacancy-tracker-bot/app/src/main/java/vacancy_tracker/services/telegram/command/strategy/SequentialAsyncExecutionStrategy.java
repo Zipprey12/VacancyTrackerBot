@@ -8,9 +8,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
-import static vacancy_tracker.services.telegram.command.strategy.AsyncExecutionStrategy.COMMAND_EXECUTION_ERROR;
-import static vacancy_tracker.services.telegram.command.strategy.AsyncExecutionStrategy.OPERATION_EXECUTION_ERROR;
-
 @Component
 @Slf4j
 @RequiredArgsConstructor

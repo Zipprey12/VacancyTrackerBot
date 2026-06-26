@@ -41,7 +41,7 @@ public class VacanciesResultMessage {
         }
     }
 
-    public void fillSourceMessage(SearchResult result, OutgoingMessage message){
+    public void fillSourceMessage(SearchResult result, OutgoingMessage message) {
         vacancySourcesFormatter.fill(message, result);
     }
 }

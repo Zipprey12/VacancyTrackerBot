@@ -60,13 +60,16 @@ public class StringUtil {
             return Optional.empty();
         }
 
-        var normalized = text.trim().replace(':', ' ');
-        var parts = normalized.split("\\s+");
+        var normalized = text.trim().replaceAll("\\s*:\\s*|\\s+", ":");
+        if (normalized.isBlank()) {
+            return Optional.empty();
+        }
 
+        var parts = normalized.split(":");
         try {
             long hours = Long.parseLong(parts[0]);
-            long minutes = parts.length > 1 ? Long.parseLong(parts[1]) : 0;
-            long seconds = parts.length > 2 ? Long.parseLong(parts[2]) : 0;
+            long minutes = parts.length > 1 ? parseTimePart(parts[1]) : 0;
+            long seconds = parts.length > 2 ? parseTimePart(parts[2]) : 0;
 
             if (hours < 0 || minutes < 0 || seconds < 0 || minutes > 59 || seconds > 59) {
                 return Optional.empty();
@@ -76,5 +79,12 @@ public class StringUtil {
         } catch (NumberFormatException e) {
             return Optional.empty();
         }
+    }
+
+    private static long parseTimePart(String part) {
+        if (part == null || part.isEmpty()) {
+            return 0;
+        }
+        return Long.parseLong(part);
     }
 }

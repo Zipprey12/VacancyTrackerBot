@@ -20,7 +20,7 @@ val mapstructVersion = "1.6.3"
 val telegramVersion = "10.0.0"
 val lombokMapstruct = "0.2.0"
 val mockitoVersion = "5.14.2"
-val assertjVersion ="3.26.3"
+val assertjVersion = "3.26.3"
 
 dependencies {
 

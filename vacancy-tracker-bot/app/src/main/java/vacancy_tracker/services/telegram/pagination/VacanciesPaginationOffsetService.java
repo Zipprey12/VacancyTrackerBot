@@ -45,7 +45,7 @@ public class VacanciesPaginationOffsetService {
 
         if (closestPrevious.isPresent()) {
             var foundPage = closestPrevious.get().getKey();
-            var foundOffset = closestPrevious.get().getKey();
+            var foundOffset = closestPrevious.get().getValue();
             log.debug("Offset для страницы {} не найден. Используется offset страницы {}",
                     page, foundPage);
             return new PaginationArgs(foundPage, foundOffset);
@@ -55,15 +55,15 @@ public class VacanciesPaginationOffsetService {
 
     public void saveNextPageOffset(long chatId, int messageId, int nextPage, long nextOffset) {
         var key = buildKey(chatId);
-        var ops = redisTemplate.opsForHash();
-
-        var map = readMap(chatId, messageId);
-        if (map.isEmpty()) {
-            map = new LinkedHashMap<>();
-        }
-        map.put(nextPage, (int) nextOffset);
-
         try {
+            var ops = redisTemplate.opsForHash();
+            var map = readMap(chatId, messageId);
+
+            if (map.isEmpty()) {
+                map = new LinkedHashMap<>();
+            }
+            map.put(nextPage, (int) nextOffset);
+
             var json = objectMapper.writeValueAsString(map);
             ops.put(key, String.valueOf(messageId), json);
             redisTemplate.expire(key, TTL);

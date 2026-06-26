@@ -74,6 +74,6 @@ public class SetSearchingTextCommand extends InputInterceptingCommand<String> {
         }
         return currentText.isBlank() ? "Текст для поиска не задан" :
                 ("Текущий текст для поиска: *" + currentText + "*.\n")
-                + secondPart;
+                        + secondPart;
     }
 }
