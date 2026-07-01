@@ -1,0 +1,72 @@
+package vacancy_tracker.bot;
+
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
+import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
+import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import vacancy_tracker.model.telegram.dto.MessageData;
+import vacancy_tracker.services.telegram.callback.CallbackService;
+import vacancy_tracker.services.telegram.navigation.BotNavigator;
+import vacancy_tracker.services.telegram.session.SessionsService;
+
+@Slf4j
+@Component
+public class VacancyTrackerBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
+
+    private final BotNavigator navigator;
+    private final SessionsService sessionsService;
+    private final CallbackService callbackService;
+
+    @Getter
+    private final String botToken;
+
+    public VacancyTrackerBot(@Value("${bot.token}") String botToken,
+                             BotNavigator navigator,
+                             SessionsService sessionsService,
+                             CallbackService callbackService) {
+        this.botToken = botToken;
+        this.navigator = navigator;
+        this.sessionsService = sessionsService;
+        this.callbackService = callbackService;
+    }
+
+    @Override
+    public LongPollingUpdateConsumer getUpdatesConsumer() {
+        return this;
+    }
+
+    @Override
+    public void consume(Update update) {
+        try {
+            processUpdate(update);
+        } catch (Exception e) {
+            log.error("Неожиданная ошибка при обработке запроса телеграм: {}", e.getMessage(), e);
+        }
+    }
+
+    private void processUpdate(Update update) {
+        var callback = update.getCallbackQuery();
+        if (callback != null) {
+            callbackService.handle(update);
+            return;
+        }
+
+        if (update.hasMessage()) {
+            var message = update.getMessage();
+            var messageData = MessageData.create(message);
+
+            var session = sessionsService.getOrCreateSession(message.getChatId());
+            if (session.isNew()) {
+                session.setNew(false);
+                sessionsService.save(session);
+                navigator.showInitMessage(messageData);
+                return;
+            }
+            navigator.navigate(update);
+        }
+    }
+}

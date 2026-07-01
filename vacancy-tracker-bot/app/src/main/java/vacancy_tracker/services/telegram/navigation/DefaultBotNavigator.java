@@ -1,0 +1,79 @@
+package vacancy_tracker.services.telegram.navigation;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import vacancy_tracker.model.telegram.dto.MessageData;
+import vacancy_tracker.services.telegram.actions.MessageAction;
+import vacancy_tracker.services.telegram.command.CommandsService;
+import vacancy_tracker.services.telegram.command.callers.MessageCommandCaller;
+import vacancy_tracker.services.telegram.session.SessionsService;
+
+import java.util.concurrent.CompletableFuture;
+
+@Component
+@RequiredArgsConstructor
+public class DefaultBotNavigator implements BotNavigator {
+
+    private final MessageAction initAction;
+    private final MessageAction helpAction;
+
+    private final SessionsService sessionsService;
+    private final MessageCommandCaller executor;
+
+    private final CommandsService commandsService;
+
+    @Override
+    public void navigate(Update update) {
+        var message = update.getMessage();
+        if (message == null) {
+            return;
+        }
+
+        var messageData = MessageData.create(message);
+        var chatId = message.getChatId();
+        var text = message.getText();
+
+        if (text.startsWith("/")) {
+            clearInterceptor(chatId);
+            executeOrHelp(messageData);
+            return;
+        }
+
+        var handlerKey = sessionsService.getOrCreateSession(chatId).getInputHandlerKey();
+        if (handlerKey != null) {
+            var interceptor = commandsService.getInterceptorByCommandKey(handlerKey);
+            if (interceptor.isPresent()) {
+                interceptor.get().processInput(messageData);
+                return;
+            }
+        }
+        executeOrHelp(messageData);
+    }
+
+    @Override
+    public void showInitMessage(MessageData message) {
+        CompletableFuture.runAsync(() -> {
+            initAction.execute(message);
+            helpAction.execute(message);
+        });
+    }
+
+    @Override
+    public void showHelpMessage(MessageData message) {
+        CompletableFuture.runAsync(() -> helpAction.execute(message));
+    }
+
+    private void executeOrHelp(MessageData messageData) {
+        executor.execute(messageData)
+                .thenAccept(executed -> {
+                    if (Boolean.FALSE.equals(executed)) {
+                        helpAction.execute(messageData);
+                    }
+                });
+    }
+
+    private void clearInterceptor(long chatId) {
+        sessionsService.disableInterceptor(chatId);
+    }
+}
